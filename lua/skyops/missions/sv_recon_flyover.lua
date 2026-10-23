@@ -14,8 +14,8 @@ SkyOps.Missions.Register({
 	},
 
 	aircraft = {
-		{ role = "tornado_ids", crew = 2, loadout_text = { "Контейнер разведки", "AIM-9L × 2", "BK-27 · 360" } },
-		{ role = "su25sm3", crew = 1, loadout_text = { "Б-8М1 × 2", "Р-73 × 2", "ГШ-30-2 · 250" } },
+		{ role = "tornado_ids", crew = 2, loadouts = { default = 1 } }, -- без подвески: лёгкий и быстрый
+		{ role = "su25sm3", crew = 1, loadouts = { tags = { "rockets" }, default = 3 } }, -- С-8
 	},
 
 	start = { anchor = "airfield_main", airborne = true, alt = 500, speed = 600 },

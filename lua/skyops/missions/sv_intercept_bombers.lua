@@ -14,8 +14,8 @@ SkyOps.Missions.Register({
 	},
 
 	aircraft = {
-		{ role = "f14a", crew = 2, loadout_text = { "AIM-54A × 4", "AIM-7F × 2", "AIM-9L × 2", "M61A1 · 675" } },
-		{ role = "su34", crew = 2, loadout_text = { "Р-27Р × 2", "Р-73 × 2", "ГШ-301 · 150" } },
+		{ role = "f14a", crew = 2, loadouts = { tags = { "aa" }, default = 2 } }, -- AIM-54 ×6
+		{ role = "su34", crew = 2, loadouts = { tags = { "aa" }, default = 1 } }, -- Р-27Р ×5
 	},
 
 	start = { anchor = "cap_station", airborne = true, alt = 4000, speed = 800 },

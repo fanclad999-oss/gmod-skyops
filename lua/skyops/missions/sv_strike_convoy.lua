@@ -14,8 +14,8 @@ SkyOps.Missions.Register({
 	},
 
 	aircraft = {
-		{ role = "su34", crew = 2, loadout_text = { "КАБ-500Кр × 4", "Р-73 × 2", "ГШ-301 · 150" } },
-		{ role = "tornado_ids", crew = 2, loadout_text = { "Mk 82 × 8", "AIM-9L × 2", "BK-27 · 360" } },
+		{ role = "su34", crew = 2, loadouts = { tags = { "bombs", "asm", "rockets" }, default = 21 } }, -- КАБ-500Кр
+		{ role = "tornado_ids", crew = 2, loadouts = { tags = { "bombs" }, default = 3 } }, -- Mk 82
 	},
 
 	start = { anchor = "airfield_main", airborne = false },

@@ -118,7 +118,16 @@ function Run:BuildBrief()
 	for _, ac in ipairs( def.aircraft ) do
 		local reg = SkyOps.Registry and SkyOps.Registry.GetAircraft( ac.role )
 
-		table.insert( brief.aircraft, { role = ac.role, crew = ac.crew or 2, loadout = ac.loadout, loadoutText = ac.loadout_text, name = ac.name or (reg and reg.name) or ac.role } )
+		local allowed, always = M.AllowedLoadouts( ac )
+
+		table.insert( brief.aircraft, {
+			role = ac.role,
+			crew = ac.crew or 2,
+			name = ac.name or (reg and reg.name) or ac.role,
+			loadouts = allowed,
+			always = always,
+			loadoutText = ac.loadout_text,
+		} )
 	end
 
 	local startPos = SkyOps.Map.Anchor( def.start.anchor )
@@ -179,6 +188,7 @@ function Run:BuildLobby()
 		lobby.flights[ i ] = {
 			callsign = self:FlightCallsign( i ),
 			aircraft = flight.aircraft,
+			loadout = flight.loadout,
 			crew = ac.crew or 2,
 			pilot = IsValid( flight.pilot ) and flight.pilot:Nick() or nil,
 			pilotId = IsValid( flight.pilot ) and flight.pilot:UserID() or nil,
@@ -245,7 +255,10 @@ function Run:TakeSeat( ply, index, seat, aircraft )
 	-- Самолёт выбирает пилот
 	if seat == M.SEAT_PILOT and aircraft and self.def.aircraft[ aircraft ] then
 		if flight.pilot == nil or flight.pilot == ply then
-			flight.aircraft = aircraft
+			if flight.aircraft ~= aircraft then
+				flight.aircraft = aircraft
+				flight.loadout = M.DefaultLoadout( self.def.aircraft[ aircraft ] )
+			end
 
 			-- одноместный самолёт: штурмана высаживаем
 			if (self.def.aircraft[ aircraft ].crew or 2) < 2 and IsValid( flight.wso ) then
@@ -563,7 +576,7 @@ function Run:SpawnFlights()
 				end
 			end
 
-			local jet = Spawn.PlayerJet( ac.role, pos, baseAng, ac.loadout )
+			local jet = Spawn.PlayerJet( ac.role, pos, baseAng, flight.loadout )
 
 			if IsValid( jet ) then
 				spawned = spawned + 1
@@ -913,7 +926,7 @@ function M.Start( id )
 	}, Run )
 
 	for i = 1, def.flights do
-		run.flights[ i ] = { aircraft = 1, ready = {} }
+		run.flights[ i ] = { aircraft = 1, loadout = M.DefaultLoadout( def.aircraft[1] ), ready = {} }
 	end
 
 	for _, wp in ipairs( def.waypoints or {} ) do
@@ -1022,6 +1035,23 @@ net.Receive( "skyops_slot", function( len, ply )
 	end
 
 	run:TakeSeat( ply, index, seat, aircraft > 0 and aircraft or nil )
+end )
+
+net.Receive( "skyops_loadout", function( len, ply )
+	local run = M.Active
+
+	if not run or run.state ~= M.STATE_BRIEFING then return end
+
+	local index = net.ReadUInt( 4 )
+	local id = net.ReadUInt( 8 )
+	local flight = run.flights[ index ]
+
+	-- подвеску выбирает пилот своего звена
+	if not flight or flight.pilot ~= ply then return end
+	if not M.IsLoadoutAllowed( run.def.aircraft[ flight.aircraft ], id ) then return end
+
+	flight.loadout = id
+	run:SendLobby()
 end )
 
 net.Receive( "skyops_ready", function( len, ply )

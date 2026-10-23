@@ -25,6 +25,7 @@ M.NET = {
 	"skyops_brief",    -- S->C: статичная часть брифинга
 	"skyops_lobby",    -- S->C: слоты экипажей и готовность
 	"skyops_slot",     -- C->S: занять / освободить место
+	"skyops_loadout",  -- C->S: пилот выбрал подвеску
 	"skyops_ready",    -- C->S: готов / не готов
 	"skyops_state",    -- S->C: состояние миссии
 	"skyops_obj",      -- S->C: изменение задачи
@@ -67,19 +68,22 @@ M.ObjectiveTypeName = {
 	intercept = "ПЕРЕХВАТ",
 }
 
--- Единицы. В Source 1 юнит = 1 дюйм, так же считает LVS (km/h = u/s * 0.09144)
+-- Единицы. Масштаб берём у ядра (SkyOps.HU_TO_M): карта Кировское построена из расчёта
+-- 40 юнитов на метр, а не дюймовой шкалы Source. Без ядра считаем 1 юнит = 1 дюйм, как LVS.
 SkyOps.Conv = SkyOps.Conv or {}
 
 local U = SkyOps.Conv
 
-U.M_PER_U = 0.0254
+local function MPerU()
+	return SkyOps.HU_TO_M or 0.0254
+end
 
-function U.ToMeters( u ) return u * 0.0254 end
-function U.FromMeters( m ) return m / 0.0254 end
-function U.ToFeet( u ) return u / 12 end
-function U.ToKmh( ups ) return ups * 0.09144 end
-function U.ToKnots( ups ) return ups * 0.0254 * 1.943844 end
-function U.ToMps( ups ) return ups * 0.0254 end
+function U.ToMeters( u ) return u * MPerU() end
+function U.FromMeters( m ) return m / MPerU() end
+function U.ToFeet( u ) return u * MPerU() * 3.28084 end
+function U.ToKmh( ups ) return ups * MPerU() * 3.6 end
+function U.ToKnots( ups ) return ups * MPerU() * 1.943844 end
+function U.ToMps( ups ) return ups * MPerU() end
 
 -- Стандартная атмосфера (ISA): плотность и скорость звука на высоте h (м)
 function U.ISA( h )
@@ -169,6 +173,50 @@ function M.Register( def )
 	def.callsign = def.callsign or "Гром"
 
 	M.List[ def.id ] = def
+end
+
+-- Подвески, разрешённые миссией для самолёта: список { id, name } из реестра ядра.
+-- В миссии: loadouts = { tags = { "bombs", "asm" }, default = 21 }; без tags разрешены все.
+function M.AllowedLoadouts( ac )
+	local reg = SkyOps.Registry and SkyOps.Registry.GetLoadouts and SkyOps.Registry.GetLoadouts( ac.role )
+	local out = {}
+
+	if not reg then return out, nil end
+
+	local tags = ac.loadouts and ac.loadouts.tags
+
+	for _, lo in ipairs( reg ) do
+		local ok = not tags or #tags == 0
+
+		for _, want in ipairs( tags or {} ) do
+			for _, have in ipairs( lo.tags or {} ) do
+				if have == want then ok = true end
+			end
+		end
+
+		if ok then table.insert( out, { id = lo.id, name = lo.name } ) end
+	end
+
+	return out, reg.always
+end
+
+function M.DefaultLoadout( ac )
+	local allowed = M.AllowedLoadouts( ac )
+	local want = ac.loadouts and ac.loadouts.default
+
+	for _, lo in ipairs( allowed ) do
+		if lo.id == want then return want end
+	end
+
+	return allowed[1] and allowed[1].id or nil
+end
+
+function M.IsLoadoutAllowed( ac, id )
+	for _, lo in ipairs( (M.AllowedLoadouts( ac )) ) do
+		if lo.id == id then return true end
+	end
+
+	return false
 end
 
 function M.Get( id )

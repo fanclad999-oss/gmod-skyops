@@ -324,6 +324,34 @@ function BRIEF:Rebuild()
 
 	self.loadoutY = y
 
+	-- выбор подвески: листает пилот своего звена
+	if myFlight and mySeat == M.SEAT_PILOT then
+		local flight = lobby.flights[ myFlight ]
+		local list = (brief.aircraft[ flight.aircraft ] or {}).loadouts or {}
+
+		if #list > 1 then
+			local function Step( dir )
+				local cur = 1
+
+				for i, lo in ipairs( list ) do
+					if lo.id == flight.loadout then cur = i end
+				end
+
+				cur = (cur - 1 + dir) % #list + 1
+
+				client.RequestLoadout( myFlight, list[ cur ].id )
+			end
+
+			local prev = UI.Button( self.right, "<", "ghost", function() Step( -1 ) end )
+			prev:SetSize( S( 28 ), S( 26 ) )
+			prev:SetPos( pad + w - S( 60 ), y + S( 4 ) )
+
+			local nxt = UI.Button( self.right, ">", "ghost", function() Step( 1 ) end )
+			nxt:SetSize( S( 28 ), S( 26 ) )
+			nxt:SetPos( pad + w - S( 28 ), y + S( 4 ) )
+		end
+	end
+
 	if myFlight then
 		local ready = mySeat == M.SEAT_PILOT and lobby.flights[ myFlight ].pilotReady or lobby.flights[ myFlight ].wsoReady
 		local btn = UI.Button( self.right, ready and "ОТМЕНИТЬ ГОТОВНОСТЬ" or "ГОТОВ К ВЫЛЕТУ", ready and "ghost" or "primary", function()
@@ -380,12 +408,34 @@ function BRIEF:PaintRight( w, h )
 	local ac = flight and brief.aircraft[ flight.aircraft ]
 	local y = (self.loadoutY or S( 300 )) + S( 10 )
 
-	if ac and ac.loadoutText then
+	if ac then
 		y = UI.Kicker( "ПОДВЕСКА · " .. string.upper( ac.name or "" ), pad, y )
 
-		for _, line in ipairs( ac.loadoutText ) do
-			UI.Text( line, "SkyOps_Text", pad, y, UI.C.text )
-			y = y + S( 28 )
+		local selected
+
+		for i, lo in ipairs( ac.loadouts or {} ) do
+			if lo.id == flight.loadout then selected = { lo, i } end
+		end
+
+		if selected then
+			for _, line in ipairs( UI.Wrap( selected[1].name, "SkyOps_Text", bw - S( 70 ) ) ) do
+				UI.Text( line, "SkyOps_Text", pad, y, UI.C.accent )
+				y = y + S( 28 )
+			end
+
+			if ac.always then
+				UI.Text( "+ " .. ac.always, "SkyOps_TextSmall", pad, y, UI.C.text )
+				y = y + S( 26 )
+			end
+
+			if #ac.loadouts > 1 then
+				UI.Text( string.format( "вариант %d из %d", selected[2], #ac.loadouts ), "SkyOps_Label", pad, y, UI.C.muted )
+			end
+		elseif ac.loadoutText then
+			for _, line in ipairs( ac.loadoutText ) do
+				UI.Text( line, "SkyOps_Text", pad, y, UI.C.text )
+				y = y + S( 28 )
+			end
 		end
 	end
 

@@ -14,8 +14,8 @@ SkyOps.Missions.Register({
 	},
 
 	aircraft = {
-		{ role = "su34", crew = 2, loadout_text = { "Х-31П × 4", "Р-73 × 2", "ГШ-301 · 150" } },
-		{ role = "tornado_ids", crew = 2, loadout_text = { "ALARM × 4", "AIM-9L × 2", "BK-27 · 360" } },
+		{ role = "su34", crew = 2, loadouts = { tags = { "arm", "asm", "guided" }, default = 34 } }, -- Х-31П: наводится на излучающую РЛС
+		{ role = "tornado_ids", crew = 2, loadouts = { tags = { "bombs" }, default = 16 } }, -- MW-1: ПРР у Tornado в паке нет
 	},
 
 	start = { anchor = "airfield_main", airborne = false },

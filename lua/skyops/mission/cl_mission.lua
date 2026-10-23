@@ -214,6 +214,13 @@ function C.RequestSeat( flight, seat, aircraft )
 	net.SendToServer()
 end
 
+function C.RequestLoadout( flight, id )
+	net.Start( "skyops_loadout" )
+		net.WriteUInt( flight, 4 )
+		net.WriteUInt( id, 8 )
+	net.SendToServer()
+end
+
 function C.SetReady( ready )
 	net.Start( "skyops_ready" )
 		net.WriteBool( ready )

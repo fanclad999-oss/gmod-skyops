@@ -37,7 +37,7 @@
 | `id`, `name`, `type` | ID, название, тип для брифинга: `strike`, `recon`, `sead`, `intercept` |
 | `map` | ключ карты |
 | `briefing` | `situation` (текст обстановки), `time`, `weather` |
-| `aircraft` | `{ role, crew, loadout_text }`: роль из `SkyOps.Registry.Aircraft`, мест в экипаже, подвеска для брифинга |
+| `aircraft` | `{ role, crew, loadouts = { tags, default } }`: роль из `SkyOps.Registry.Aircraft`, мест в экипаже, разрешённые подвески |
 | `flights` | сколько экипажей можно (по умолчанию 2) |
 | `callsign` | позывной звена (по умолчанию «Гром»: Гром-1, Гром-2) |
 | `start` | `anchor`, `airborne`, `alt` (м над уровнем моря), `speed` (км/ч) |
@@ -47,6 +47,14 @@
 | `fail` | `crew_dead` (по умолчанию да), `time_limit` (с) |
 | `score` | очки за задачи по их id, `per_kill`, пороги оценок `grades = { S, A, B, C }` |
 | `radio` | `{ start = "..." }`, а у задачи — поле `radio` с фразой при выполнении |
+
+### Подвески
+
+Список подвесок каждого самолёта ведёт ядро (`SkyOps.Registry.Loadouts`, у каждой `id`,
+`name` и теги `aa`, `rockets`, `bombs`, `guided`, `asm`, `arm`). Миссия указывает, какие
+теги подходят, и подвеску по умолчанию: `loadouts = { tags = { "arm", "asm" }, default = 34 }`.
+Без `tags` разрешены все. В брифинге пилот листает разрешённые подвески стрелками, на вылете
+ядро ставит выбранную (`Spawn.PlayerJet( role, pos, ang, loadoutId )`).
 
 ### Юниты (`units`)
 
@@ -87,6 +95,7 @@
 | `skyops_brief` | S→C | брифинг: тексты, WP и угрозы с мировыми позициями, самолёты |
 | `skyops_lobby` | S→C | звенья, кто на каком месте, готовность, таймеры |
 | `skyops_slot` / `skyops_ready` | C→S | занять место / готовность |
+| `skyops_loadout` | C→S | пилот выбрал подвеску своего звена |
 | `skyops_state` | S→C | состояние: 0 нет, 1 брифинг, 2 полёт, 3 итоги |
 | `skyops_obj` | S→C | состояние и прогресс задач |
 | `skyops_msg` | S→C | радиосообщение (отправитель, текст) |
