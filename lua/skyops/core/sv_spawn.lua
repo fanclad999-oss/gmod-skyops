@@ -44,7 +44,8 @@ local function CollectParts( ent, data, parts )
 	end
 end
 
--- system: key of Registry.AirDefense; opts: { team, groupId, ang, part, count, follow }
+-- system: key of Registry.AirDefense; opts: { team, groupId, ang, part, count, follow, snap }
+-- The site is put on the ground at pos.x, pos.y unless opts.snap == false.
 -- Returns the main entity and a parts table ({ main, snr75, launcher, p12_radar })
 -- that is filled once the site has finished spawning; SkyOps.AirDefenseReady
 -- ( main, parts, groupId ) fires at the same moment.
@@ -70,6 +71,11 @@ function SkyOps.Spawn.AirDefense( system, pos, opts )
 			if isfunction( part.SetAITEAM ) then part:SetAITEAM( team ) end
 		end
 		hook.Run( "SkyOps.AirDefenseReady", self, parts, opts.groupId )
+	end
+
+	if opts.snap ~= false then
+		local z = SkyOps.Map.GroundZ( pos.x, pos.y, pos.z )
+		if z then pos = Vector( pos.x, pos.y, z + 40 ) end
 	end
 
 	ent:SetPos( pos )

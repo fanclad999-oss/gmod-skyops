@@ -20,3 +20,17 @@ function SkyOps.Map.Anchor( name )
 
 	return a.pos, a.chunk
 end
+
+-- terrain height (world units) at x, y: the Kirovskoe height grid when the map
+-- provides it (exact even where no collider is streamed in), else a trace
+function SkyOps.Map.GroundZ( x, y, fromZ )
+	if KIR and KIR.MeshHeight then return KIR.MeshHeight( x, y ) end
+
+	local tr = util.TraceLine( {
+		start = Vector( x, y, ( fromZ or 0 ) + 20000 ),
+		endpos = Vector( x, y, ( fromZ or 0 ) - 200000 ),
+		-- InfMap terrain is made of infmap_* collider entities, not brushes
+		filter = function( e ) return e:IsWorld() or string.StartWith( e:GetClass(), "infmap_" ) end,
+	} )
+	return tr.Hit and tr.HitPos.z or nil
+end

@@ -42,16 +42,6 @@ local function PlayerJet( ply )
 	return veh
 end
 
-local function GroundAt( pos )
-	local tr = util.TraceLine( {
-		start = Vector( pos.x, pos.y, pos.z + 20000 ),
-		endpos = Vector( pos.x, pos.y, pos.z - 200000 ),
-		-- InfMap terrain is made of infmap_* collider entities, not brushes
-		filter = function( e ) return e:IsWorld() or string.StartWith( e:GetClass(), "infmap_" ) end,
-	} )
-	return tr.Hit and tr.HitPos or pos
-end
-
 concommand.Add( "skyops_test_chase", function( ply, _, args )
 	if not IsAdmin( ply ) then return end
 
@@ -86,7 +76,7 @@ concommand.Add( "skyops_test_sam", function( ply, _, args )
 	fwd.z = 0
 	fwd:Normalize()
 
-	local pos = GroundAt( origin:GetPos() + fwd * dist ) + Vector( 0, 0, 50 )
+	local pos = origin:GetPos() + fwd * dist -- Spawn.AirDefense puts it on the ground
 	local site = SkyOps.Spawn.AirDefense( system, pos, { ang = Angle( 0, origin:GetAngles().y + 180, 0 ) } )
 	if not IsValid( site ) then ply:ChatPrint( "Не удалось создать " .. system ) return end
 
@@ -96,7 +86,7 @@ concommand.Add( "skyops_test_sam", function( ply, _, args )
 		Track( jet, "player" )
 	end
 	Track( site, "sam_" .. system )
-	ply:ChatPrint( "ПВО " .. system .. " создано в " .. math.Round( dist * 0.01905 ) .. " м впереди. Сядь в него сам или подлетай." )
+	ply:ChatPrint( "ПВО " .. system .. " создано в " .. math.Round( dist * SkyOps.HU_TO_M ) .. " м впереди. Сядь в него сам или подлетай." )
 end )
 
 concommand.Add( "skyops_test_jet", function( ply, _, args )
