@@ -58,7 +58,7 @@ local function ScanAirDefense( veh )
 		for _, ent in ipairs( ents.FindByClass( data.spawn ) ) do
 			if IsValid( ent ) and (not ent.GetAITEAM or ent:GetAITEAM() ~= myTeam) then
 				local dist = U.ToMeters( (ent:GetPos() - myPos):Length() )
-				local range = ranges[ system ] or 10000
+				local range = data.radar and data.radar.engage or ranges[ system ] or 10000
 
 				-- РЛС слышно дальше, чем бьёт ракета
 				if dist < range * 2 then

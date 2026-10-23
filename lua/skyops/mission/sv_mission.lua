@@ -142,8 +142,10 @@ function Run:BuildBrief()
 				if unit.kind == "airdefense" then
 					local range = M.ThreatRange[ unit.system ]
 
-					if SkyOps.AirDefense and SkyOps.AirDefense.GetRange then
-						range = SkyOps.AirDefense.GetRange( unit.system, unit.part ) or range
+					local reg = SkyOps.Registry and SkyOps.Registry.GetAirDefense and SkyOps.Registry.GetAirDefense( unit.system )
+
+					if reg and reg.radar and reg.radar.engage then
+						range = reg.radar.engage
 					end
 
 					entry.range = range
@@ -385,6 +387,8 @@ function Run:SpawnUnit( unit )
 				self.sites[ key ] = ToEntList( Spawn.AirDefense( unit.system, pos, opts ) )
 			end
 
+			self.unitSite[ unit.id ] = key
+
 			return {}, nil, true
 		end
 
@@ -444,6 +448,34 @@ function Run:AddToGroup( group, ent )
 	end
 end
 
+-- Ядро сообщает о готовом комплексе: раскладываем его части по группам миссии
+function Run:OnAirDefenseReady( main, parts )
+	local key
+
+	for k, list in pairs( self.sites ) do
+		for _, ent in ipairs( list ) do
+			if ent == main then key = k end
+		end
+	end
+
+	if not key then return end
+
+	for _, unit in ipairs( self.def.units or {} ) do
+		local group = self.groups[ unit.id ]
+
+		if group and group.pending and self.unitSite[ unit.id ] == key and parts[ unit.part ] then
+			group.pending = nil
+
+			for _, ent in ipairs( ToEntList( parts[ unit.part ] ) ) do
+				if not unit.count or group.total < unit.count then
+					self:AddToGroup( group, ent )
+				end
+			end
+		end
+	end
+end
+
+-- Запасной вариант, если ядро не прислало SkyOps.AirDefenseReady: ищем части рядом по классу
 function Run:CollectParts()
 	local Registry = SkyOps.Registry
 
@@ -873,6 +905,7 @@ function M.Start( id )
 		entGroup = {},
 		stats = {},
 		sites = {},
+		unitSite = {},
 		objectives = {},
 		waypoints = {},
 		totalKills = 0,
@@ -938,6 +971,12 @@ end
 
 timer.Create( "skyops_mission_think", SkyOps.Objectives and SkyOps.Objectives.TICK or 0.5, 0, function()
 	if M.Active then M.Active:Think() end
+end )
+
+hook.Add( "SkyOps.AirDefenseReady", "skyops_mission", function( main, parts, groupId )
+	if M.Active and M.Active.state == M.STATE_RUNNING and istable( parts ) then
+		M.Active:OnAirDefenseReady( main, parts )
+	end
 end )
 
 hook.Add( "SkyOps.UnitKilled", "skyops_mission", function( ent, groupId, attacker )
