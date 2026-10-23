@@ -2,6 +2,7 @@
 -- Commands (admin only):
 --   skyops_test_chase [role] [distance]   SkyOps AI jet spawned behind you, chases you
 --   skyops_test_sam [system] [distance]   SAM site on the ground ahead of you
+--   skyops_test_jet [role] [loadout]       your jet in front of you with a loadout (34 = Kh-31P on su34)
 --   skyops_test_status                    prints every tracked object
 --   skyops_test_clear                     removes everything the test spawned
 -- Every chunk change, missile launch and missile end is printed to the server
@@ -96,6 +97,18 @@ concommand.Add( "skyops_test_sam", function( ply, _, args )
 	end
 	Track( site, "sam_" .. system )
 	ply:ChatPrint( "ПВО " .. system .. " создано в " .. math.Round( dist * 0.01905 ) .. " м впереди. Сядь в него сам или подлетай." )
+end )
+
+concommand.Add( "skyops_test_jet", function( ply, _, args )
+	if not IsAdmin( ply ) or not IsValid( ply ) then return end
+
+	local role = args[1] or "su34"
+	local pos = ply:GetPos() + ply:GetForward() * 800 + Vector( 0, 0, 100 )
+	local jet = SkyOps.Spawn.PlayerJet( role, pos, Angle( 0, ply:EyeAngles().y, 0 ), tonumber( args[2] ) )
+	if not IsValid( jet ) then ply:ChatPrint( "Не удалось создать " .. role ) return end
+
+	Spawned[ #Spawned + 1 ] = jet
+	Track( jet, "player_" .. role )
 end )
 
 concommand.Add( "skyops_test_status", function( ply )

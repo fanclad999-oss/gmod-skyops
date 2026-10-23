@@ -83,12 +83,22 @@ function SkyOps.Spawn.AirDefense( system, pos, opts )
 	return ent, parts
 end
 
--- role: key of Registry.Aircraft; loadout: LVS weapon/loadout index, nil = default
+-- role: key of Registry.Aircraft; loadout: id from Registry.Loadouts[role]
+-- (the aircraft's own loadout index), nil = the aircraft's default
 function SkyOps.Spawn.PlayerJet( role, pos, ang, loadout )
 	local data = Registry.GetAircraft( role )
 	if not data then return NULL end
 
-	return SpawnClass( data.class, pos, ang, SkyOps.Teams.BLUE )
+	local ent = SpawnClass( data.class, pos, ang, SkyOps.Teams.BLUE )
+	if IsValid( ent ) and loadout then
+		-- the jet sets loadout 1 in its own OnSpawn, one tick after Spawn();
+		-- its OnTick then rebuilds pylons and weapons for the new value
+		timer.Simple( 0.5, function()
+			if IsValid( ent ) and isfunction( ent.SetLoadout ) then ent:SetLoadout( loadout ) end
+		end )
+	end
+
+	return ent
 end
 
 -- SkyOps.Spawn.AIFlight lives in sv_ai_flight.lua

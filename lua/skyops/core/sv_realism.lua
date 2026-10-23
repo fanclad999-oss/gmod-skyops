@@ -1,6 +1,6 @@
--- Real-world lock ranges for Ryuunosuke vehicles. Out of the box their seekers
--- are tuned for small maps (Su-34: 20000 u = 380 m), which on a 1:1 map makes
--- missiles drop lock almost at once. Values are lock/tracking ranges in metres.
+-- Real-world numbers for Ryuunosuke vehicles on a 1:1 map. Out of the box they
+-- are tuned for small maps: seekers lock at 380-950 m, jets top out near
+-- 250 km/h and burn a full tank in 3-7 minutes.
 
 local M_TO_HU = SkyOps.M_TO_HU
 
@@ -22,7 +22,54 @@ local function CanSeeMis( self, target )
 	return SkyOps.Radar.LineOfSight( from, target )
 end
 
+-- maxKmh: top speed at low altitude; fuelMin: minutes at full throttle
+-- (LVS burns throttle^2, so cruise at ~70% lasts about twice as long)
+SkyOps.Performance = {
+	sw_su34 = { maxKmh = 1400, fuelMin = 90 },
+	sw_su25sm3 = { maxKmh = 950, fuelMin = 60 },
+	sw_f14a = { maxKmh = 1450, fuelMin = 75 },
+	sw_tornado = { maxKmh = 1480, fuelMin = 75 },
+}
+
+-- Source caps every physics object at 4000 u/s (~275 km/h); that cap is why
+-- jets and missiles all crawled at the same speed. 50000 u/s is ~3400 km/h,
+-- enough for Mach 3 missiles.
+local MAX_VELOCITY = 50000
+
+local function RaisePhysicsLimit()
+	local tbl = physenv.GetPerformanceSettings()
+	if tbl.MaxVelocity < MAX_VELOCITY then
+		tbl.MaxVelocity = MAX_VELOCITY
+		physenv.SetPerformanceSettings( tbl )
+	end
+end
+RaisePhysicsLimit()
+hook.Add( "InitPostEntity", "SkyOps.Realism", RaisePhysicsLimit )
+
+local function ApplyPerformance( ent, perf )
+	local kmh_to_hu = 1000 / 3600 * M_TO_HU
+	local newMax = perf.maxKmh * kmh_to_hu
+	local scale = newMax / ent.MaxVelocity
+
+	-- thrust and the best-turn speed scale with top speed so handling keeps its feel
+	ent.MaxVelocity = newMax
+	ent.MaxThrust = ent.MaxThrust * scale
+	if ent.MaxPerfVelocity then ent.MaxPerfVelocity = ent.MaxPerfVelocity * scale end
+
+	local tank = isfunction( ent.GetFuelTank ) and ent:GetFuelTank()
+	if IsValid( tank ) then
+		-- consumption is throttle^2 / size per second
+		tank:SetSize( perf.fuelMin * 60 / LVS.FuelScale )
+	end
+end
+
 local function Apply( ent )
+	local perf = SkyOps.Performance[ ent:GetClass() ]
+	if perf and not ent.SkyOpsPerf then
+		ent.SkyOpsPerf = true
+		ApplyPerformance( ent, perf )
+	end
+
 	local range = SkyOps.SeekerRange[ ent:GetClass() ]
 	if not range or not isfunction( ent.SetSeekerDist ) then return end
 
@@ -31,7 +78,8 @@ local function Apply( ent )
 end
 
 hook.Add( "OnEntityCreated", "SkyOps.Realism", function( ent )
-	if not SkyOps.SeekerRange[ ent:GetClass() ] then return end
+	local class = ent:GetClass()
+	if not ( SkyOps.SeekerRange[ class ] or SkyOps.Performance[ class ] ) then return end
 	-- LVS runs OnSpawn (which sets the stock range) one tick after creation
 	timer.Simple( 0.5, function()
 		if IsValid( ent ) then Apply( ent ) end
