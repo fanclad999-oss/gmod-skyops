@@ -4,6 +4,7 @@
 -- memory, sees it by radar instead of traces, and steers into a lead pursuit.
 
 SkyOps.AIFlight = SkyOps.AIFlight or {}
+SkyOps.Spawn = SkyOps.Spawn or {} -- sv_spawn.lua loads after this file
 
 local M_TO_HU = SkyOps.M_TO_HU
 
