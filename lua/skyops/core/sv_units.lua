@@ -2,8 +2,11 @@
 
 SkyOps.Units = SkyOps.Units or { list = {} }
 
-function SkyOps.Units.Register( ent, groupId )
-	SkyOps.Units.list[ ent ] = { groupId = groupId }
+-- info: optional extra fields, e.g. { system, team, parts } for air defense
+function SkyOps.Units.Register( ent, groupId, info )
+	info = info or {}
+	info.groupId = groupId
+	SkyOps.Units.list[ ent ] = info
 end
 
 local function OnKilled( ent, attacker )

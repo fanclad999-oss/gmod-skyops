@@ -26,14 +26,25 @@ R.Aircraft = {
 }
 
 -- parts: classes that make up one site; spawn = the class that creates the rest
+-- radar: search range (m), radar mast height (m), max engagement range (m)
 R.AirDefense = {
 	s75 = {
 		name = "С-75", workshop = 3470355913, spawn = "sw_snr75",
 		parts = { snr75 = "sw_snr75", launcher = "sw_s75", p12_radar = "sw_p12" },
+		radar = { search = 120000, mast = 10, engage = 43000 },
 	},
-	tor_m1 = { name = "Тор-М1", workshop = 3291755974, spawn = "sw_torm1" },
-	osa = { name = "Оса (9К33М3)", workshop = 3319287696, spawn = "sw_9k33m3" },
-	roland = { name = "Roland (FlaRakPz I)", workshop = 3488791956, spawn = "sw_flarakpz1" },
+	tor_m1 = {
+		name = "Тор-М1", workshop = 3291755974, spawn = "sw_torm1",
+		radar = { search = 25000, mast = 6, engage = 12000 },
+	},
+	osa = {
+		name = "Оса (9К33М3)", workshop = 3319287696, spawn = "sw_9k33m3",
+		radar = { search = 30000, mast = 5, engage = 10000 },
+	},
+	roland = {
+		name = "Roland (FlaRakPz I)", workshop = 3488791956, spawn = "sw_flarakpz1",
+		radar = { search = 16000, mast = 5, engage = 8000 },
+	},
 	aaa = { name = "Зенитная артиллерия", spawn = "lvs_trailer_flak" },
 }
 

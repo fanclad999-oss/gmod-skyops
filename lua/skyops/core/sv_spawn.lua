@@ -24,18 +24,63 @@ local function SpawnClass( class, pos, ang, team )
 	return ent
 end
 
--- system: key of Registry.AirDefense; opts: { team, groupId, ang }
+-- Collects the extra entities a site builds in its own OnSpawn (S-75 makes
+-- its launcher and P-12 radar there). LVS runs OnSpawn one tick after Spawn().
+local function CollectParts( ent, data, parts )
+	parts[ "main" ] = ent
+	if not data.parts then return end
+
+	for key, class in pairs( data.parts ) do
+		if class == ent:GetClass() then
+			parts[ key ] = ent
+		elseif ent:GetNWEntity( "Launcher" ):IsValid() and ent:GetNWEntity( "Launcher" ):GetClass() == class then
+			parts[ key ] = ent:GetNWEntity( "Launcher" )
+		else
+			-- the P-12 only points back at its SNR-75
+			for _, other in ipairs( ents.FindByClass( class ) ) do
+				if other:GetNWEntity( "Radar" ) == ent then parts[ key ] = other break end
+			end
+		end
+	end
+end
+
+-- system: key of Registry.AirDefense; opts: { team, groupId, ang, part, count, follow }
+-- Returns the main entity and a parts table ({ main, snr75, launcher, p12_radar })
+-- that is filled once the site has finished spawning; SkyOps.AirDefenseReady
+-- ( main, parts, groupId ) fires at the same moment.
 function SkyOps.Spawn.AirDefense( system, pos, opts )
 	opts = opts or {}
 	local data = Registry.GetAirDefense( system )
-	if not data then return NULL end
+	if not data then return NULL, {} end
 
-	local ent = SpawnClass( data.spawn, pos, opts.ang, opts.team or SkyOps.Teams.RED )
-	if IsValid( ent ) then
-		SkyOps.Units.Register( ent, opts.groupId )
+	local parts = {}
+	local ent = ents.Create( data.spawn )
+	if not IsValid( ent ) then
+		ErrorNoHalt( "[SkyOps] cannot create " .. tostring( data.spawn ) .. ", is the addon installed?\n" )
+		return NULL, parts
 	end
 
-	return ent
+	local team = opts.team or SkyOps.Teams.RED
+	local origFinish = ent.OnSpawnFinish
+	ent.OnSpawnFinish = function( self, PObj )
+		if origFinish then origFinish( self, PObj ) end
+
+		CollectParts( self, data, parts )
+		for _, part in pairs( parts ) do
+			if isfunction( part.SetAITEAM ) then part:SetAITEAM( team ) end
+		end
+		hook.Run( "SkyOps.AirDefenseReady", self, parts, opts.groupId )
+	end
+
+	ent:SetPos( pos )
+	ent:SetAngles( opts.ang or angle_zero )
+	ent:Spawn()
+	ent:Activate()
+	if isfunction( ent.SetAITEAM ) then ent:SetAITEAM( team ) end
+
+	SkyOps.Units.Register( ent, opts.groupId, { system = system, team = team, parts = parts } )
+
+	return ent, parts
 end
 
 -- role: key of Registry.Aircraft; loadout: LVS weapon/loadout index, nil = default
@@ -46,12 +91,14 @@ function SkyOps.Spawn.PlayerJet( role, pos, ang, loadout )
 	return SpawnClass( data.class, pos, ang, SkyOps.Teams.BLUE )
 end
 
+-- task: { attack = pos } or { escort = { ents } }; opts: { groupId, team }
 -- TODO step 5: AI fighters with a SkyOps brain on top of LVS AI
-function SkyOps.Spawn.AIFlight( role, count, pos, task )
+function SkyOps.Spawn.AIFlight( role, count, pos, task, opts )
 	return {}
 end
 
--- TODO step 3: ground column driven along a route of positions
-function SkyOps.Spawn.Convoy( class, count, route )
+-- route: list of world positions; opts: { groupId, team }
+-- TODO step 3: ground column driven along the route
+function SkyOps.Spawn.Convoy( class, count, route, opts )
 	return {}
 end
