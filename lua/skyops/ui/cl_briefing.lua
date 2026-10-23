@@ -107,8 +107,12 @@ function MAP:Paint( w, h )
 			local r = SkyOps.Conv.FromMeters( threat.range ) * self.scale
 			local long = threat.range > 20000
 
-			UI.FilledCircle( x, y, r, Color( 255, 107, 94, long and 14 or 24 ), 64 )
-			UI.Circle( x, y, r, t2, UI.C.threat, 64, long )
+			-- дальнюю зону (С-75) только обводим: заливка размером больше карты красит её целиком
+			if not long then
+				UI.FilledCircle( x, y, r, Color( 255, 107, 94, 22 ), 64 )
+			end
+
+			UI.Circle( x, y, r, t2, UI.C.threat, 96, long )
 		end
 	end
 
@@ -381,7 +385,7 @@ function BRIEF:PaintRight( w, h )
 
 		for _, line in ipairs( ac.loadoutText ) do
 			UI.Text( line, "SkyOps_Text", pad, y, UI.C.text )
-			y = y + S( 24 )
+			y = y + S( 28 )
 		end
 	end
 
@@ -441,7 +445,7 @@ function BRIEF:Paint( w, h )
 
 		for _, line in ipairs( UI.Wrap( b.situation, "SkyOps_Text", cw ) ) do
 			UI.Text( line, "SkyOps_Text", pad, y, UI.C.text )
-			y = y + S( 24 )
+			y = y + S( 28 )
 		end
 
 		y = y + S( 16 )
@@ -456,7 +460,7 @@ function BRIEF:Paint( w, h )
 
 		for _, line in ipairs( UI.Wrap( obj.text, "SkyOps_Text", cw - S( 26 ) ) ) do
 			UI.Text( line, "SkyOps_Text", pad + S( 26 ), y, col )
-			y = y + S( 24 )
+			y = y + S( 28 )
 		end
 
 		y = y + S( 4 )
@@ -473,7 +477,7 @@ function BRIEF:Paint( w, h )
 			local right = threat.range and string.format( "ДАЛЬН. ~%d км", math.Round( threat.range / 1000 ) ) or ("× " .. (threat.count or 1))
 
 			UI.Text( right, "SkyOps_Text", pad + cw, y, UI.C.threat, TEXT_ALIGN_RIGHT )
-			y = y + S( 26 )
+			y = y + S( 30 )
 		end
 	end
 end

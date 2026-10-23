@@ -22,34 +22,51 @@ UI.C = {
 	road = Color( 36, 64, 74 ),
 }
 
--- Масштаб под высоту экрана (макеты рисовались под 1080p)
+local cvScale = CreateClientConVar( "skyops_ui_scale", "1", true, false, "Масштаб интерфейса и шрифтов SkyOps (0.8..2)" )
+
+-- Масштаб под высоту экрана (макеты рисовались под 1080p). На маленьких экранах не мельчим
+-- ниже 0.9, иначе текст становится нечитаемым.
+function UI.Scale()
+	return math.max( ScrH() / 1080, 0.9 ) * math.Clamp( cvScale:GetFloat(), 0.8, 2 )
+end
+
 function UI.S( x )
-	return math.max( math.Round( x * ScrH() / 1080 ), 1 )
+	return math.max( math.Round( x * UI.Scale() ), 1 )
 end
 
 local function CreateFonts()
 	local heading = "Bahnschrift"
 	local mono = "Consolas"
 
-	surface.CreateFont( "SkyOps_Title", { font = heading, size = UI.S( 34 ), weight = 700, extended = true } )
-	surface.CreateFont( "SkyOps_H1", { font = heading, size = UI.S( 26 ), weight = 600, extended = true } )
-	surface.CreateFont( "SkyOps_H2", { font = heading, size = UI.S( 21 ), weight = 600, extended = true } )
-	surface.CreateFont( "SkyOps_Kicker", { font = heading, size = UI.S( 15 ), weight = 700, extended = true } )
-	surface.CreateFont( "SkyOps_Button", { font = heading, size = UI.S( 20 ), weight = 700, extended = true } )
-	surface.CreateFont( "SkyOps_Label", { font = mono, size = UI.S( 13 ), weight = 500, extended = true } )
-	surface.CreateFont( "SkyOps_Text", { font = mono, size = UI.S( 16 ), weight = 500, extended = true } )
-	surface.CreateFont( "SkyOps_TextSmall", { font = mono, size = UI.S( 14 ), weight = 500, extended = true } )
+	surface.CreateFont( "SkyOps_Title", { font = heading, size = UI.S( 38 ), weight = 700, extended = true } )
+	surface.CreateFont( "SkyOps_H1", { font = heading, size = UI.S( 30 ), weight = 600, extended = true } )
+	surface.CreateFont( "SkyOps_H2", { font = heading, size = UI.S( 25 ), weight = 600, extended = true } )
+	surface.CreateFont( "SkyOps_Kicker", { font = heading, size = UI.S( 17 ), weight = 700, extended = true } )
+	surface.CreateFont( "SkyOps_Button", { font = heading, size = UI.S( 22 ), weight = 700, extended = true } )
+	surface.CreateFont( "SkyOps_Label", { font = mono, size = UI.S( 16 ), weight = 600, extended = true } )
+	surface.CreateFont( "SkyOps_Text", { font = mono, size = UI.S( 20 ), weight = 600, extended = true } )
+	surface.CreateFont( "SkyOps_TextSmall", { font = mono, size = UI.S( 18 ), weight = 600, extended = true } )
 
 	-- Символика HUD: жирный моноширинный, без сглаживания краёв в тени
-	surface.CreateFont( "SkyOps_HUD", { font = mono, size = UI.S( 21 ), weight = 700, extended = true } )
-	surface.CreateFont( "SkyOps_HUDLarge", { font = mono, size = UI.S( 27 ), weight = 700, extended = true } )
-	surface.CreateFont( "SkyOps_HUDSmall", { font = mono, size = UI.S( 16 ), weight = 700, extended = true } )
-	surface.CreateFont( "SkyOps_Warn", { font = heading, size = UI.S( 26 ), weight = 700, extended = true } )
+	surface.CreateFont( "SkyOps_HUD", { font = mono, size = UI.S( 23 ), weight = 700, extended = true } )
+	surface.CreateFont( "SkyOps_HUDLarge", { font = mono, size = UI.S( 29 ), weight = 700, extended = true } )
+	surface.CreateFont( "SkyOps_HUDSmall", { font = mono, size = UI.S( 19 ), weight = 700, extended = true } )
+	surface.CreateFont( "SkyOps_Warn", { font = heading, size = UI.S( 28 ), weight = 700, extended = true } )
 end
 
 CreateFonts()
 
 hook.Add( "OnScreenSizeChanged", "SkyOps.UI.Fonts", CreateFonts )
+
+cvars.AddChangeCallback( "skyops_ui_scale", function()
+	CreateFonts()
+
+	-- открытый брифинг пересоздаём под новый размер
+	if IsValid( UI.BriefingPanel ) then
+		UI.BriefingPanel:Remove()
+		UI.OpenBriefing()
+	end
+end, "SkyOps.UI.Fonts" )
 
 -- Рисование
 function UI.Box( x, y, w, h, col )

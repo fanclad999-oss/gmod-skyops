@@ -22,7 +22,7 @@ local function PaintObjectives()
 	local x, y = S( 32 ), S( 32 )
 	local w = S( 360 )
 	local list = client.Objectives()
-	local lineH = S( 22 )
+	local lineH = S( 26 )
 	local h = S( 40 ) + #list * lineH
 
 	UI.Box( x, y, w, h, UI.C.panelAlpha )
@@ -80,7 +80,7 @@ local function PaintRadio()
 	if #visible == 0 then return end
 
 	local w = S( 460 )
-	local lineH = S( 22 )
+	local lineH = S( 26 )
 	local h = S( 20 ) + #visible * lineH
 	local x = ScrW() - S( 32 ) - w
 	local y = S( 140 )
