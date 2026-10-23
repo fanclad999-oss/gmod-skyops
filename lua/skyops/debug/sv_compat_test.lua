@@ -1,6 +1,6 @@
 -- Step 0: does LVS + SW Bombs survive InfMap chunk transitions?
 -- Commands (admin only):
---   skyops_test_chase [role] [distance]   enemy AI jet spawned behind you, chases you
+--   skyops_test_chase [role] [distance]   SkyOps AI jet spawned behind you, chases you
 --   skyops_test_sam [system] [distance]   SAM site on the ground ahead of you
 --   skyops_test_status                    prints every tracked object
 --   skyops_test_clear                     removes everything the test spawned
@@ -45,7 +45,8 @@ local function GroundAt( pos )
 	local tr = util.TraceLine( {
 		start = Vector( pos.x, pos.y, pos.z + 20000 ),
 		endpos = Vector( pos.x, pos.y, pos.z - 200000 ),
-		mask = MASK_SOLID_BRUSHONLY,
+		-- InfMap terrain is made of infmap_* collider entities, not brushes
+		filter = function( e ) return e:IsWorld() or string.StartWith( e:GetClass(), "infmap_" ) end,
 	} )
 	return tr.Hit and tr.HitPos or pos
 end
@@ -56,20 +57,14 @@ concommand.Add( "skyops_test_chase", function( ply, _, args )
 	local jet = PlayerJet( ply )
 	if not IsValid( jet ) then ply:ChatPrint( "Сядь в самолёт LVS" ) return end
 
-	local data = SkyOps.Registry.GetAircraft( args[1] or "su25sm3" )
+	local data = SkyOps.Registry.GetAircraft( args[1] or "su34" )
 	if not data then ply:ChatPrint( "Неизвестная роль" ) return end
 
 	local dist = tonumber( args[2] ) or 8000
 	local pos = jet:GetPos() - jet:GetForward() * dist + Vector( 0, 0, 500 )
 
-	local enemy = ents.Create( data.class )
+	local enemy = SkyOps.Spawn.AIFlight( args[1] or "su34", 1, pos, {}, { ang = jet:GetAngles() } )[1]
 	if not IsValid( enemy ) then return end
-	enemy:SetPos( pos )
-	enemy:SetAngles( jet:GetAngles() )
-	enemy:Spawn()
-	enemy:Activate()
-	enemy:SetAITEAM( SkyOps.Teams.RED )
-	enemy:SetAI( true )
 
 	if isfunction( jet.SetAITEAM ) then jet:SetAITEAM( SkyOps.Teams.BLUE ) end
 

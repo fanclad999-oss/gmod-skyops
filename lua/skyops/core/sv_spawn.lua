@@ -91,11 +91,7 @@ function SkyOps.Spawn.PlayerJet( role, pos, ang, loadout )
 	return SpawnClass( data.class, pos, ang, SkyOps.Teams.BLUE )
 end
 
--- task: { attack = pos } or { escort = { ents } }; opts: { groupId, team }
--- TODO step 5: AI fighters with a SkyOps brain on top of LVS AI
-function SkyOps.Spawn.AIFlight( role, count, pos, task, opts )
-	return {}
-end
+-- SkyOps.Spawn.AIFlight lives in sv_ai_flight.lua
 
 -- route: list of world positions; opts: { groupId, team }
 -- TODO step 3: ground column driven along the route

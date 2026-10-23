@@ -1,0 +1,112 @@
+-- SAM brain: runs every air-defense site that has no player gunner.
+-- Search -> track (lock takes LockTime) -> launch inside engage range, using
+-- the vehicle's own missile weapon so damage, guidance and effects stay stock.
+
+SkyOps.SAM = SkyOps.SAM or {}
+
+local LOCK_TIME = { s75 = 6, tor_m1 = 3, osa = 4, roland = 4 }
+local SHOT_GAP = { s75 = 8, tor_m1 = 3, osa = 5, roland = 5 }
+
+local function HasPlayerGunner( site )
+	if not isfunction( site.GetEveryone ) then return false end
+	for _, ply in ipairs( site:GetEveryone() ) do
+		if IsValid( ply ) and ply:IsPlayer() then return true end
+	end
+	return false
+end
+
+local function FindMissileWeapon( launcher )
+	for _, pod in pairs( launcher.WEAPONS or {} ) do
+		for _, w in ipairs( pod ) do
+			local ok, name = pcall( function() return w.Icon:GetName() end )
+			if isfunction( w.Attack ) and ok and string.find( name or "", "missile", 1, true ) then return w end
+		end
+	end
+end
+
+-- stands in for the gunner's weapon handler the stock Attack functions expect
+local function Handler( launcher )
+	return {
+		GetVehicle = function() return launcher end,
+		GetDriver = function() return NULL end,
+		TakeAmmo = function() end,
+		SetHeat = function() end,
+		GetAmmo = function() return 1 end,
+	}
+end
+
+local function SetRadar( ctrl, on )
+	if isfunction( ctrl.SetRadar ) and ctrl:GetRadar() ~= on then
+		ctrl:SetRadar( on )
+		ctrl:SetRadarWorking( on )
+	end
+end
+
+local function Think( site, info, data, now )
+	local parts = info.parts or {}
+	local ctrl = parts.snr75 or site       -- the entity that owns ClosestEnt/IsLocked
+	local launcher = parts.launcher or site
+	if not ( IsValid( ctrl ) and IsValid( launcher ) ) then return end
+
+	local st = info.sam or {}
+	info.sam = st
+
+	SetRadar( ctrl, true )
+
+	local radarPos = ( IsValid( parts.p12_radar ) and parts.p12_radar or ctrl ):GetPos()
+	local target
+	for _, c in ipairs( SkyOps.Radar.FindTargets( radarPos, info.team, data.radar.search, data.radar.mast ) ) do
+		if SkyOps.Radar.LineOfSight( ctrl:WorldSpaceCenter() + Vector( 0, 0, 200 ), c.ent ) then
+			target = c
+			break
+		end
+	end
+
+	if not target then
+		if st.target then ctrl:SetClosestEnt( NULL ) ctrl:SetIsLocked( false ) end
+		st.target = nil
+		site.SkyOpsTarget = nil
+		return
+	end
+
+	if st.target ~= target.ent then
+		st.target = target.ent
+		st.lockStart = now
+		ctrl:SetClosestEnt( target.ent )
+		ctrl:SetIsLocked( false )
+	end
+	site.SkyOpsTarget = target.ent
+
+	if now - st.lockStart < ( LOCK_TIME[ info.system ] or 4 ) then return end
+	ctrl:SetIsLocked( true )
+
+	if target.dist > data.radar.engage then return end
+	if now < ( st.nextShot or 0 ) then return end
+	if IsValid( ctrl:GetNWEntity( "Missile" ) ) or IsValid( launcher:GetNWEntity( "Missile" ) ) then return end
+	if launcher:GetClass() == "sw_s75" and not launcher:GetNWBool( "Loaded", true ) then return end
+
+	st.weapon = st.weapon or FindMissileWeapon( launcher )
+	if not st.weapon then return end
+
+	st.ammo = st.ammo or ( st.weapon.Ammo and st.weapon.Ammo > 0 and st.weapon.Ammo or 6 )
+	if st.ammo <= 0 then return end
+
+	local ok, err = pcall( st.weapon.Attack, Handler( launcher ) )
+	if not ok then
+		ErrorNoHalt( "[SkyOps] SAM " .. info.system .. " launch failed: " .. tostring( err ) .. "\n" )
+	end
+	st.ammo = st.ammo - 1
+	st.nextShot = now + ( SHOT_GAP[ info.system ] or 5 )
+	hook.Run( "SkyOps.SAMLaunch", site, target.ent, info.system )
+end
+
+timer.Create( "SkyOps.SAM", 0.25, 0, function()
+	local now = CurTime()
+	for site, info in pairs( SkyOps.Units.list ) do
+		local data = info.system and SkyOps.Registry.GetAirDefense( info.system )
+		if not ( IsValid( site ) and data and data.radar ) then continue end
+		if HasPlayerGunner( site ) or ( info.parts and IsValid( info.parts.snr75 ) and HasPlayerGunner( info.parts.snr75 ) ) then continue end
+
+		Think( site, info, data, now )
+	end
+end )

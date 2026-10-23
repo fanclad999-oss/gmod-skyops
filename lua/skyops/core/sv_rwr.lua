@@ -1,12 +1,11 @@
 -- Radar warning: tells each crew which SAM radars see them.
 -- net "skyops_rwr": UInt(8) N, then N x { Vector radar pos, String system, UInt(2) state }
 -- state 0 = search (painted), 1 = tracking (locked), 2 = missile in flight at you.
--- Detection: search range plus radar horizon, d(km) = 4.12 * (sqrt(h_radar) + sqrt(h_target)),
--- so flying low behind the horizon really hides you.
+-- Detection: search range plus radar horizon (SkyOps.Radar.InHorizon), so
+-- flying low behind the horizon really hides you.
 
 util.AddNetworkString( "skyops_rwr" )
 
-local HU_TO_M = SkyOps.HU_TO_M
 local STATE_SEARCH, STATE_TRACK, STATE_LAUNCH = 0, 1, 2
 
 local function RadarOn( ent, system )
@@ -27,15 +26,6 @@ local function MissileAt( jet, site, parts )
 		end
 	end
 	return false
-end
-
-local function InRadarHorizon( radarPos, mast, jetPos, range )
-	local dist = radarPos:Distance( jetPos ) * HU_TO_M
-	if dist > range then return false end
-
-	local hTarget = math.max( 0, ( jetPos.z - radarPos.z ) * HU_TO_M )
-	local horizon = 4120 * ( math.sqrt( mast ) + math.sqrt( hTarget ) )
-	return dist <= horizon
 end
 
 local function CrewOf( jet )
@@ -67,7 +57,7 @@ timer.Create( "SkyOps.RWR", 0.5, 0, function()
 
 			local radarEnt = info.parts and info.parts.p12_radar or site
 			if not IsValid( radarEnt ) then radarEnt = site end
-			if not InRadarHorizon( radarEnt:GetPos(), data.radar.mast, jetPos, data.radar.search ) then continue end
+			if not SkyOps.Radar.InHorizon( radarEnt:GetPos(), data.radar.mast, jetPos, data.radar.search ) then continue end
 
 			local state = STATE_SEARCH
 			if MissileAt( jet, site, info.parts or {} ) then
