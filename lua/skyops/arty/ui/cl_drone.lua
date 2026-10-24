@@ -135,7 +135,7 @@ local function PaintTrack( drone )
 	if not laser then LaserSince = nil end
 
 	local sw = ScrW()
-	local bx, by = sw / 2, UI.S( 40 )
+	local bx, by = sw / 2, UI.S( 80 )
 
 	if laser then
 		local blink = math.floor( CurTime() * 3 ) % 2 == 0
@@ -227,7 +227,153 @@ local function PaintImpacts( drone )
 		text = "РАЗРЫВ: " .. A.FmtDeviation( math.Round( lat / 10 ) * 10, math.Round( rng / 10 ) * 10 )
 	end
 
-	UI.HText( string.upper( text ), "SkyOpsArty_HUDLarge", ScrW() / 2, UI.S( 80 ), C.accent, TEXT_ALIGN_CENTER )
+	UI.HText( string.upper( text ), "SkyOpsArty_HUDLarge", ScrW() / 2, UI.S( 150 ), C.accent, TEXT_ALIGN_CENTER )
+end
+
+-- шкала курса сверху: градусы, метки сторон света, треугольник на курсе
+local CARDINAL = { [ 0 ] = "С", [ 45 ] = "СВ", [ 90 ] = "В", [ 135 ] = "ЮВ", [ 180 ] = "Ю", [ 225 ] = "ЮЗ", [ 270 ] = "З", [ 315 ] = "СЗ" }
+
+local function PaintCompass( drone )
+	local heading = A.YawToBearing( EyeAngles().y )
+	local w, h = UI.S( 480 ), UI.S( 30 )
+	local cx, y = ScrW() / 2, UI.S( 4 )
+	local span = 60 -- градусов на всю ширину
+	local ppd = w / span
+
+	UI.Box( cx - w / 2, y, w, h, C.panelAlpha )
+
+	for d = math.floor( heading - span / 2 ), math.ceil( heading + span / 2 ) do
+		if d % 5 == 0 then
+			local x = cx + ( d - heading ) * ppd
+			local deg = d % 360
+			local major = deg % 15 == 0
+
+			surface.SetDrawColor( major and C.hud or Color( C.hud.r, C.hud.g, C.hud.b, 110 ) )
+			surface.DrawLine( x, y + h - ( major and UI.S( 9 ) or UI.S( 5 ) ), x, y + h )
+
+			if CARDINAL[ deg ] then
+				UI.Text( CARDINAL[ deg ], "SkyOpsArty_HUDSmall", x, y + UI.S( 2 ), deg == 0 and C.accent or C.hud, TEXT_ALIGN_CENTER )
+			elseif deg % 15 == 0 then
+				UI.Text( string.format( "%03d", deg ), "SkyOpsArty_Label", x, y + UI.S( 4 ), C.muted, TEXT_ALIGN_CENTER )
+			end
+		end
+	end
+
+	UI.Pointer( cx, y + h, UI.S( 6 ), "up", C.text )
+	UI.HText( string.format( "%03.0f°", heading ), "SkyOpsArty_HUDSmall", cx, y + h + UI.S( 10 ), C.text, TEXT_ALIGN_CENTER )
+end
+
+-- уголки видоискателя и шкала дальности камеры
+local function PaintViewfinder()
+	local sw, sh = ScrW(), ScrH()
+	local m, len = UI.S( 60 ), UI.S( 40 )
+	local col = Color( C.hud.r, C.hud.g, C.hud.b, 150 )
+
+	for _, c in ipairs( { { m, m, 1, 1 }, { sw - m, m, -1, 1 }, { m, sh - m, 1, -1 }, { sw - m, sh - m, -1, -1 } } ) do
+		UI.Line( c[ 1 ], c[ 2 ], c[ 1 ] + len * c[ 3 ], c[ 2 ], 2, col )
+		UI.Line( c[ 1 ], c[ 2 ], c[ 1 ], c[ 2 ] + len * c[ 4 ], 2, col )
+	end
+
+	-- метка по центру экрана: куда смотрит камера
+	local cx, cy, g = sw / 2, sh / 2, UI.S( 8 )
+
+	UI.Line( cx - g * 3, cy, cx - g, cy, 1, col )
+	UI.Line( cx + g, cy, cx + g * 3, cy, 1, col )
+	UI.Line( cx, cy - g * 3, cx, cy - g, 1, col )
+	UI.Line( cx, cy + g, cx, cy + g * 3, 1, col )
+end
+
+-- мини-карта слева снизу: север вверх, 3 км вокруг дрона
+local MINIMAP_KM = 3
+
+local function PaintMinimap( drone )
+	local size = UI.S( 220 )
+	local x, y = UI.S( 24 ), ScrH() - size - UI.S( 70 )
+	local r = size / 2
+	local cx, cy = x + r, y + r
+	local de, dn = A.ToGrid( drone:GetPos() )
+	local mpp = MINIMAP_KM * 1000 / r
+
+	local function P( pos )
+		local e, n = A.ToGrid( pos )
+		local px, py = ( e - de ) / mpp, -( n - dn ) / mpp
+		local d = math.sqrt( px * px + py * py )
+
+		-- за краем: прижимаем к окружности
+		if d > r - 4 then
+			px, py = px / d * ( r - 4 ), py / d * ( r - 4 )
+
+			return cx + px, cy + py, true
+		end
+
+		return cx + px, cy + py, false
+	end
+
+	UI.FilledCircle( cx, cy, r, C.panelAlpha, 48 )
+	UI.Circle( cx, cy, r, 1, C.line, 48 )
+	UI.Circle( cx, cy, r / 3 * 2, 1, Color( C.line.r, C.line.g, C.line.b, 120 ), 40, true )
+	UI.Circle( cx, cy, r / 3, 1, Color( C.line.r, C.line.g, C.line.b, 120 ), 32, true )
+	UI.Text( "С", "SkyOpsArty_HUDSmall", cx, y + UI.S( 2 ), C.text, TEXT_ALIGN_CENTER )
+	UI.Text( MINIMAP_KM .. " км", "SkyOpsArty_Label", x + size, y + size, C.muted, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM )
+
+	local center, radius = A.DroneLoiter( drone )
+
+	if center then
+		local lx, ly = P( center )
+
+		UI.Circle( lx, ly, radius / A.UPM() / mpp, 1, Color( C.ok.r, C.ok.g, C.ok.b, 120 ), 32, true )
+	end
+
+	for _, imp in ipairs( A.Impacts ) do
+		if CurTime() - imp.time < 90 then
+			local ix, iy, edge = P( imp.pos )
+
+			if not edge then
+				UI.Line( ix - 3, iy - 3, ix + 3, iy + 3, 1, C.accent )
+				UI.Line( ix - 3, iy + 3, ix + 3, iy - 3, 1, C.accent )
+			end
+		end
+	end
+
+	if A.Target then
+		local tx, ty = P( A.Target.pos )
+
+		UI.Circle( tx, ty, UI.S( 5 ), 2, C.threat, 12 )
+	end
+
+	local track = A.DroneTrack( drone )
+
+	if track then
+		local tx, ty = P( track )
+
+		UI.DashedLine( cx, cy, tx, ty, 1, 3, 3, A.DroneLaser( drone ) and C.laser or C.hud )
+		UI.Box( tx - 2, ty - 2, 4, 4, A.DroneLaser( drone ) and C.laser or C.hud )
+	end
+
+	local spg = A.MySPG()
+
+	if IsValid( spg ) then
+		local sx, sy, edge = P( spg:GetPos() )
+		local s = UI.S( 4 )
+
+		UI.Outline( sx - s, sy - s, s * 2, s * 2, C.accent, 2 )
+
+		if edge then
+			local ge, gn = A.ToGrid( spg:GetPos() )
+
+			UI.Text( string.format( "%.0f км", math.sqrt( ( ge - de ) ^ 2 + ( gn - dn ) ^ 2 ) / 1000 ), "SkyOpsArty_Label", sx, sy + s + 2, C.accent, TEXT_ALIGN_CENTER )
+		end
+	end
+
+	-- сам дрон: стрелка по курсу
+	local a = math.rad( A.YawToBearing( drone:GetAngles().y ) )
+	local s = UI.S( 8 )
+	local function Q( ang, d ) return { x = cx + math.sin( a + ang ) * d, y = cy - math.cos( a + ang ) * d } end
+
+	draw.NoTexture()
+	surface.SetDrawColor( C.text )
+	surface.DrawPoly( { Q( 0, s * 1.3 ), Q( 2.5, s ), Q( math.pi, s * 0.3 ) } )
+	surface.DrawPoly( { Q( 0, s * 1.3 ), Q( math.pi, s * 0.3 ), Q( -2.5, s ) } )
 end
 
 local function PaintHints()
@@ -256,7 +402,10 @@ hook.Add( "HUDPaint", "SkyOpsArty.UI.Drone", function()
 
 	if not IsValid( drone ) then return end
 
+	PaintViewfinder()
+	PaintCompass( drone )
 	PaintTelemetry( drone )
+	PaintMinimap( drone )
 	PaintTrack( drone )
 	PaintImpacts( drone )
 	PaintHints()
