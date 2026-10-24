@@ -74,6 +74,9 @@ function SkyOps.AIFlight.Attach( ent, task )
 	end
 end
 
+local MIN_START_AGL = 1500 -- m
+local START_SPEED = 250    -- m/s, ~900 km/h
+
 -- task: { attack = pos, altitude = u } or { escort = { ents } }; opts: { groupId, team }
 function SkyOps.Spawn.AIFlight( role, count, pos, task, opts )
 	opts = opts or {}
@@ -83,6 +86,15 @@ function SkyOps.Spawn.AIFlight( role, count, pos, task, opts )
 	local team = opts.team or SkyOps.Teams.RED
 	local ang = opts.ang or Angle( 0, 0, 0 )
 	local flight = {}
+
+	-- AI flights start airborne: at least MIN_START_AGL above the terrain,
+	-- engine running and already at cruise speed (from a standstill they stall
+	-- and fall, which is how they ended up lying on the ground)
+	local M = SkyOps.M_TO_HU
+	local agl = ( task and task.altitude ) or MIN_START_AGL * M
+	pos = Vector( pos )
+	local ground = SkyOps.Map.GroundZ( pos.x, pos.y, pos.z )
+	if ground and pos.z < ground + agl then pos.z = ground + agl end
 
 	for i = 1, ( count or 1 ) do
 		-- echelon: each wingman 30 m right and 20 m behind the previous one
@@ -98,6 +110,14 @@ function SkyOps.Spawn.AIFlight( role, count, pos, task, opts )
 		ent:SetAI( true )
 
 		SkyOps.AIFlight.Attach( ent, task )
+		timer.Simple( 0.2, function()
+			if not IsValid( ent ) then return end
+			if isfunction( ent.StartEngine ) then ent:StartEngine() end
+			if isfunction( ent.SetThrottle ) then ent:SetThrottle( 1 ) end
+			if isfunction( ent.RaiseLandingGear ) then ent:RaiseLandingGear() end
+			local phys = ent:GetPhysicsObject()
+			if IsValid( phys ) then phys:SetVelocity( ang:Forward() * START_SPEED * M ) end
+		end )
 		SkyOps.Units.Register( ent, opts.groupId, { role = role, team = team } )
 		flight[ #flight + 1 ] = ent
 	end

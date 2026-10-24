@@ -94,11 +94,19 @@ concommand.Add( "skyops_test_jet", function( ply, _, args )
 
 	local role = args[1] or "su34"
 	local pos = ply:GetPos() + ply:GetForward() * 800 + Vector( 0, 0, 100 )
-	local jet = SkyOps.Spawn.PlayerJet( role, pos, Angle( 0, ply:EyeAngles().y, 0 ), tonumber( args[2] ) )
+	local ang = Angle( 0, ply:EyeAngles().y, 0 )
+	-- with a home airfield the jet goes to the runway threshold
+	local rw = SkyOps.Map.Anchors[ "airfield_main" ]
+	if SkyOps.Airfield and SkyOps.Airfield.origin and rw then pos, ang = rw.pos, rw.ang end
+	local jet = SkyOps.Spawn.PlayerJet( role, pos, ang, tonumber( args[2] ) )
 	if not IsValid( jet ) then ply:ChatPrint( "Не удалось создать " .. role ) return end
 
 	Spawned[ #Spawned + 1 ] = jet
 	Track( jet, "player_" .. role )
+end )
+
+hook.Add( "SkyOps.MissileFuzed", "SkyOps.CompatTest", function( mis, target, miss )
+	Log( "fuze %s -> %s, miss %d m", mis:GetClass(), target:GetClass(), math.Round( miss * SkyOps.HU_TO_M ) )
 end )
 
 concommand.Add( "skyops_test_status", function( ply )
