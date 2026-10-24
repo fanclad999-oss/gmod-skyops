@@ -615,6 +615,11 @@ function A.DroneTrack( drone )
 
 	if D and D.TrackPos then return D.TrackPos( drone ) end
 
+	-- копия точки захвата от модуля дрона: стоковый NWVector на InfMap обрезается
+	if drone:GetNW2Bool( "SkyOpsArty_Track", false ) then
+		return Vector( drone:GetNW2Float( "SkyOpsArty_TrackPos_X", 0 ), drone:GetNW2Float( "SkyOpsArty_TrackPos_Y", 0 ), drone:GetNW2Float( "SkyOpsArty_TrackPos_Z", 0 ) )
+	end
+
 	local p = drone:GetNWVector( "TrackPos", vector_origin )
 	local tracking = drone.GetTracking and drone:GetTracking()
 
