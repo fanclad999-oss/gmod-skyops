@@ -16,12 +16,24 @@ local function HasPlayerGunner( site )
 end
 
 local function FindMissileWeapon( launcher )
+	local fallback
 	for _, pod in pairs( launcher.WEAPONS or {} ) do
 		for _, w in ipairs( pod ) do
+			if not isfunction( w.Attack ) then continue end
 			local ok, name = pcall( function() return w.Icon:GetName() end )
-			if isfunction( w.Attack ) and ok and string.find( name or "", "missile", 1, true ) then return w end
+			if ok and string.find( name or "", "missile", 1, true ) then return w end
+			-- SAM missiles are the only limited-ammo weapons on these vehicles
+			if w.Ammo and w.Ammo > 0 then fallback = fallback or w end
 		end
 	end
+	return fallback
+end
+
+-- state changes for debugging: search / track / lock / launch / error / noweapon
+local function State( site, st, state, target, extra )
+	if st.lastState == state and st.lastStateTarget == target then return end
+	st.lastState, st.lastStateTarget = state, target
+	hook.Run( "SkyOps.SAMState", site, state, target, extra )
 end
 
 -- stands in for the gunner's weapon handler the stock Attack functions expect
@@ -63,6 +75,7 @@ local function Think( site, info, data, now )
 	end
 
 	if not target then
+		State( site, st, "search" )
 		if st.target then ctrl:SetClosestEnt( NULL ) ctrl:SetIsLocked( false ) end
 		st.target = nil
 		site.SkyOpsTarget = nil
@@ -77,8 +90,12 @@ local function Think( site, info, data, now )
 	end
 	site.SkyOpsTarget = target.ent
 
-	if now - st.lockStart < ( LOCK_TIME[ info.system ] or 4 ) then return end
+	if now - st.lockStart < ( LOCK_TIME[ info.system ] or 4 ) then
+		State( site, st, "track", target.ent, math.Round( target.dist ) )
+		return
+	end
 	ctrl:SetIsLocked( true )
+	State( site, st, "lock", target.ent, math.Round( target.dist ) )
 
 	if target.dist > data.radar.engage then return end
 	if now < ( st.nextShot or 0 ) then return end
@@ -86,7 +103,7 @@ local function Think( site, info, data, now )
 	if launcher:GetClass() == "sw_s75" and not launcher:GetNWBool( "Loaded", true ) then return end
 
 	st.weapon = st.weapon or FindMissileWeapon( launcher )
-	if not st.weapon then return end
+	if not st.weapon then State( site, st, "noweapon" ) return end
 
 	st.ammo = st.ammo or ( st.weapon.Ammo and st.weapon.Ammo > 0 and st.weapon.Ammo or 6 )
 	if st.ammo <= 0 then return end
@@ -94,6 +111,9 @@ local function Think( site, info, data, now )
 	local ok, err = pcall( st.weapon.Attack, Handler( launcher ) )
 	if not ok then
 		ErrorNoHalt( "[SkyOps] SAM " .. info.system .. " launch failed: " .. tostring( err ) .. "\n" )
+		State( site, st, "error", target.ent, tostring( err ) )
+	else
+		State( site, st, "launch", target.ent, math.Round( target.dist ) )
 	end
 	st.ammo = st.ammo - 1
 	st.nextShot = now + ( SHOT_GAP[ info.system ] or 5 )

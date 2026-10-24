@@ -36,15 +36,19 @@ SkyOps.Performance = {
 -- enough for Mach 3 missiles.
 local MAX_VELOCITY = 50000
 
+-- physenv is not ready while autorun files load, only after InitPostEntity
 local function RaisePhysicsLimit()
 	local tbl = physenv.GetPerformanceSettings()
+	if not tbl then return end
 	if tbl.MaxVelocity < MAX_VELOCITY then
 		tbl.MaxVelocity = MAX_VELOCITY
 		physenv.SetPerformanceSettings( tbl )
+		print( "[SkyOps] physics MaxVelocity -> " .. MAX_VELOCITY )
 	end
 end
-RaisePhysicsLimit()
 hook.Add( "InitPostEntity", "SkyOps.Realism", RaisePhysicsLimit )
+-- LVS:FixVelocity can run later and only ever raises the value, so this sticks
+timer.Create( "SkyOps.PhysicsLimit", 5, 0, RaisePhysicsLimit )
 
 local function ApplyPerformance( ent, perf )
 	local kmh_to_hu = 1000 / 3600 * M_TO_HU

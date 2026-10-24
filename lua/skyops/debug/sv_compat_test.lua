@@ -122,6 +122,15 @@ concommand.Add( "skyops_test_clear", function( ply )
 	SaveLog()
 end )
 
+hook.Add( "SkyOps.SAMState", "SkyOps.CompatTest", function( site, state, target, extra )
+	Log( "SAM %s %s %s %s", site:GetClass(), state, IsValid( target ) and target:GetClass() or "-", tostring( extra or "" ) )
+	SaveLog()
+end )
+
+hook.Add( "SkyOps.ARMLaunch", "SkyOps.CompatTest", function( mis, emitter )
+	Log( "ARM %s homing on %s at %d m", mis:GetClass(), emitter:GetClass(), mis:GetPos():Distance( emitter:GetPos() ) * SkyOps.HU_TO_M )
+end )
+
 -- missiles: SW Bombs rockets and LVS missiles
 hook.Add( "OnEntityCreated", "SkyOps.CompatTest", function( ent )
 	local class = ent:GetClass()
@@ -130,7 +139,7 @@ hook.Add( "OnEntityCreated", "SkyOps.CompatTest", function( ent )
 	timer.Simple( 0.1, function()
 		if not IsValid( ent ) then return end
 		local target = ent.target or ( isfunction( ent.GetTarget ) and ent:GetTarget() ) or NULL
-		Track( ent, "missile->" .. ( IsValid( target ) and target:GetClass() or "none" ) )
+		Track( ent, "missile->" .. ( IsValid( target ) and target:GetClass() or ( target and target:IsWorld() and "world" ) or "none" ) )
 		Tracked[ ent ].target = target
 	end )
 end )
