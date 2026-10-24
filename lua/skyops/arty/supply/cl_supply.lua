@@ -44,7 +44,8 @@ local function KitKeyName()
 end
 
 local function KitHint( truck )
-	if truck:GetNW2Bool( "SkyOpsArty_KitOut", false ) then return "[" .. KitKeyName() .. "] убрать катапульту и дрон" end
+	if truck:GetNW2Bool( "SkyOpsArty_KitRecall", false ) then return "[" .. KitKeyName() .. "] подорвать дрон и убрать катапульту" end
+	if truck:GetNW2Bool( "SkyOpsArty_KitOut", false ) then return "[" .. KitKeyName() .. "] убрать катапульту и дрон (дальний вернётся сам)" end
 	if truck:GetNW2Int( "SkyOpsArty_KitDrones", 0 ) > 0 then return "[" .. KitKeyName() .. "] выгрузить катапульту с дроном" end
 
 	return "[" .. KitKeyName() .. "] выгрузить катапульту (дронов нет)"
@@ -119,7 +120,7 @@ local function PaintCarrier( UI, carrier )
 		rows[ #rows + 1 ] = { string.format( "к САУ ближе %d м", S.RANGE ), "стоп", C.muted }
 	end
 
-	rows[ #rows + 1 ] = { "ДРОНЫ", tostring( carrier:GetNW2Int( "SkyOpsArty_KitDrones", 0 ) ) .. ( carrier:GetNW2Bool( "SkyOpsArty_KitOut", false ) and " + 1 снаружи" or "" ) }
+	rows[ #rows + 1 ] = { "ДРОНЫ", tostring( carrier:GetNW2Int( "SkyOpsArty_KitDrones", 0 ) ) .. ( carrier:GetNW2Bool( "SkyOpsArty_KitRecall", false ) and " + 1 летит назад" or carrier:GetNW2Bool( "SkyOpsArty_KitOut", false ) and " + 1 снаружи" or "" ) }
 
 	Panel( UI, rows, string.format( "СНАБЖЕНИЕ: %d выстр.", stock ), stock > 0 and C.accent or C.threat )
 
