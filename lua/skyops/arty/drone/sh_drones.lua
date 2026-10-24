@@ -172,10 +172,10 @@ if SERVER then
 end
 
 -- консольная команда на клиенте (с автодополнением), чтобы её знала консоль игрока:
--- skyops_arty_drone_cmd laser | loiter | send | switch. Клавиши по умолчанию даёт интерфейс:
+-- skyops_arty_drone_cmd laser | loiter | send | switch | deploy. Клавиши по умолчанию даёт интерфейс:
 -- T передать, G подсветка, J барраж, U пересесть.
 if CLIENT then
-	local CMDS = { "laser", "loiter", "send", "switch" }
+	local CMDS = { "laser", "loiter", "send", "switch", "deploy" }
 
 	concommand.Add( "skyops_arty_drone_cmd", function( _, _, args )
 		local cmd = args[ 1 ]
@@ -194,6 +194,21 @@ if CLIENT then
 
 		net.Start( "skyops_arty_drone" )
 		net.WriteString( cmd )
+
+		-- deploy: заодно отдаём цель с планшета (абсолютная), на случай если задания нет
+		if cmd == "deploy" then
+			local A = SkyOps.Arty.UI and SkyOps.Arty.UI.API
+			local t = A and A.Target
+
+			net.WriteBool( t ~= nil and t.pos ~= nil )
+
+			if t and t.pos then
+				net.WriteFloat( t.pos.x )
+				net.WriteFloat( t.pos.y )
+				net.WriteFloat( t.pos.z )
+			end
+		end
+
 		net.SendToServer()
 	end, function( name )
 		local list = {}
@@ -201,5 +216,5 @@ if CLIENT then
 		for _, c in ipairs( CMDS ) do list[ #list + 1 ] = name .. " " .. c end
 
 		return list
-	end, "Команда дрону: laser | loiter | send | switch" )
+	end, "Команда дрону: laser | loiter | send | switch | deploy" )
 end

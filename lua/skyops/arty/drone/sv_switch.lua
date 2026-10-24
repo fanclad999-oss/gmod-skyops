@@ -59,7 +59,7 @@ hook.Add( "PlayerLeaveVehicle", "SkyOpsArty.Drone.Switch", function( ply, pod )
 end )
 
 -- пересадить игрока в кресло (выход и вход в разные кадры, иначе Source теряет вход)
-local function MoveTo( ply, pod, onDone )
+function D.MoveTo( ply, pod, onDone )
 	ply.SkyOpsArty_Switching = true
 
 	if ply:InVehicle() then ply:ExitVehicle() end
@@ -105,7 +105,7 @@ function D.SwitchToDrone( ply )
 
 	if not IsValid( seat ) then return false, "У дрона нет кресла" end
 
-	MoveTo( ply, seat, function()
+	D.MoveTo( ply, seat, function()
 		if IsValid( drone ) then drone:AlignView( ply ) end
 	end )
 
@@ -116,7 +116,7 @@ function D.SwitchToSPG( ply )
 	local pod = ply.SkyOpsArty_SPGPod
 
 	if IsValid( pod ) and not IsValid( pod:GetDriver() ) then
-		MoveTo( ply, pod )
+		D.MoveTo( ply, pod )
 
 		return true
 	end
