@@ -23,8 +23,16 @@ end
 
 -- terrain height (world units) at x, y: the Kirovskoe height grid when the map
 -- provides it (exact even where no collider is streamed in), else a trace
+local function Finite( z )
+	return isnumber( z ) and z == z and z > -math.huge and z < math.huge
+end
+
 function SkyOps.Map.GroundZ( x, y, fromZ )
-	if KIR and KIR.MeshHeight then return KIR.MeshHeight( x, y ) end
+	-- the height grid returns -inf outside its edge: fall back to a trace there
+	if KIR and KIR.MeshHeight then
+		local z = KIR.MeshHeight( x, y )
+		if Finite( z ) then return z end
+	end
 
 	local tr = util.TraceLine( {
 		start = Vector( x, y, ( fromZ or 0 ) + 20000 ),
@@ -32,5 +40,5 @@ function SkyOps.Map.GroundZ( x, y, fromZ )
 		-- InfMap terrain is made of infmap_* collider entities, not brushes
 		filter = function( e ) return e:IsWorld() or string.StartWith( e:GetClass(), "infmap_" ) end,
 	} )
-	return tr.Hit and tr.HitPos.z or nil
+	return tr.Hit and Finite( tr.HitPos.z ) and tr.HitPos.z or nil
 end

@@ -37,7 +37,7 @@ function SkyOps.Radar.LineOfSight( fromPos, target )
 		for i = 1, steps - 1 do
 			local p = LerpVector( i / steps, fromPos, toPos )
 			local ground = KIR.MeshHeight( p.x, p.y )
-			if ground and p.z < ground + clearance then return false end
+			if ground and ground > -math.huge and p.z < ground + clearance then return false end
 		end
 		return true
 	end
