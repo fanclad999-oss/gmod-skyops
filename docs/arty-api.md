@@ -75,17 +75,18 @@ InfMap, то есть то, что возвращает `GetPos()` (InfMap ег�
 
 - `GetControlled( ply ) -> ent`
 - NW2 на дроне: `SkyOpsArty_Laser` (bool), `SkyOpsArty_Loiter` (bool),
-  `SkyOpsArty_LoiterCenter` (Vector), `SkyOpsArty_LoiterRadius` (float, юниты)
+  `SkyOpsArty_LoiterCenter_X/_Y/_Z` (Float), `SkyOpsArty_LoiterRadius` (float, юниты)
+- Shared: `Drone.LaserPos( drone )`, `Drone.LoiterCenter( drone )` собирают Vector из NW2Float
 - Точка камеры: стоковый `NWVector "TrackPos"` дронов Ryuunosuke (без захвата там 1)
 - net клиент -> сервер `skyops_arty_drone { String cmd }`, cmd = `laser` | `loiter` | `send` | `switch`
   (`switch` в одиночке переключает игрока между САУ и дроном, `arty/drone/sv_switch.lua`)
 - Консоль: `skyops_arty_switch`, `skyops_arty_drone_cmd <cmd>`
-- NW2 на дроне: `SkyOpsArty_LaserPos` (Vector, точка подсветки), `SkyOpsArty_LaserBlocked` (bool, луч закрыт)
+- NW2 на дроне: `SkyOpsArty_LaserPos_X/_Y/_Z` (Float, точка подсветки), `SkyOpsArty_LaserBlocked` (bool, луч закрыт)
 - NW2Entity на игроке: `SkyOpsArty_Drone` (его дрон)
 - Сервер: `SkyOps.Arty.Guided.Steer( s, dt )` (`arty/drone/sv_guided.lua`), его вызывает `sv_ballistics`
 - Хуки: `SkyOpsArty.TargetSent`, `SkyOpsArty.GuidedLocked`
 - Подробности: `docs/arty-drone.md`
-- net сервер -> клиент `skyops_arty_target { Vector pos, Float err_m, Entity drone }`
+- net сервер -> клиент `skyops_arty_target { Float x, Float y, Float z, Float err_m, Entity drone }`
 
 ## Что известно об аддонах (этап 0, тест 24.10.2026 на gm_infmap_kirovskoe, 40 u/m)
 
