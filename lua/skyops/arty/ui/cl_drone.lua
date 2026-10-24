@@ -107,6 +107,23 @@ local keySwitch = A.Bind( "skyops_arty_key_switch", KEY_U, "Пересесть �
 
 UI.SwitchKeyName = function() return A.KeyName( keySwitch ) end
 
+-- быстрый вылет (arty/drone): дрон ставится в воздух у цели, игрок садится в него.
+-- Через консольную команду модуля: она сама дописывает цель с планшета.
+-- K занята сменой заряда в САУ, поэтому I.
+function UI.DroneDeploy()
+	if not concommand.GetTable()[ "skyops_arty_drone_cmd" ] then
+		notification.AddLegacy( "Быстрый вылет недоступен: нет модуля дрона", NOTIFY_ERROR, 3 )
+
+		return
+	end
+
+	RunConsoleCommand( "skyops_arty_drone_cmd", "deploy" )
+end
+
+local keyDeploy = A.Bind( "skyops_arty_key_drone_deploy", KEY_I, "Быстрый вылет дрона к цели", UI.DroneDeploy )
+
+UI.DeployKeyName = function() return A.KeyName( keyDeploy ) end
+
 concommand.Add( "skyops_arty_send", function() if InDrone() then SendTarget() end end )
 concommand.Add( "skyops_arty_laser", function() if InDrone() then ToggleLaser() end end )
 concommand.Add( "skyops_arty_loiter", function() if InDrone() then ToggleLoiter() end end )

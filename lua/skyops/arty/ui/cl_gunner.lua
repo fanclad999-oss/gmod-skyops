@@ -240,7 +240,11 @@ local function PaintKeys( spg, sw, sh )
 	K( "fast", "x10" ) K( "charge", "заряд" ) K( "deploy", "свернуть" )
 	parts[ #parts + 1 ] = "[" .. UI.TabletKeyName() .. "] планшет"
 
-	if UI.SwitchKeyName and IsValid( A.LinkedDrone() ) then parts[ #parts + 1 ] = "[" .. UI.SwitchKeyName() .. "] в дрон" end
+	if UI.SwitchKeyName and IsValid( A.LinkedDrone() ) then
+		parts[ #parts + 1 ] = "[" .. UI.SwitchKeyName() .. "] в дрон"
+	elseif UI.DeployKeyName then
+		parts[ #parts + 1 ] = "[" .. UI.DeployKeyName() .. "] вылет дрона"
+	end
 
 	UI.HText( table.concat( parts, "   " ), "SkyOpsArty_HUDSmall", sw / 2, sh - UI.S( 36 ), C.muted, TEXT_ALIGN_CENTER )
 end

@@ -125,6 +125,10 @@ function PANEL:OpenMenu()
 		menu:AddOption( "Центр на дроне", function() self:CenterOn( A.ToGrid( A.EntPos( drone ) ) ) end ):SetIcon( "icon16/eye.png" )
 	end
 
+	if UI.DroneDeploy then
+		menu:AddOption( "Вылет дрона к цели", function() UI.DroneDeploy() end ):SetIcon( "icon16/arrow_up.png" )
+	end
+
 	if A.Target then
 		menu:AddOption( "Центр на цели", function() self:CenterOn( A.Target.e, A.Target.n ) end ):SetIcon( "icon16/flag_red.png" )
 		menu:AddOption( "Снять цель", function()
