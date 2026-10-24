@@ -30,6 +30,9 @@ local function ApproachDir( ply, target )
 end
 
 local function Place( drone, pos, ang )
+	-- дрон может стоять на катапульте (приварен): отцепляем, иначе потащит её за собой
+	constraint.RemoveConstraints( drone, "Weld" )
+
 	drone:SetPos( pos )
 	drone:SetAngles( ang )
 
