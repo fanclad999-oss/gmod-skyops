@@ -7,6 +7,8 @@
 | Баллистика и САУ | `arty/core/sh_grid.lua`, `arty/core/sh_firecomp.lua`, `arty/core/sv_ballistics.lua`, `arty/core/sv_spg.lua` |
 | Дрон и лазер | `arty/drone/sh_drones.lua`, `arty/drone/sv_loiter.lua`, `arty/drone/sv_laser.lua`, `arty/drone/sv_guided.lua` |
 | Интерфейс | `arty/ui/cl_*.lua` (все обращения к API собраны в `arty/ui/cl_api.lua`) |
+| Задания | `arty/missions/*` (описание в `docs/arty-missions.md`) |
+| Эффекты | `arty/fx/*` |
 | Разведка, план | `arty/debug/*`, этот файл |
 
 Единицы: координаты сетки в метрах (X на восток, Y на север), углы в тысячных
@@ -87,7 +89,8 @@ InfMap, то есть то, что возвращает `GetPos()` (InfMap ег�
 - NW2 на дроне: `SkyOpsArty_LaserPos_X/_Y/_Z` (Float, точка подсветки), `SkyOpsArty_LaserBlocked` (bool, луч закрыт)
 - NW2Entity на игроке: `SkyOpsArty_Drone` (его дрон)
 - Сервер: `SkyOps.Arty.Guided.Steer( s, dt )` (`arty/drone/sv_guided.lua`), его вызывает `sv_ballistics`
-- Хуки: `SkyOpsArty.TargetSent`, `SkyOpsArty.GuidedLocked`
+- Хуки: `SkyOps.Arty.TargetSent( drone, worldPos, err_m, ply )`, `SkyOps.Arty.GuidedLocked`
+  (все хуки модуля называются `SkyOps.Arty.*`)
 - Подробности: `docs/arty-drone.md`
 - net сервер -> клиент `skyops_arty_target { Float x, Float y, Float z, Float err_m, Entity drone }`
 
@@ -136,3 +139,12 @@ InfMap, то есть то, что возвращает `GetPos()` (InfMap ег�
   (без захвата там 1). HUD показывает дистанцию (`* 0.024`, под масштаб 41,7 u/m) и сырые X/Y.
 - Тест: Орлан-10 в чанке 1, 48 м/с, захват точки сработал, топливо 74% через пару минут.
 - Ни у одного дрона нет лазера и автопилота, их делаем сами.
+
+## Задания `arty/missions/` (подробно в `docs/arty-missions.md`)
+
+- Хуки: `SkyOps.Arty.MissionStart( run )`, `SkyOps.Arty.MissionStage( run, stage )`,
+  `SkyOps.Arty.MissionEnd( run, debrief )`, клиент `SkyOps.Arty.MissionState( state )`
+- net: `skyops_artym_state`, `skyops_artym_msg`, `skyops_artym_debrief`, `skyops_artym_req`, `skyops_artym_menu`
+- Клавиша F7 (`skyops_arty_key_missions`)
+- Использует `SPGFired`, `ShellImpact` (возвращает nil), `ShellRemoved`, поле `shell.data.mission`;
+  дополняет карту планшета обёрткой `PaintTarget` у `SkyOpsArtyMap`
