@@ -73,7 +73,8 @@ function R.Request()
 	R.Row = 0
 	R.Lo, R.Hi = math.huge, -math.huge
 	R.State = "sampling"
-	R.RT = GetRenderTarget( "skyops_arty_relief_" .. SIZE, SIZE, SIZE )
+	-- RGBA: за краем карты подложка прозрачная
+	R.RT = GetRenderTargetEx( "skyops_arty_relief_" .. SIZE, SIZE, SIZE, RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_NONE, 0, 0, IMAGE_FORMAT_RGBA8888 )
 	R.Mat = CreateMaterial( "skyops_arty_relief_" .. SIZE, "UnlitGeneric", {
 		[ "$basetexture" ] = R.RT:GetName(),
 		[ "$vertexcolor" ] = 1,
