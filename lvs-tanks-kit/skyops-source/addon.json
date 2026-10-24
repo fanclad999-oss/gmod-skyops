@@ -1,0 +1,6 @@
+{
+	"title": "SkyOps",
+	"type": "tool",
+	"tags": [ "fun", "realism" ],
+	"ignore": [ "*.md", "docs/*", ".git*" ]
+}
