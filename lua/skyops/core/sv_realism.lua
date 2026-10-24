@@ -89,3 +89,15 @@ hook.Add( "OnEntityCreated", "SkyOps.Realism", function( ent )
 		if IsValid( ent ) then Apply( ent ) end
 	end )
 end )
+
+-- SW Bombs rockets cap speed at ConvertMetersToUnits( MaxVelocity^2 ), i.e.
+-- squared metres converted once: MaxVelocity * 7.2 u/s instead of
+-- MaxVelocity * 40 u/s on this map. An R-73 (850 m/s) topped out at ~150 m/s,
+-- slower than the jet that fired it. Recompute the cap in map units.
+hook.Add( "OnEntityCreated", "SkyOps.MissileSpeed", function( ent )
+	-- launchers set MaxVelocity between ents.Create and Spawn; Initialize computes the cap
+	timer.Simple( 0, function()
+		if not ( IsValid( ent ) and ent.IsRocket and isnumber( ent.MaxVelocity ) ) then return end
+		ent.MaxVelocityUnitsSquared = ( ent.MaxVelocity * SkyOps.M_TO_HU ) ^ 2
+	end )
+end )
