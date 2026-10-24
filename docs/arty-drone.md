@@ -1,0 +1,88 @@
+# Артиллерия: дрон-корректировщик (`lua/skyops/arty/drone/`)
+
+Дополнение к `docs/arty-api.md`, раздел «Дрон». Всё поверх стоковых дронов Ryuunosuke,
+их файлы не меняются. Все числа игровые, подобраны под удобство игры.
+
+| Файл | Что делает |
+|---|---|
+| `sh_drones.lua` | настройки дронов `SkyOps.Arty.Drone.Types`, общие функции, приём команд |
+| `sv_loiter.lua` | барражирование по кругу |
+| `sv_laser.lua` | подсветка точки и передача координат |
+| `sv_guided.lua` | упрощённый «магнит» для управляемого снаряда |
+| `sv_switch.lua` | переключение САУ <-> дрон, выход из дрона к пульту |
+| `sv_deploy.lua` | быстрый вылет: дрон сразу в воздухе в 1 км от цели |
+| `sv_fuel.lua` | запас хода: бак дрона тратится медленнее |
+
+## Как играть одному
+
+1. Запустить дрон, сесть в него через пульт.
+2. Навести камеру на цель, включить захват (стоковое оружие `track`).
+3. `laser` — подсветка, `loiter` — дрон кружит над точкой, `send` — координаты на планшет.
+4. `switch` (U) — пересесть в 2С35 (в то же кресло, где сидел). Дрон продолжает кружить и светить.
+5. Выстрелить Краснополем. На нисходящей ветке снаряд доворачивает к пятну подсветки.
+6. `switch` ещё раз — обратно в дрон.
+
+Быстрый вылет: `deploy` ставит свой дрон (или создаёт новый, `skyops_arty_drone_class`) в воздух в
+`skyops_arty_drone_deploy_dist` м от цели на `skyops_arty_drone_deploy_alt` м над ней, носом на цель,
+со стороны своей САУ, и сажает игрока в него. Цель: `hook.Run( "SkyOps.Arty.DroneDeployPoint", ply )`
+(модуль заданий), иначе цель с планшета (клиент дописывает `Bool has, Float x, y, z` после имени команды).
+
+Обычный выход из дрона (E) ставит игрока у пульта, а не в воздух рядом с дроном.
+
+## API `SkyOps.Arty.Drone` (shared, кроме помеченных)
+
+- `Types[ class ]` — `{ name, loiter, radius (м), throttle, lead, laserRange (м), errBase, errPerKm }`
+- `IsDrone( ent )`, `Config( ent )`, `All()`
+- `GetControlled( ply )` — дрон, в кресле которого игрок сидит сейчас
+- `GetLinked( ply )` — последний дрон игрока (NW2 `SkyOpsArty_Drone` на игроке), в т. ч. когда он в САУ
+- `Station( drone )` — пульт `sw_uav_control`
+- `TrackPos( drone )` — точка стокового захвата или nil
+- `LaserPos( drone )` -> `pos, blocked` или nil; `LoiterCenter( drone )` -> `pos, radius` или nil
+- `SetNWPos( ent, key, v )`, `GetNWPos( ent, key )` — позиция тремя NW2Float
+- сервер: `SetLaser( drone, on )`, `LaserSpots()`, `SendTarget( drone, ply )`,
+  `StartLoiter( drone, center? )`, `StopLoiter( drone )`, `IsLoitering( drone )`, `Switch( ply )`
+
+## NW2 на дроне
+
+Позиции лежат тремя NW2Float `<имя>_X`, `<имя>_Y`, `<имя>_Z` (NW2Vector обрезает координаты
+дальше ±16384 u). Значения абсолютные, как `GetPos()` на сервере; на клиенте InfMap их надо
+перевести в чанк `LocalPlayer` (см. «Правила для позиций в сети» в `arty-api.md`).
+Читать проще через `D.LaserPos( drone )` и `D.LoiterCenter( drone )`.
+
+- `SkyOpsArty_Laser` (bool), `SkyOpsArty_LaserPos_X/_Y/_Z` (точка подсветки),
+  `SkyOpsArty_LaserBlocked` (bool: точка вне дальности или за препятствием)
+- `SkyOpsArty_Loiter` (bool), `SkyOpsArty_LoiterCenter_X/_Y/_Z`, `SkyOpsArty_LoiterRadius` (юниты)
+
+## Сеть и консоль
+
+- клиент -> сервер `skyops_arty_drone { String cmd }`: `laser` | `loiter` | `send` | **`switch`** | **`deploy`**
+  (`switch` работает и из САУ, остальные только из кресла дрона)
+- то же из консоли игрока: `skyops_arty_drone_cmd <cmd>` (клиентская команда с автодополнением); клавиши по умолчанию из интерфейса: T передать, G подсветка, J барраж, U пересесть
+- сервер -> все `skyops_arty_target { Float x, Float y, Float z, Float err_m, Entity drone }` (абсолютная позиция)
+- хуки сервера: `SkyOps.Arty.TargetSent( drone, worldPos, err_m, ply )`, `SkyOps.Arty.GuidedLocked( s, drone )`
+
+## Управляемый снаряд `SkyOps.Arty.Guided` (сервер)
+
+`Guided.Steer( s, dt )` зовёт `sv_ballistics` на каждом шаге полёта снаряда с `def.guided`.
+Игровое правило: на нисходящей ветке снаряд берёт ближайшее пятно подсветки в радиусе
+захвата и поворачивает вектор скорости к нему не быстрее `skyops_arty_guided_turn` градусов
+в секунду, модуль скорости не меняет. Пропала подсветка — летит дальше как есть.
+
+## Барраж
+
+Круг против часовой на высоте включения, центр — подсветка, захват камеры или точка
+слева от дрона. Пока барраж включён, мышь крутит только камеру. Любая клавиша
+тангажа, рыскания или крена возвращает ручное управление. Raven's Eye (вертолёт) не барражирует.
+
+## Convar
+
+| Имя | По умолчанию | Смысл |
+|---|---|---|
+| `skyops_arty_laser_los` | 1 | подсветка срывается за препятствием |
+| `skyops_arty_send_error` | 1 | в hardcore координаты передаются с ошибкой |
+| `skyops_arty_guided_turn` | 8 | доворот снаряда, град/с |
+| `skyops_arty_guided_capture` | 1500 | радиус захвата подсветки, м |
+| `skyops_arty_drone_fuel` | 5 | во сколько раз дольше дрон летает на одном баке |
+
+Проверено вне игры (заглушки Lua): снаряд, падающий на 300 м/с с промахом наведения до
+600 м, приходит в 1–8 м от пятна; барраж поворачивает против часовой.
