@@ -72,14 +72,31 @@ function D.Station( drone )
 	return IsValid( st ) and st or nil
 end
 
--- точка захвата стоковой камеры или nil (без захвата там лежит число 1)
-function D.TrackPos( drone )
-	local p = drone:GetNWVector( "TrackPos", vector_origin )
-
-	if not isvector( p ) or p:LengthSqr() < 100 then return nil end
+-- Точка захвата стоковой камеры (абсолютная мировая) или nil.
+-- Стоковый код кладёт её в NWVector "TrackPos", а NWVector обрезает координаты
+-- дальше ±16384 u: на InfMap клиент получает мусор. Поэтому сервер берёт точку из
+-- Lua-полей дрона и копирует её в три NW2Float SkyOpsArty_TrackPos_* (ниже, Tick),
+-- а клиент читает уже их.
+local function ServerTrackPos( drone )
 	if drone.GetTracking and not drone:GetTracking() then return nil end
 
+	if drone.TrackType and IsValid( drone.TrackEnt ) then
+		return drone.TrackEnt:LocalToWorld( drone.TrackEnt:OBBCenter() )
+	end
+
+	local p = drone.TrackPos
+
+	if not isvector( p ) or p:LengthSqr() < 100 then return nil end
+
 	return p
+end
+
+function D.TrackPos( drone )
+	if SERVER then return ServerTrackPos( drone ) end
+
+	if not drone:GetNW2Bool( "SkyOpsArty_Track", false ) then return nil end
+
+	return D.GetNWPos( drone, "SkyOpsArty_TrackPos" )
 end
 
 -- Позиции в NW2 храним тремя float: NW2Vector, как и net.WriteVector, сжимает
@@ -122,6 +139,16 @@ end
 if SERVER then
 	util.AddNetworkString( "skyops_arty_drone" )
 	util.AddNetworkString( "skyops_arty_target" )
+
+	hook.Add( "Tick", "SkyOpsArty.Drone.Track", function()
+		for _, drone in ipairs( D.All() ) do
+			local p = ServerTrackPos( drone )
+
+			drone:SetNW2Bool( "SkyOpsArty_Track", p ~= nil )
+
+			if p then D.SetNWPos( drone, "SkyOpsArty_TrackPos", p ) end
+		end
+	end )
 
 	-- обработчики команд с клиента: D.Commands[ cmd ]( ply, drone ), drone = управляемый или nil
 	D.Commands = D.Commands or {}
