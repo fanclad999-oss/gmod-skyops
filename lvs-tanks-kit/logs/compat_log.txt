@@ -1,0 +1,701 @@
+[   31.7] track missile->sw_su25sm3 sw_base_rocket_v3 at -531674.125000 785624.812500 150094.078125 chunk -27.000000 39.000000 8.000000
+[   32.0] missile->sw_su25sm3 chunk -27.000000 39.000000 8.000000 -> -27.000000 40.000000 7.000000, jump 8333 u, speed 34724
+[   32.0] !! missile->sw_su25sm3 teleported by 8333 u on chunk change
+[   32.3] missile->sw_su25sm3 chunk -27.000000 40.000000 7.000000 -> -26.000000 40.000000 7.000000, jump 7202 u, speed 9950
+[   32.3] !! missile->sw_su25sm3 teleported by 7202 u on chunk change
+[   33.0] missile->sw_su25sm3 chunk -26.000000 40.000000 7.000000 -> -26.000000 41.000000 8.000000, jump 6411 u, speed 34537
+[   33.0] !! missile->sw_su25sm3 teleported by 6411 u on chunk change
+[   34.0] missile->sw_su25sm3 chunk -26.000000 41.000000 8.000000 -> -26.000000 42.000000 8.000000, jump 5165 u, speed 8612
+[   34.0] !! missile->sw_su25sm3 teleported by 5165 u on chunk change
+[   34.1] track missile->sw_su25sm3 sw_base_rocket_v3 at -526557.375000 824006.250000 149302.531250 chunk -26.000000 41.000000 7.000000
+[   34.5] missile->sw_su25sm3 chunk -26.000000 41.000000 7.000000 -> -26.000000 42.000000 7.000000, jump 9398 u, speed 34781
+[   34.5] !! missile->sw_su25sm3 teleported by 9398 u on chunk change
+[   35.0] missile->sw_su25sm3 chunk -26.000000 42.000000 8.000000 -> -25.000000 42.000000 8.000000, jump 5109 u, speed 17280
+[   35.0] !! missile->sw_su25sm3 teleported by 5109 u on chunk change
+[   35.3] missile->sw_su25sm3 chunk -26.000000 42.000000 7.000000 -> -26.000000 43.000000 7.000000, jump 7275 u, speed 20376
+[   35.3] !! missile->sw_su25sm3 teleported by 7275 u on chunk change
+[   35.5] missile->sw_su25sm3 chunk -25.000000 42.000000 8.000000 -> -26.000000 42.000000 8.000000, jump 7237 u, speed 30452
+[   35.5] !! missile->sw_su25sm3 teleported by 7237 u on chunk change
+[   35.8] missile->sw_su25sm3 chunk -26.000000 43.000000 7.000000 -> -27.000000 43.000000 7.000000, jump 6490 u, speed 22975
+[   35.8] !! missile->sw_su25sm3 teleported by 6490 u on chunk change
+[   36.3] missile->sw_su25sm3 chunk -27.000000 43.000000 7.000000 -> -27.000000 43.000000 6.000000, jump 3537 u, speed 9390
+[   36.3] missile->sw_su25sm3 chunk -26.000000 42.000000 8.000000 -> -26.000000 41.000000 8.000000, jump 4652 u, speed 14566
+[   36.5] missile->sw_su25sm3 chunk -26.000000 41.000000 8.000000 -> -27.000000 41.000000 8.000000, jump 4196 u, speed 28838
+[   37.0] missile->sw_su25sm3 chunk -27.000000 43.000000 6.000000 -> -27.000000 44.000000 6.000000, jump 3647 u, speed 29980
+[   37.3] missile->sw_su25sm3 chunk -27.000000 44.000000 6.000000 -> -28.000000 44.000000 6.000000, jump 5509 u, speed 8999
+[   37.3] !! missile->sw_su25sm3 teleported by 5509 u on chunk change
+[   38.5] missile->sw_su25sm3 chunk -28.000000 44.000000 6.000000 -> -28.000000 45.000000 6.000000, jump 5446 u, speed 30977
+[   38.5] !! missile->sw_su25sm3 teleported by 5446 u on chunk change
+[   49.5] track missile->sw_f14a sw_base_rocket_v3 at -487068.968750 1071949.375000 142736.437500 chunk -24.000000 54.000000 7.000000
+[   50.0] missile->sw_f14a chunk -24.000000 54.000000 7.000000 -> -24.000000 55.000000 7.000000, jump 9101 u, speed 37920
+[   50.0] !! missile->sw_f14a teleported by 9101 u on chunk change
+[   50.8] missile->sw_f14a chunk -24.000000 55.000000 7.000000 -> -24.000000 56.000000 7.000000, jump 5177 u, speed 25780
+[   50.8] !! missile->sw_f14a teleported by 5177 u on chunk change
+[   51.8] missile->sw_f14a chunk -24.000000 56.000000 7.000000 -> -24.000000 57.000000 7.000000, jump 8701 u, speed 38698
+[   51.8] !! missile->sw_f14a teleported by 8701 u on chunk change
+[   52.0] missile->sw_f14a chunk -24.000000 57.000000 7.000000 -> -24.000000 57.000000 6.000000, jump 5499 u, speed 8214
+[   52.0] !! missile->sw_f14a teleported by 5499 u on chunk change
+[   52.8] missile->sw_f14a chunk -24.000000 57.000000 6.000000 -> -24.000000 58.000000 6.000000, jump 5239 u, speed 29114
+[   52.8] !! missile->sw_f14a teleported by 5239 u on chunk change
+[   53.3] missile->sw_f14a chunk -24.000000 58.000000 6.000000 -> -24.000000 58.000000 7.000000, jump 8914 u, speed 28367
+[   53.3] !! missile->sw_f14a teleported by 8914 u on chunk change
+[   53.5] missile->sw_f14a chunk -24.000000 58.000000 7.000000 -> -24.000000 59.000000 7.000000, jump 3559 u, speed 22547
+[   54.3] missile->sw_f14a chunk -24.000000 59.000000 7.000000 -> -24.000000 60.000000 7.000000, jump 5183 u, speed 24881
+[   54.3] !! missile->sw_f14a teleported by 5183 u on chunk change
+[   55.5] missile->sw_f14a chunk -24.000000 60.000000 7.000000 -> -24.000000 60.000000 8.000000, jump 3269 u, speed 26272
+[   55.8] missile->sw_f14a chunk -24.000000 60.000000 8.000000 -> -23.000000 60.000000 8.000000, jump 8997 u, speed 42200
+[   55.8] !! missile->sw_f14a teleported by 8997 u on chunk change
+[   56.3] missile->sw_f14a chunk -23.000000 60.000000 8.000000 -> -23.000000 61.000000 9.000000, jump 11255 u, speed 20305
+[   56.3] !! missile->sw_f14a teleported by 11255 u on chunk change
+[   56.5] missile->sw_f14a chunk -23.000000 61.000000 9.000000 -> -23.000000 61.000000 8.000000, jump 5191 u, speed 26126
+[   56.5] !! missile->sw_f14a teleported by 5191 u on chunk change
+[   57.0] missile->sw_f14a chunk -23.000000 61.000000 8.000000 -> -22.000000 61.000000 9.000000, jump 7694 u, speed 31955
+[   57.0] !! missile->sw_f14a teleported by 7694 u on chunk change
+[   57.3] missile->sw_f14a chunk -22.000000 61.000000 9.000000 -> -22.000000 62.000000 9.000000, jump 8752 u, speed 40614
+[   57.3] !! missile->sw_f14a teleported by 8752 u on chunk change
+[   59.0] missile->sw_f14a chunk -22.000000 62.000000 9.000000 -> -22.000000 62.000000 8.000000, jump 6633 u, speed 23841
+[   59.0] !! missile->sw_f14a teleported by 6633 u on chunk change
+[   60.3] missile->sw_f14a chunk -22.000000 62.000000 8.000000 -> -22.000000 63.000000 8.000000, jump 2270 u, speed 12286
+[   60.5] missile->sw_f14a chunk -22.000000 63.000000 8.000000 -> -23.000000 62.000000 8.000000, jump 4934 u, speed 35941
+[   61.0] missile->sw_f14a chunk -23.000000 62.000000 8.000000 -> -23.000000 61.000000 8.000000, jump 11951 u, speed 50000
+[   61.0] !! missile->sw_f14a teleported by 11951 u on chunk change
+[   61.3] missile->sw_f14a chunk -23.000000 61.000000 8.000000 -> -23.000000 61.000000 7.000000, jump 11939 u, speed 49999
+[   61.3] !! missile->sw_f14a teleported by 11939 u on chunk change
+[   61.5] missile->sw_f14a chunk -23.000000 61.000000 7.000000 -> -23.000000 60.000000 7.000000, jump 13454 u, speed 50000
+[   61.5] !! missile->sw_f14a teleported by 13454 u on chunk change
+[   61.8] missile->sw_f14a chunk -23.000000 60.000000 7.000000 -> -24.000000 60.000000 7.000000, jump 11939 u, speed 49500
+[   61.8] !! missile->sw_f14a teleported by 11939 u on chunk change
+[   62.0] missile->sw_f14a chunk -24.000000 60.000000 7.000000 -> -24.000000 59.000000 7.000000, jump 11955 u, speed 50000
+[   62.0] !! missile->sw_f14a teleported by 11955 u on chunk change
+[   62.3] missile->sw_f14a chunk -24.000000 59.000000 7.000000 -> -24.000000 58.000000 7.000000, jump 13439 u, speed 49500
+[   62.3] !! missile->sw_f14a teleported by 13439 u on chunk change
+[   62.8] missile->sw_f14a chunk -24.000000 58.000000 7.000000 -> -24.000000 57.000000 7.000000, jump 11970 u, speed 50000
+[   62.8] !! missile->sw_f14a teleported by 11970 u on chunk change
+[   63.0] missile->sw_f14a chunk -24.000000 57.000000 7.000000 -> -25.000000 57.000000 7.000000, jump 13454 u, speed 49999
+[   63.0] !! missile->sw_f14a teleported by 13454 u on chunk change
+[   63.3] missile->sw_f14a chunk -25.000000 57.000000 7.000000 -> -25.000000 56.000000 7.000000, jump 11969 u, speed 50000
+[   63.3] !! missile->sw_f14a teleported by 11969 u on chunk change
+[   63.5] missile->sw_f14a chunk -25.000000 56.000000 7.000000 -> -25.000000 56.000000 6.000000, jump 11954 u, speed 50000
+[   63.5] !! missile->sw_f14a teleported by 11954 u on chunk change
+[   63.8] missile->sw_f14a chunk -25.000000 56.000000 6.000000 -> -25.000000 55.000000 6.000000, jump 13440 u, speed 49500
+[   63.8] !! missile->sw_f14a teleported by 13440 u on chunk change
+[   64.0] missile->sw_f14a chunk -25.000000 55.000000 6.000000 -> -25.000000 54.000000 6.000000, jump 11954 u, speed 49999
+[   64.0] !! missile->sw_f14a teleported by 11954 u on chunk change
+[   64.3] missile->sw_f14a chunk -25.000000 54.000000 6.000000 -> -26.000000 54.000000 6.000000, jump 11954 u, speed 50000
+[   64.3] !! missile->sw_f14a teleported by 11954 u on chunk change
+[   64.5] missile->sw_f14a chunk -26.000000 54.000000 6.000000 -> -26.000000 53.000000 6.000000, jump 13469 u, speed 50000
+[   64.5] !! missile->sw_f14a teleported by 13469 u on chunk change
+[   65.0] missile->sw_f14a chunk -26.000000 53.000000 6.000000 -> -26.000000 52.000000 6.000000, jump 11970 u, speed 49500
+[   65.0] !! missile->sw_f14a teleported by 11970 u on chunk change
+[   65.3] missile->sw_f14a chunk -26.000000 52.000000 6.000000 -> -26.000000 51.000000 6.000000, jump 13379 u, speed 49500
+[   65.3] !! missile->sw_f14a teleported by 13379 u on chunk change
+[   65.5] missile->sw_f14a chunk -26.000000 51.000000 6.000000 -> -27.000000 51.000000 6.000000, jump 11880 u, speed 49500
+[   65.5] !! missile->sw_f14a teleported by 11880 u on chunk change
+[   65.8] missile->sw_f14a chunk -27.000000 51.000000 6.000000 -> -27.000000 50.000000 6.000000, jump 11879 u, speed 49500
+[   65.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   66.0] missile->sw_f14a chunk -27.000000 50.000000 6.000000 -> -27.000000 50.000000 5.000000, jump 13364 u, speed 49500
+[   66.0] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   66.3] missile->sw_f14a chunk -27.000000 50.000000 5.000000 -> -27.000000 49.000000 5.000000, jump 11880 u, speed 49500
+[   66.3] !! missile->sw_f14a teleported by 11880 u on chunk change
+[   66.8] missile->sw_f14a chunk -27.000000 49.000000 5.000000 -> -28.000000 48.000000 5.000000, jump 13364 u, speed 49500
+[   66.8] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   67.0] missile->sw_f14a chunk -28.000000 48.000000 5.000000 -> -28.000000 47.000000 5.000000, jump 11879 u, speed 49500
+[   67.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   67.5] missile->sw_f14a chunk -28.000000 47.000000 5.000000 -> -28.000000 46.000000 5.000000, jump 13364 u, speed 49500
+[   67.5] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   68.0] missile->sw_f14a chunk -28.000000 46.000000 5.000000 -> -29.000000 45.000000 5.000000, jump 11879 u, speed 49500
+[   68.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   68.3] missile->sw_f14a chunk -29.000000 45.000000 5.000000 -> -29.000000 44.000000 5.000000, jump 13364 u, speed 49500
+[   68.3] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   68.5] missile->sw_f14a chunk -29.000000 44.000000 5.000000 -> -29.000000 44.000000 4.000000, jump 11879 u, speed 49500
+[   68.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   68.8] missile->sw_f14a chunk -29.000000 44.000000 4.000000 -> -29.000000 43.000000 4.000000, jump 11880 u, speed 49500
+[   68.8] !! missile->sw_f14a teleported by 11880 u on chunk change
+[   69.3] missile->sw_f14a chunk -29.000000 43.000000 4.000000 -> -30.000000 42.000000 4.000000, jump 11879 u, speed 49500
+[   69.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   69.8] missile->sw_f14a chunk -30.000000 42.000000 4.000000 -> -30.000000 41.000000 4.000000, jump 13364 u, speed 49500
+[   69.8] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   70.0] missile->sw_f14a chunk -30.000000 41.000000 4.000000 -> -30.000000 40.000000 4.000000, jump 11879 u, speed 49500
+[   70.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   70.5] missile->sw_f14a chunk -30.000000 40.000000 4.000000 -> -31.000000 39.000000 4.000000, jump 13364 u, speed 49500
+[   70.5] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   71.0] missile->sw_f14a chunk -31.000000 39.000000 4.000000 -> -31.000000 38.000000 3.000000, jump 11879 u, speed 49500
+[   71.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   71.5] missile->sw_f14a chunk -31.000000 38.000000 3.000000 -> -31.000000 37.000000 3.000000, jump 11879 u, speed 49500
+[   71.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   71.8] missile->sw_f14a chunk -31.000000 37.000000 3.000000 -> -31.000000 36.000000 3.000000, jump 11879 u, speed 49500
+[   71.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   72.0] missile->sw_f14a chunk -31.000000 36.000000 3.000000 -> -32.000000 36.000000 3.000000, jump 13365 u, speed 49500
+[   72.0] !! missile->sw_f14a teleported by 13365 u on chunk change
+[   72.3] missile->sw_f14a chunk -32.000000 36.000000 3.000000 -> -32.000000 35.000000 3.000000, jump 11879 u, speed 49500
+[   72.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   72.8] missile->sw_f14a chunk -32.000000 35.000000 3.000000 -> -32.000000 34.000000 3.000000, jump 13365 u, speed 49500
+[   72.8] !! missile->sw_f14a teleported by 13365 u on chunk change
+[   72.8] track missile->sw_su25sm3 sw_base_rocket_v3 at -540147.500000 707296.500000 157900.578125 chunk -27.000000 35.000000 8.000000
+[   73.2] missile->sw_su25sm3 ended 1532306 u from target (target chunk -14.000000 111.000000 6.000000, missile chunk -27.000000 35.000000 8.000000)
+[   73.3] missile->sw_f14a chunk -32.000000 34.000000 3.000000 -> -33.000000 33.000000 3.000000, jump 11879 u, speed 49500
+[   73.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   73.5] missile->sw_f14a chunk -33.000000 33.000000 3.000000 -> -33.000000 32.000000 2.000000, jump 13365 u, speed 49500
+[   73.5] !! missile->sw_f14a teleported by 13365 u on chunk change
+[   74.0] missile->sw_f14a chunk -33.000000 32.000000 2.000000 -> -33.000000 31.000000 2.000000, jump 11879 u, speed 49500
+[   74.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   74.5] missile->sw_f14a chunk -33.000000 31.000000 2.000000 -> -34.000000 30.000000 2.000000, jump 11879 u, speed 49500
+[   74.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   74.8] missile->sw_f14a chunk -34.000000 30.000000 2.000000 -> -34.000000 29.000000 2.000000, jump 11879 u, speed 49500
+[   74.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   75.3] missile->sw_f14a chunk -34.000000 29.000000 2.000000 -> -34.000000 28.000000 2.000000, jump 11879 u, speed 49500
+[   75.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   75.4] track missile->sw_su25sm3 sw_base_rocket_v3 at -541108.875000 746770.875000 164816.515625 chunk -27.000000 37.000000 8.000000
+[   75.8] missile->sw_f14a chunk -34.000000 28.000000 2.000000 -> -35.000000 27.000000 2.000000, jump 13364 u, speed 49500
+[   75.8] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   75.8] missile->sw_su25sm3 ended 1462310 u from target (target chunk -15.000000 110.000000 5.000000, missile chunk -27.000000 37.000000 8.000000)
+[   76.0] missile->sw_f14a chunk -35.000000 27.000000 2.000000 -> -35.000000 27.000000 1.000000, jump 11880 u, speed 49500
+[   76.0] !! missile->sw_f14a teleported by 11880 u on chunk change
+[   76.3] missile->sw_f14a chunk -35.000000 27.000000 1.000000 -> -35.000000 26.000000 1.000000, jump 11879 u, speed 49500
+[   76.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   76.5] missile->sw_f14a chunk -35.000000 26.000000 1.000000 -> -35.000000 25.000000 1.000000, jump 13364 u, speed 49500
+[   76.5] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   77.0] missile->sw_f14a chunk -35.000000 25.000000 1.000000 -> -36.000000 24.000000 1.000000, jump 11880 u, speed 49500
+[   77.0] !! missile->sw_f14a teleported by 11880 u on chunk change
+[   77.5] missile->sw_f14a chunk -36.000000 24.000000 1.000000 -> -36.000000 23.000000 1.000000, jump 11879 u, speed 49500
+[   77.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   78.0] track missile->sw_su25sm3 sw_base_rocket_v3 at -543067.250000 787256.125000 172416.625000 chunk -27.000000 39.000000 9.000000
+[   78.0] missile->sw_f14a chunk -36.000000 23.000000 1.000000 -> -36.000000 22.000000 1.000000, jump 13364 u, speed 49500
+[   78.0] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   78.3] missile->sw_f14a chunk -36.000000 22.000000 1.000000 -> -37.000000 21.000000 1.000000, jump 11879 u, speed 49500
+[   78.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   78.4] missile->sw_su25sm3 ended 1401420 u from target (target chunk -15.000000 109.000000 6.000000, missile chunk -27.000000 39.000000 9.000000)
+[   78.5] missile->sw_f14a chunk -37.000000 21.000000 1.000000 -> -37.000000 21.000000 0.000000, jump 11879 u, speed 49500
+[   78.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   78.8] missile->sw_f14a chunk -37.000000 21.000000 0.000000 -> -37.000000 20.000000 0.000000, jump 13364 u, speed 49500
+[   78.8] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   79.3] missile->sw_f14a chunk -37.000000 20.000000 0.000000 -> -37.000000 19.000000 0.000000, jump 11879 u, speed 49500
+[   79.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   79.5] missile->sw_f14a chunk -37.000000 19.000000 0.000000 -> -38.000000 18.000000 0.000000, jump 13365 u, speed 49500
+[   79.5] !! missile->sw_f14a teleported by 13365 u on chunk change
+[   80.0] missile->sw_f14a chunk -38.000000 18.000000 0.000000 -> -38.000000 17.000000 0.000000, jump 11879 u, speed 49500
+[   80.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   80.5] missile->sw_f14a chunk -38.000000 17.000000 0.000000 -> -38.000000 16.000000 0.000000, jump 11880 u, speed 49500
+[   80.5] !! missile->sw_f14a teleported by 11880 u on chunk change
+[   81.0] missile->sw_f14a chunk -38.000000 16.000000 0.000000 -> -39.000000 15.000000 -1.000000, jump 13364 u, speed 49500
+[   81.0] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   81.3] missile->sw_f14a chunk -39.000000 15.000000 -1.000000 -> -39.000000 14.000000 -1.000000, jump 11879 u, speed 49500
+[   81.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   81.8] missile->sw_f14a chunk -39.000000 14.000000 -1.000000 -> -39.000000 13.000000 -1.000000, jump 13364 u, speed 49500
+[   81.8] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   82.3] missile->sw_f14a chunk -39.000000 13.000000 -1.000000 -> -40.000000 12.000000 -1.000000, jump 11879 u, speed 49500
+[   82.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   82.5] missile->sw_f14a chunk -40.000000 12.000000 -1.000000 -> -40.000000 11.000000 -1.000000, jump 13365 u, speed 49500
+[   82.5] !! missile->sw_f14a teleported by 13365 u on chunk change
+[   82.8] track missile->sw_su25sm3 sw_base_rocket_v3 at -548668.250000 863318.812500 186557.234375 chunk -27.000000 43.000000 9.000000
+[   83.0] missile->sw_f14a chunk -40.000000 11.000000 -1.000000 -> -40.000000 10.000000 -1.000000, jump 11879 u, speed 49500
+[   83.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   83.3] missile->sw_f14a chunk -40.000000 10.000000 -1.000000 -> -40.000000 10.000000 -2.000000, jump 13364 u, speed 49500
+[   83.3] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   83.3] missile->sw_su25sm3 ended 1273642 u from target (target chunk -16.000000 106.000000 6.000000, missile chunk -27.000000 43.000000 9.000000)
+[   83.5] missile->sw_f14a chunk -40.000000 10.000000 -2.000000 -> -41.000000 9.000000 -2.000000, jump 11879 u, speed 49500
+[   83.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   84.0] missile->sw_f14a chunk -41.000000 9.000000 -2.000000 -> -41.000000 8.000000 -2.000000, jump 13364 u, speed 49500
+[   84.0] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   84.3] missile->sw_f14a chunk -41.000000 8.000000 -2.000000 -> -41.000000 7.000000 -2.000000, jump 11880 u, speed 49500
+[   84.3] !! missile->sw_f14a teleported by 11880 u on chunk change
+[   84.8] missile->sw_f14a chunk -41.000000 7.000000 -2.000000 -> -42.000000 6.000000 -2.000000, jump 13364 u, speed 49500
+[   84.8] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   85.3] missile->sw_f14a chunk -42.000000 6.000000 -2.000000 -> -42.000000 5.000000 -2.000000, jump 11879 u, speed 49500
+[   85.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   85.8] missile->sw_f14a chunk -42.000000 5.000000 -2.000000 -> -42.000000 4.000000 -3.000000, jump 11879 u, speed 49500
+[   85.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   85.8] track missile->sw_f14a sw_base_rocket_v3 at -552154.062500 909750.125000 194715.828125 chunk -28.000000 45.000000 10.000000
+[   86.0] missile->sw_f14a chunk -28.000000 45.000000 10.000000 -> -28.000000 46.000000 10.000000, jump 6373 u, speed 4105
+[   86.0] !! missile->sw_f14a teleported by 6373 u on chunk change
+[   86.0] missile->sw_f14a chunk -42.000000 4.000000 -3.000000 -> -43.000000 3.000000 -3.000000, jump 11879 u, speed 49500
+[   86.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   86.5] missile->sw_f14a chunk -28.000000 46.000000 10.000000 -> -28.000000 47.000000 10.000000, jump 9380 u, speed 45402
+[   86.5] !! missile->sw_f14a teleported by 9380 u on chunk change
+[   86.5] missile->sw_f14a chunk -43.000000 3.000000 -3.000000 -> -43.000000 2.000000 -3.000000, jump 11879 u, speed 49500
+[   86.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   87.0] missile->sw_f14a chunk -43.000000 2.000000 -3.000000 -> -43.000000 1.000000 -3.000000, jump 13364 u, speed 49500
+[   87.0] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   87.3] missile->sw_f14a chunk -43.000000 1.000000 -3.000000 -> -44.000000 1.000000 -3.000000, jump 11879 u, speed 49500
+[   87.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   87.5] missile->sw_f14a chunk -28.000000 47.000000 10.000000 -> -28.000000 48.000000 10.000000, jump 6921 u, speed 16820
+[   87.5] !! missile->sw_f14a teleported by 6921 u on chunk change
+[   87.5] missile->sw_f14a chunk -44.000000 1.000000 -3.000000 -> -44.000000 0.000000 -3.000000, jump 11879 u, speed 49500
+[   87.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   87.8] missile->sw_f14a chunk -44.000000 0.000000 -3.000000 -> -44.000000 -1.000000 -3.000000, jump 13364 u, speed 49500
+[   87.8] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   88.3] missile->sw_f14a chunk -44.000000 -1.000000 -3.000000 -> -44.000000 -2.000000 -4.000000, jump 11879 u, speed 49500
+[   88.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   88.5] missile->sw_f14a chunk -28.000000 48.000000 10.000000 -> -28.000000 49.000000 10.000000, jump 4417 u, speed 17993
+[   88.5] missile->sw_f14a chunk -44.000000 -2.000000 -4.000000 -> -45.000000 -2.000000 -4.000000, jump 13364 u, speed 49500
+[   88.5] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   88.8] missile->sw_f14a chunk -45.000000 -2.000000 -4.000000 -> -45.000000 -3.000000 -4.000000, jump 11879 u, speed 49500
+[   88.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   89.0] missile->sw_f14a chunk -45.000000 -3.000000 -4.000000 -> -45.000000 -4.000000 -4.000000, jump 11879 u, speed 49500
+[   89.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   89.3] missile->sw_f14a chunk -28.000000 49.000000 10.000000 -> -28.000000 50.000000 10.000000, jump 11278 u, speed 48949
+[   89.3] !! missile->sw_f14a teleported by 11278 u on chunk change
+[   89.5] missile->sw_f14a chunk -45.000000 -4.000000 -4.000000 -> -45.000000 -5.000000 -4.000000, jump 11879 u, speed 49500
+[   89.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   90.0] missile->sw_f14a chunk -28.000000 50.000000 10.000000 -> -27.000000 50.000000 10.000000, jump 8637 u, speed 35075
+[   90.0] !! missile->sw_f14a teleported by 8637 u on chunk change
+[   90.0] missile->sw_f14a chunk -45.000000 -5.000000 -4.000000 -> -46.000000 -6.000000 -4.000000, jump 13364 u, speed 49500
+[   90.0] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   90.3] missile->sw_f14a chunk -27.000000 50.000000 10.000000 -> -27.000000 51.000000 11.000000, jump 7985 u, speed 46830
+[   90.3] !! missile->sw_f14a teleported by 7985 u on chunk change
+[   90.5] missile->sw_f14a chunk -46.000000 -6.000000 -4.000000 -> -46.000000 -7.000000 -4.000000, jump 11879 u, speed 49500
+[   90.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   90.8] missile->sw_f14a chunk -27.000000 51.000000 11.000000 -> -27.000000 51.000000 12.000000, jump 13461 u, speed 50000
+[   90.8] !! missile->sw_f14a teleported by 13461 u on chunk change
+[   90.8] missile->sw_f14a chunk -46.000000 -7.000000 -4.000000 -> -46.000000 -8.000000 -5.000000, jump 13364 u, speed 49500
+[   90.8] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   91.0] missile->sw_f14a chunk -27.000000 51.000000 12.000000 -> -26.000000 52.000000 12.000000, jump 11998 u, speed 50000
+[   91.0] !! missile->sw_f14a teleported by 11998 u on chunk change
+[   91.3] missile->sw_f14a chunk -46.000000 -8.000000 -5.000000 -> -47.000000 -9.000000 -5.000000, jump 11879 u, speed 49500
+[   91.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   91.8] missile->sw_f14a chunk -47.000000 -9.000000 -5.000000 -> -47.000000 -10.000000 -5.000000, jump 11879 u, speed 49500
+[   91.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   92.0] missile->sw_f14a chunk -26.000000 52.000000 12.000000 -> -26.000000 52.000000 13.000000, jump 6115 u, speed 8576
+[   92.0] !! missile->sw_f14a teleported by 6115 u on chunk change
+[   92.3] missile->sw_f14a chunk -47.000000 -10.000000 -5.000000 -> -47.000000 -11.000000 -5.000000, jump 13364 u, speed 49500
+[   92.3] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   92.5] missile->sw_f14a chunk -47.000000 -11.000000 -5.000000 -> -48.000000 -12.000000 -5.000000, jump 11879 u, speed 49500
+[   92.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   92.8] missile->sw_f14a chunk -26.000000 52.000000 13.000000 -> -25.000000 53.000000 13.000000, jump 5899 u, speed 15872
+[   92.8] !! missile->sw_f14a teleported by 5899 u on chunk change
+[   93.0] missile->sw_f14a chunk -48.000000 -12.000000 -5.000000 -> -48.000000 -13.000000 -5.000000, jump 13364 u, speed 49500
+[   93.0] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   93.3] missile->sw_f14a chunk -48.000000 -13.000000 -5.000000 -> -48.000000 -13.000000 -6.000000, jump 11880 u, speed 49500
+[   93.3] !! missile->sw_f14a teleported by 11880 u on chunk change
+[   93.5] missile->sw_f14a chunk -48.000000 -13.000000 -6.000000 -> -48.000000 -14.000000 -6.000000, jump 11879 u, speed 49500
+[   93.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   93.8] missile->sw_f14a chunk -48.000000 -14.000000 -6.000000 -> -49.000000 -15.000000 -6.000000, jump 13364 u, speed 49500
+[   93.8] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   94.0] missile->sw_f14a chunk -25.000000 53.000000 13.000000 -> -25.000000 54.000000 13.000000, jump 7846 u, speed 44601
+[   94.0] !! missile->sw_f14a teleported by 7846 u on chunk change
+[   94.3] missile->sw_f14a chunk -49.000000 -15.000000 -6.000000 -> -49.000000 -16.000000 -6.000000, jump 11879 u, speed 49500
+[   94.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   94.8] missile->sw_f14a chunk -49.000000 -16.000000 -6.000000 -> -49.000000 -17.000000 -6.000000, jump 11879 u, speed 49500
+[   94.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   95.0] missile->sw_f14a chunk -25.000000 54.000000 13.000000 -> -26.000000 55.000000 13.000000, jump 6035 u, speed 41149
+[   95.0] !! missile->sw_f14a teleported by 6035 u on chunk change
+[   95.0] missile->sw_f14a chunk -49.000000 -17.000000 -6.000000 -> -50.000000 -17.000000 -6.000000, jump 11880 u, speed 49500
+[   95.0] !! missile->sw_f14a teleported by 11880 u on chunk change
+[   95.3] missile->sw_f14a chunk -50.000000 -17.000000 -6.000000 -> -50.000000 -18.000000 -6.000000, jump 13365 u, speed 49500
+[   95.3] !! missile->sw_f14a teleported by 13365 u on chunk change
+[   95.5] missile->sw_f14a chunk -50.000000 -18.000000 -6.000000 -> -50.000000 -19.000000 -6.000000, jump 11879 u, speed 49500
+[   95.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   95.8] missile->sw_f14a chunk -26.000000 55.000000 13.000000 -> -26.000000 54.000000 13.000000, jump 3539 u, speed 24765
+[   95.8] missile->sw_f14a chunk -50.000000 -19.000000 -6.000000 -> -50.000000 -19.000000 -7.000000, jump 11879 u, speed 49500
+[   95.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   96.0] missile->sw_f14a chunk -26.000000 54.000000 13.000000 -> -26.000000 54.000000 14.000000, jump 9782 u, speed 38464
+[   96.0] !! missile->sw_f14a teleported by 9782 u on chunk change
+[   96.0] missile->sw_f14a chunk -50.000000 -19.000000 -7.000000 -> -50.000000 -20.000000 -7.000000, jump 13364 u, speed 49500
+[   96.0] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   96.3] missile->sw_f14a chunk -50.000000 -20.000000 -7.000000 -> -51.000000 -20.000000 -7.000000, jump 11880 u, speed 49500
+[   96.3] !! missile->sw_f14a teleported by 11880 u on chunk change
+[   96.5] missile->sw_f14a chunk -51.000000 -20.000000 -7.000000 -> -51.000000 -21.000000 -7.000000, jump 11879 u, speed 49500
+[   96.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   97.0] missile->sw_f14a chunk -51.000000 -21.000000 -7.000000 -> -51.000000 -22.000000 -7.000000, jump 11879 u, speed 49500
+[   97.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   97.3] missile->sw_f14a chunk -26.000000 54.000000 14.000000 -> -27.000000 55.000000 14.000000, jump 8352 u, speed 43834
+[   97.3] !! missile->sw_f14a teleported by 8352 u on chunk change
+[   97.3] missile->sw_f14a chunk -51.000000 -22.000000 -7.000000 -> -51.000000 -23.000000 -7.000000, jump 11879 u, speed 49500
+[   97.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   97.5] missile->sw_f14a chunk -51.000000 -23.000000 -7.000000 -> -52.000000 -23.000000 -7.000000, jump 13365 u, speed 49500
+[   97.5] !! missile->sw_f14a teleported by 13365 u on chunk change
+[   97.8] missile->sw_f14a chunk -27.000000 55.000000 14.000000 -> -27.000000 56.000000 14.000000, jump 11964 u, speed 50000
+[   97.8] !! missile->sw_f14a teleported by 11964 u on chunk change
+[   97.8] missile->sw_f14a chunk -52.000000 -23.000000 -7.000000 -> -52.000000 -24.000000 -7.000000, jump 11879 u, speed 49500
+[   97.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[   98.0] missile->sw_f14a chunk -27.000000 56.000000 14.000000 -> -27.000000 56.000000 13.000000, jump 11935 u, speed 50000
+[   98.0] !! missile->sw_f14a teleported by 11935 u on chunk change
+[   98.3] missile->sw_f14a chunk -52.000000 -24.000000 -7.000000 -> -52.000000 -25.000000 -8.000000, jump 13364 u, speed 49500
+[   98.3] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   98.5] missile->sw_f14a chunk -27.000000 56.000000 13.000000 -> -27.000000 57.000000 13.000000, jump 5944 u, speed 30705
+[   98.5] !! missile->sw_f14a teleported by 5944 u on chunk change
+[   98.5] missile->sw_f14a chunk -52.000000 -25.000000 -8.000000 -> -52.000000 -26.000000 -8.000000, jump 11880 u, speed 49500
+[   98.5] !! missile->sw_f14a teleported by 11880 u on chunk change
+[   99.0] missile->sw_f14a chunk -27.000000 57.000000 13.000000 -> -27.000000 57.000000 12.000000, jump 5841 u, speed 7365
+[   99.0] !! missile->sw_f14a teleported by 5841 u on chunk change
+[   99.0] missile->sw_f14a chunk -52.000000 -26.000000 -8.000000 -> -53.000000 -27.000000 -8.000000, jump 13364 u, speed 49500
+[   99.0] !! missile->sw_f14a teleported by 13364 u on chunk change
+[   99.5] missile->sw_f14a chunk -27.000000 57.000000 12.000000 -> -26.000000 57.000000 12.000000, jump 9258 u, speed 47558
+[   99.5] !! missile->sw_f14a teleported by 9258 u on chunk change
+[   99.5] missile->sw_f14a chunk -53.000000 -27.000000 -8.000000 -> -53.000000 -28.000000 -8.000000, jump 11879 u, speed 49500
+[   99.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  100.0] missile->sw_f14a chunk -26.000000 57.000000 12.000000 -> -25.000000 57.000000 12.000000, jump 7994 u, speed 17846
+[  100.0] !! missile->sw_f14a teleported by 7994 u on chunk change
+[  100.0] missile->sw_f14a chunk -53.000000 -28.000000 -8.000000 -> -53.000000 -29.000000 -8.000000, jump 11880 u, speed 49500
+[  100.0] !! missile->sw_f14a teleported by 11880 u on chunk change
+[  100.3] missile->sw_f14a chunk -53.000000 -29.000000 -8.000000 -> -54.000000 -30.000000 -8.000000, jump 11879 u, speed 49500
+[  100.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  100.5] missile->sw_f14a chunk -25.000000 57.000000 12.000000 -> -26.000000 57.000000 13.000000, jump 12331 u, speed 50000
+[  100.5] !! missile->sw_f14a teleported by 12331 u on chunk change
+[  100.8] missile->sw_f14a chunk -54.000000 -30.000000 -8.000000 -> -54.000000 -31.000000 -9.000000, jump 11879 u, speed 49500
+[  100.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  101.3] missile->sw_f14a chunk -54.000000 -31.000000 -9.000000 -> -54.000000 -32.000000 -9.000000, jump 13364 u, speed 49500
+[  101.3] !! missile->sw_f14a teleported by 13364 u on chunk change
+[  101.5] missile->sw_f14a chunk -54.000000 -32.000000 -9.000000 -> -55.000000 -32.000000 -9.000000, jump 11879 u, speed 49500
+[  101.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  101.8] missile->sw_f14a chunk -26.000000 57.000000 13.000000 -> -26.000000 56.000000 13.000000, jump 2720 u, speed 11334
+[  101.8] missile->sw_f14a chunk -55.000000 -32.000000 -9.000000 -> -55.000000 -33.000000 -9.000000, jump 11880 u, speed 49500
+[  101.8] !! missile->sw_f14a teleported by 11880 u on chunk change
+[  102.0] missile->sw_f14a chunk -26.000000 56.000000 13.000000 -> -26.000000 56.000000 14.000000, jump 3057 u, speed 11322
+[  102.0] missile->sw_f14a chunk -55.000000 -33.000000 -9.000000 -> -55.000000 -34.000000 -9.000000, jump 13364 u, speed 49500
+[  102.0] !! missile->sw_f14a teleported by 13364 u on chunk change
+[  102.5] missile->sw_f14a chunk -55.000000 -34.000000 -9.000000 -> -55.000000 -35.000000 -9.000000, jump 11880 u, speed 49500
+[  102.5] !! missile->sw_f14a teleported by 11880 u on chunk change
+[  102.8] missile->sw_f14a chunk -26.000000 56.000000 14.000000 -> -25.000000 56.000000 14.000000, jump 3049 u, speed 11290
+[  102.8] missile->sw_f14a chunk -55.000000 -35.000000 -9.000000 -> -56.000000 -35.000000 -9.000000, jump 13364 u, speed 49500
+[  102.8] !! missile->sw_f14a teleported by 13364 u on chunk change
+[  103.0] missile->sw_f14a chunk -25.000000 56.000000 14.000000 -> -25.000000 57.000000 14.000000, jump 2707 u, speed 11281
+[  103.0] missile->sw_f14a chunk -56.000000 -35.000000 -9.000000 -> -56.000000 -36.000000 -9.000000, jump 11879 u, speed 49500
+[  103.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  103.3] missile->sw_f14a chunk -56.000000 -36.000000 -9.000000 -> -56.000000 -36.000000 -10.000000, jump 11880 u, speed 49500
+[  103.3] !! missile->sw_f14a teleported by 11880 u on chunk change
+[  103.5] missile->sw_f14a chunk -56.000000 -36.000000 -10.000000 -> -56.000000 -37.000000 -10.000000, jump 13364 u, speed 49500
+[  103.5] !! missile->sw_f14a teleported by 13364 u on chunk change
+[  103.8] missile->sw_f14a chunk -56.000000 -37.000000 -10.000000 -> -56.000000 -38.000000 -10.000000, jump 11879 u, speed 49500
+[  103.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  104.0] missile->sw_f14a chunk -25.000000 57.000000 14.000000 -> -25.000000 57.000000 15.000000, jump 2697 u, speed 11238
+[  104.0] missile->sw_f14a chunk -56.000000 -38.000000 -10.000000 -> -57.000000 -38.000000 -10.000000, jump 11879 u, speed 49500
+[  104.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  104.3] missile->sw_f14a chunk -57.000000 -38.000000 -10.000000 -> -57.000000 -39.000000 -10.000000, jump 13365 u, speed 49500
+[  104.3] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  104.8] missile->sw_f14a chunk -57.000000 -39.000000 -10.000000 -> -57.000000 -40.000000 -10.000000, jump 11879 u, speed 49500
+[  104.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  105.0] missile->sw_f14a chunk -57.000000 -40.000000 -10.000000 -> -57.000000 -41.000000 -10.000000, jump 13365 u, speed 49500
+[  105.0] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  105.3] missile->sw_f14a chunk -57.000000 -41.000000 -10.000000 -> -58.000000 -41.000000 -10.000000, jump 11879 u, speed 49500
+[  105.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  105.5] missile->sw_f14a chunk -58.000000 -41.000000 -10.000000 -> -58.000000 -42.000000 -10.000000, jump 11879 u, speed 49500
+[  105.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  105.8] missile->sw_f14a chunk -58.000000 -42.000000 -10.000000 -> -58.000000 -42.000000 -11.000000, jump 13365 u, speed 49500
+[  105.8] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  106.0] missile->sw_f14a chunk -25.000000 57.000000 15.000000 -> -25.000000 58.000000 15.000000, jump 2679 u, speed 11162
+[  106.0] missile->sw_f14a chunk -58.000000 -42.000000 -11.000000 -> -58.000000 -43.000000 -11.000000, jump 11879 u, speed 49500
+[  106.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  106.5] missile->sw_f14a chunk -58.000000 -43.000000 -11.000000 -> -59.000000 -44.000000 -11.000000, jump 13365 u, speed 49500
+[  106.5] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  106.8] missile->sw_f14a chunk -59.000000 -44.000000 -11.000000 -> -59.000000 -45.000000 -11.000000, jump 11879 u, speed 49500
+[  106.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  107.3] missile->sw_f14a chunk -59.000000 -45.000000 -11.000000 -> -59.000000 -46.000000 -11.000000, jump 13365 u, speed 49500
+[  107.3] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  107.5] missile->sw_f14a chunk -25.000000 58.000000 15.000000 -> -24.000000 58.000000 15.000000, jump 2557 u, speed 10388
+[  107.5] track missile->sw_f14a sw_base_rocket_v3 at -505775.718750 1223088.000000 206379.937500 chunk -25.000000 61.000000 10.000000
+[  107.8] missile->sw_f14a chunk -59.000000 -46.000000 -11.000000 -> -59.000000 -47.000000 -11.000000, jump 11879 u, speed 49500
+[  107.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  108.0] missile->sw_f14a ended 557330 u from target (target chunk -20.000000 89.000000 9.000000, missile chunk -25.000000 61.000000 10.000000)
+[  108.0] missile->sw_f14a chunk -24.000000 58.000000 15.000000 -> -24.000000 59.000000 15.000000, jump 2611 u, speed 9668
+[  108.0] missile->sw_f14a chunk -59.000000 -47.000000 -11.000000 -> -60.000000 -48.000000 -11.000000, jump 13365 u, speed 49500
+[  108.0] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  108.3] missile->sw_f14a chunk -60.000000 -48.000000 -11.000000 -> -60.000000 -48.000000 -12.000000, jump 11879 u, speed 49500
+[  108.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  108.5] missile->sw_f14a chunk -60.000000 -48.000000 -12.000000 -> -60.000000 -49.000000 -12.000000, jump 11879 u, speed 49500
+[  108.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  108.8] missile->sw_f14a chunk -24.000000 59.000000 15.000000 -> -24.000000 59.000000 16.000000, jump 2611 u, speed 9662
+[  109.0] missile->sw_f14a chunk -60.000000 -49.000000 -12.000000 -> -60.000000 -50.000000 -12.000000, jump 11880 u, speed 49500
+[  109.0] !! missile->sw_f14a teleported by 11880 u on chunk change
+[  109.3] missile->sw_f14a chunk -60.000000 -50.000000 -12.000000 -> -61.000000 -50.000000 -12.000000, jump 11879 u, speed 49500
+[  109.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  109.5] missile->sw_f14a chunk -61.000000 -50.000000 -12.000000 -> -61.000000 -51.000000 -12.000000, jump 13364 u, speed 49500
+[  109.5] !! missile->sw_f14a teleported by 13364 u on chunk change
+[  109.8] missile->sw_f14a chunk -61.000000 -51.000000 -12.000000 -> -61.000000 -52.000000 -12.000000, jump 11880 u, speed 49500
+[  109.8] !! missile->sw_f14a teleported by 11880 u on chunk change
+[  110.3] missile->sw_f14a chunk -61.000000 -52.000000 -12.000000 -> -61.000000 -53.000000 -12.000000, jump 13365 u, speed 49500
+[  110.3] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  110.4] track missile->sw_f14a sw_base_rocket_v3 at -386938.718750 1746537.625000 175957.093750 chunk -19.000000 87.000000 9.000000
+[  110.4] track missile->sw_f14a sw_base_rocket_v3 at -427947.250000 1749632.625000 192861.000000 chunk -21.000000 88.000000 10.000000
+[  110.5] missile->sw_f14a chunk -21.000000 88.000000 10.000000 -> -21.000000 87.000000 10.000000, jump 3851 u, speed 32094
+[  110.5] missile->sw_f14a chunk -24.000000 59.000000 16.000000 -> -24.000000 60.000000 16.000000, jump 1539 u, speed 6409
+[  110.5] missile->sw_f14a chunk -61.000000 -53.000000 -12.000000 -> -62.000000 -53.000000 -12.000000, jump 11879 u, speed 49500
+[  110.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  110.8] missile->sw_f14a chunk -62.000000 -53.000000 -12.000000 -> -62.000000 -54.000000 -13.000000, jump 11879 u, speed 49500
+[  110.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  111.3] missile->sw_f14a chunk -62.000000 -54.000000 -13.000000 -> -62.000000 -55.000000 -13.000000, jump 11879 u, speed 49500
+[  111.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  111.3] missile->sw_f14a ended 466805 u from target (target chunk -24.000000 63.000000 10.000000, missile chunk -19.000000 87.000000 9.000000)
+[  111.4] missile->sw_f14a ended 461583 u from target (target chunk -24.000000 63.000000 10.000000, missile chunk -21.000000 87.000000 10.000000)
+[  111.5] missile->sw_f14a chunk -62.000000 -55.000000 -13.000000 -> -62.000000 -56.000000 -13.000000, jump 11879 u, speed 49500
+[  111.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  111.8] missile->sw_f14a chunk -62.000000 -56.000000 -13.000000 -> -63.000000 -56.000000 -13.000000, jump 13365 u, speed 49500
+[  111.8] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  112.0] missile->sw_f14a chunk -63.000000 -56.000000 -13.000000 -> -63.000000 -57.000000 -13.000000, jump 11879 u, speed 49500
+[  112.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  112.5] missile->sw_f14a chunk -63.000000 -57.000000 -13.000000 -> -63.000000 -58.000000 -13.000000, jump 13364 u, speed 49500
+[  112.5] !! missile->sw_f14a teleported by 13364 u on chunk change
+[  113.0] missile->sw_f14a chunk -63.000000 -58.000000 -13.000000 -> -64.000000 -59.000000 -14.000000, jump 11879 u, speed 49500
+[  113.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  113.3] missile->sw_f14a chunk -64.000000 -59.000000 -14.000000 -> -64.000000 -60.000000 -14.000000, jump 13364 u, speed 49500
+[  113.3] !! missile->sw_f14a teleported by 13364 u on chunk change
+[  113.8] missile->sw_f14a chunk -24.000000 60.000000 16.000000 -> -24.000000 61.000000 16.000000, jump 1540 u, speed 6409
+[  113.8] missile->sw_f14a chunk -64.000000 -60.000000 -14.000000 -> -64.000000 -61.000000 -14.000000, jump 11879 u, speed 49500
+[  113.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  114.3] missile->sw_f14a chunk -64.000000 -61.000000 -14.000000 -> -65.000000 -62.000000 -14.000000, jump 11880 u, speed 49500
+[  114.3] !! missile->sw_f14a teleported by 11880 u on chunk change
+[  114.5] missile->sw_f14a chunk -65.000000 -62.000000 -14.000000 -> -65.000000 -63.000000 -14.000000, jump 11879 u, speed 49500
+[  114.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  115.0] missile->sw_f14a chunk -65.000000 -63.000000 -14.000000 -> -65.000000 -64.000000 -14.000000, jump 11880 u, speed 49500
+[  115.0] !! missile->sw_f14a teleported by 11880 u on chunk change
+[  115.5] missile->sw_f14a chunk -65.000000 -64.000000 -14.000000 -> -66.000000 -65.000000 -15.000000, jump 13364 u, speed 49500
+[  115.5] !! missile->sw_f14a teleported by 13364 u on chunk change
+[  116.0] missile->sw_f14a chunk -66.000000 -65.000000 -15.000000 -> -66.000000 -66.000000 -15.000000, jump 11879 u, speed 49500
+[  116.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  116.3] missile->sw_f14a chunk -66.000000 -66.000000 -15.000000 -> -66.000000 -67.000000 -15.000000, jump 13364 u, speed 49500
+[  116.3] !! missile->sw_f14a teleported by 13364 u on chunk change
+[  116.8] missile->sw_f14a chunk -24.000000 61.000000 16.000000 -> -24.000000 62.000000 16.000000, jump 1540 u, speed 6409
+[  116.8] missile->sw_f14a chunk -66.000000 -67.000000 -15.000000 -> -66.000000 -68.000000 -15.000000, jump 11879 u, speed 49500
+[  116.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  117.0] missile->sw_f14a chunk -24.000000 62.000000 16.000000 -> -24.000000 62.000000 15.000000, jump 1604 u, speed 3886
+[  117.0] missile->sw_f14a chunk -66.000000 -68.000000 -15.000000 -> -67.000000 -68.000000 -15.000000, jump 13364 u, speed 49500
+[  117.0] !! missile->sw_f14a teleported by 13364 u on chunk change
+[  117.3] missile->sw_f14a chunk -67.000000 -68.000000 -15.000000 -> -67.000000 -69.000000 -15.000000, jump 11879 u, speed 49500
+[  117.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  117.8] missile->sw_f14a chunk -67.000000 -69.000000 -15.000000 -> -67.000000 -70.000000 -15.000000, jump 13364 u, speed 49500
+[  117.8] !! missile->sw_f14a teleported by 13364 u on chunk change
+[  118.0] missile->sw_f14a chunk -67.000000 -70.000000 -15.000000 -> -67.000000 -71.000000 -16.000000, jump 11879 u, speed 49500
+[  118.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  118.3] track missile->sw_f14a sw_base_rocket_v3 at -454798.468750 1335076.500000 207756.437500 chunk -23.000000 67.000000 10.000000
+[  118.3] missile->sw_f14a chunk -67.000000 -71.000000 -16.000000 -> -68.000000 -71.000000 -16.000000, jump 11880 u, speed 49500
+[  118.3] !! missile->sw_f14a teleported by 11880 u on chunk change
+[  118.5] missile->sw_f14a chunk -68.000000 -71.000000 -16.000000 -> -68.000000 -72.000000 -16.000000, jump 13364 u, speed 49500
+[  118.5] !! missile->sw_f14a teleported by 13364 u on chunk change
+[  119.0] missile->sw_f14a chunk -23.000000 67.000000 10.000000 -> -23.000000 68.000000 10.000000, jump 3739 u, speed 3733
+[  119.0] missile->sw_f14a chunk -68.000000 -72.000000 -16.000000 -> -68.000000 -73.000000 -16.000000, jump 11880 u, speed 49500
+[  119.0] !! missile->sw_f14a teleported by 11880 u on chunk change
+[  119.3] missile->sw_f14a chunk -23.000000 68.000000 10.000000 -> -23.000000 67.000000 10.000000, jump 5806 u, speed 26730
+[  119.3] !! missile->sw_f14a teleported by 5806 u on chunk change
+[  119.3] missile->sw_f14a chunk -68.000000 -73.000000 -16.000000 -> -68.000000 -74.000000 -16.000000, jump 13364 u, speed 49500
+[  119.3] !! missile->sw_f14a teleported by 13364 u on chunk change
+[  119.5] missile->sw_f14a chunk -68.000000 -74.000000 -16.000000 -> -69.000000 -74.000000 -16.000000, jump 11879 u, speed 49500
+[  119.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  119.8] missile->sw_f14a chunk -23.000000 67.000000 10.000000 -> -24.000000 67.000000 10.000000, jump 7054 u, speed 20708
+[  119.8] !! missile->sw_f14a teleported by 7054 u on chunk change
+[  119.8] missile->sw_f14a chunk -69.000000 -74.000000 -16.000000 -> -69.000000 -75.000000 -16.000000, jump 11879 u, speed 49500
+[  119.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  120.3] missile->sw_f14a chunk -69.000000 -75.000000 -16.000000 -> -69.000000 -76.000000 -16.000000, jump 11879 u, speed 49500
+[  120.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  120.5] missile->sw_f14a chunk -24.000000 67.000000 10.000000 -> -24.000000 68.000000 10.000000, jump 4261 u, speed 3900
+[  120.5] missile->sw_f14a chunk -69.000000 -76.000000 -16.000000 -> -69.000000 -76.000000 -17.000000, jump 11879 u, speed 49500
+[  120.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  120.8] missile->sw_f14a chunk -69.000000 -76.000000 -17.000000 -> -70.000000 -77.000000 -17.000000, jump 13365 u, speed 49500
+[  120.8] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  121.0] missile->sw_f14a chunk -24.000000 68.000000 10.000000 -> -23.000000 68.000000 10.000000, jump 3869 u, speed 8570
+[  121.0] missile->sw_f14a chunk -70.000000 -77.000000 -17.000000 -> -70.000000 -78.000000 -17.000000, jump 11879 u, speed 49500
+[  121.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  121.5] missile->sw_f14a chunk -23.000000 68.000000 10.000000 -> -23.000000 68.000000 11.000000, jump 7236 u, speed 8469
+[  121.5] !! missile->sw_f14a teleported by 7236 u on chunk change
+[  121.5] missile->sw_f14a chunk -70.000000 -78.000000 -17.000000 -> -70.000000 -79.000000 -17.000000, jump 13365 u, speed 49500
+[  121.5] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  121.6] track missile->sw_f14a sw_base_rocket_v3 at -390588.500000 1729517.500000 156159.062500 chunk -20.000000 86.000000 8.000000
+[  121.7] track missile->sw_f14a sw_base_rocket_v3 at -390077.718750 1729566.125000 156445.500000 chunk -19.000000 86.000000 8.000000
+[  121.9] track missile->sw_f14a sw_base_rocket_v3 at -390088.000000 1731788.750000 161754.843750 chunk -19.000000 87.000000 8.000000
+[  121.9] track missile->sw_f14a sw_base_rocket_v3 at -389534.437500 1732499.875000 161658.609375 chunk -19.000000 87.000000 8.000000
+[  122.0] missile->sw_f14a chunk -19.000000 87.000000 8.000000 -> -20.000000 87.000000 8.000000, jump 1939 u, speed 12928
+[  122.0] missile->sw_f14a chunk -19.000000 86.000000 8.000000 -> -20.000000 86.000000 8.000000, jump 3091 u, speed 12879
+[  122.0] missile->sw_f14a chunk -70.000000 -79.000000 -17.000000 -> -71.000000 -80.000000 -17.000000, jump 11879 u, speed 49500
+[  122.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  122.3] missile->sw_f14a chunk -20.000000 87.000000 8.000000 -> -20.000000 86.000000 8.000000, jump 3640 u, speed 17921
+[  122.3] missile->sw_f14a chunk -23.000000 68.000000 11.000000 -> -23.000000 69.000000 11.000000, jump 5226 u, speed 19385
+[  122.3] !! missile->sw_f14a teleported by 5226 u on chunk change
+[  122.3] missile->sw_f14a chunk -71.000000 -80.000000 -17.000000 -> -71.000000 -81.000000 -17.000000, jump 13365 u, speed 49500
+[  122.3] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  122.3] missile->sw_f14a chunk -19.000000 87.000000 8.000000 -> -19.000000 86.000000 8.000000, jump 3490 u, speed 12927
+[  122.3] missile->sw_f14a ended 365073 u from target (target chunk -23.000000 68.000000 10.000000, missile chunk -20.000000 86.000000 8.000000)
+[  122.4] missile->sw_f14a ended 372249 u from target (target chunk -23.000000 68.000000 10.000000, missile chunk -19.000000 86.000000 8.000000)
+[  122.8] missile->sw_f14a chunk -23.000000 69.000000 11.000000 -> -23.000000 69.000000 10.000000, jump 5856 u, speed 27321
+[  122.8] !! missile->sw_f14a teleported by 5856 u on chunk change
+[  122.8] missile->sw_f14a chunk -71.000000 -81.000000 -17.000000 -> -71.000000 -82.000000 -17.000000, jump 11879 u, speed 49500
+[  122.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  123.0] missile->sw_f14a chunk -71.000000 -82.000000 -17.000000 -> -71.000000 -82.000000 -18.000000, jump 13365 u, speed 49500
+[  123.0] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  123.3] missile->sw_f14a chunk -20.000000 86.000000 8.000000 -> -20.000000 85.000000 8.000000, jump 3709 u, speed 15181
+[  123.3] missile->sw_f14a chunk -71.000000 -82.000000 -18.000000 -> -72.000000 -83.000000 -18.000000, jump 11879 u, speed 49500
+[  123.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  123.5] missile->sw_f14a chunk -20.000000 86.000000 8.000000 -> -20.000000 86.000000 9.000000, jump 6064 u, speed 27546
+[  123.5] !! missile->sw_f14a teleported by 6064 u on chunk change
+[  123.8] missile->sw_f14a chunk -20.000000 85.000000 8.000000 -> -20.000000 85.000000 9.000000, jump 4227 u, speed 23717
+[  123.8] missile->sw_f14a chunk -23.000000 69.000000 10.000000 -> -23.000000 70.000000 10.000000, jump 3240 u, speed 7807
+[  123.8] missile->sw_f14a chunk -72.000000 -83.000000 -18.000000 -> -72.000000 -84.000000 -18.000000, jump 13365 u, speed 49500
+[  123.8] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  124.0] missile->sw_f14a chunk -20.000000 86.000000 9.000000 -> -21.000000 86.000000 9.000000, jump 5373 u, speed 10853
+[  124.0] !! missile->sw_f14a teleported by 5373 u on chunk change
+[  124.0] missile->sw_f14a chunk -72.000000 -84.000000 -18.000000 -> -72.000000 -85.000000 -18.000000, jump 11879 u, speed 49500
+[  124.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  124.5] missile->sw_f14a chunk -20.000000 85.000000 9.000000 -> -20.000000 84.000000 9.000000, jump 8643 u, speed 37416
+[  124.5] !! missile->sw_f14a teleported by 8643 u on chunk change
+[  124.5] missile->sw_f14a chunk -72.000000 -85.000000 -18.000000 -> -73.000000 -86.000000 -18.000000, jump 13365 u, speed 49500
+[  124.5] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  125.0] missile->sw_f14a chunk -21.000000 86.000000 9.000000 -> -21.000000 85.000000 9.000000, jump 5195 u, speed 26648
+[  125.0] !! missile->sw_f14a teleported by 5195 u on chunk change
+[  125.0] missile->sw_f14a chunk -73.000000 -86.000000 -18.000000 -> -73.000000 -87.000000 -18.000000, jump 11879 u, speed 49500
+[  125.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  125.3] missile->sw_f14a chunk -21.000000 85.000000 9.000000 -> -21.000000 85.000000 10.000000, jump 6087 u, speed 22490
+[  125.3] !! missile->sw_f14a teleported by 6087 u on chunk change
+[  125.5] missile->sw_f14a chunk -73.000000 -87.000000 -18.000000 -> -73.000000 -88.000000 -19.000000, jump 11879 u, speed 49500
+[  125.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  125.8] missile->sw_f14a chunk -73.000000 -88.000000 -19.000000 -> -73.000000 -89.000000 -19.000000, jump 11879 u, speed 49500
+[  125.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  126.0] missile->sw_f14a chunk -73.000000 -89.000000 -19.000000 -> -74.000000 -89.000000 -19.000000, jump 13365 u, speed 49500
+[  126.0] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  126.3] missile->sw_f14a chunk -74.000000 -89.000000 -19.000000 -> -74.000000 -90.000000 -19.000000, jump 11879 u, speed 49500
+[  126.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  126.8] missile->sw_f14a chunk -21.000000 85.000000 10.000000 -> -22.000000 85.000000 9.000000, jump 7158 u, speed 30651
+[  126.8] !! missile->sw_f14a teleported by 7158 u on chunk change
+[  126.8] missile->sw_f14a chunk -74.000000 -90.000000 -19.000000 -> -74.000000 -91.000000 -19.000000, jump 13365 u, speed 49500
+[  126.8] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  127.3] missile->sw_f14a chunk -74.000000 -91.000000 -19.000000 -> -75.000000 -92.000000 -19.000000, jump 11879 u, speed 49500
+[  127.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  127.5] missile->sw_f14a chunk -23.000000 70.000000 10.000000 -> -23.000000 71.000000 10.000000, jump 1393 u, speed 5166
+[  127.5] missile->sw_f14a chunk -75.000000 -92.000000 -19.000000 -> -75.000000 -93.000000 -19.000000, jump 13365 u, speed 49500
+[  127.5] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  127.8] missile->sw_f14a chunk -22.000000 85.000000 9.000000 -> -22.000000 84.000000 9.000000, jump 5561 u, speed 14729
+[  127.8] !! missile->sw_f14a teleported by 5561 u on chunk change
+[  128.0] missile->sw_f14a chunk -22.000000 84.000000 9.000000 -> -22.000000 84.000000 8.000000, jump 3093 u, speed 22046
+[  128.0] missile->sw_f14a chunk -75.000000 -93.000000 -19.000000 -> -75.000000 -94.000000 -20.000000, jump 11879 u, speed 49500
+[  128.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  128.5] missile->sw_f14a chunk -75.000000 -94.000000 -20.000000 -> -76.000000 -95.000000 -20.000000, jump 11879 u, speed 49500
+[  128.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  128.8] missile->sw_f14a chunk -22.000000 84.000000 8.000000 -> -23.000000 84.000000 8.000000, jump 5455 u, speed 11447
+[  128.8] !! missile->sw_f14a teleported by 5455 u on chunk change
+[  128.8] missile->sw_f14a chunk -76.000000 -95.000000 -20.000000 -> -76.000000 -96.000000 -20.000000, jump 11879 u, speed 49500
+[  128.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  129.3] missile->sw_f14a chunk -76.000000 -96.000000 -20.000000 -> -76.000000 -97.000000 -20.000000, jump 11879 u, speed 49500
+[  129.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  129.8] missile->sw_f14a chunk -23.000000 84.000000 8.000000 -> -23.000000 83.000000 8.000000, jump 7190 u, speed 14465
+[  129.8] !! missile->sw_f14a teleported by 7190 u on chunk change
+[  129.8] missile->sw_f14a chunk -76.000000 -97.000000 -20.000000 -> -77.000000 -98.000000 -20.000000, jump 13365 u, speed 49500
+[  129.8] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  130.0] missile->sw_f14a chunk -23.000000 83.000000 8.000000 -> -22.000000 83.000000 8.000000, jump 4016 u, speed 28311
+[  130.3] missile->sw_f14a chunk -77.000000 -98.000000 -20.000000 -> -77.000000 -99.000000 -20.000000, jump 11879 u, speed 49500
+[  130.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  130.5] missile->sw_f14a chunk -22.000000 83.000000 8.000000 -> -22.000000 83.000000 7.000000, jump 6774 u, speed 37222
+[  130.5] !! missile->sw_f14a teleported by 6774 u on chunk change
+[  130.5] missile->sw_f14a chunk -77.000000 -99.000000 -20.000000 -> -77.000000 -100.000000 -21.000000, jump 13365 u, speed 49500
+[  130.5] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  131.0] missile->sw_f14a chunk -77.000000 -100.000000 -21.000000 -> -78.000000 -101.000000 -21.000000, jump 11879 u, speed 49500
+[  131.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  131.3] missile->sw_f14a chunk -22.000000 83.000000 7.000000 -> -21.000000 83.000000 7.000000, jump 6782 u, speed 16764
+[  131.3] !! missile->sw_f14a teleported by 6782 u on chunk change
+[  131.5] missile->sw_f14a chunk -78.000000 -101.000000 -21.000000 -> -78.000000 -102.000000 -21.000000, jump 11879 u, speed 49500
+[  131.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  131.8] missile->sw_f14a chunk -23.000000 71.000000 10.000000 -> -23.000000 72.000000 10.000000, jump 1266 u, speed 5281
+[  131.8] missile->sw_f14a chunk -21.000000 83.000000 7.000000 -> -21.000000 84.000000 7.000000, jump 6228 u, speed 26632
+[  131.8] !! missile->sw_f14a teleported by 6228 u on chunk change
+[  132.0] missile->sw_f14a chunk -78.000000 -102.000000 -21.000000 -> -78.000000 -103.000000 -21.000000, jump 13365 u, speed 49500
+[  132.0] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  132.3] missile->sw_f14a chunk -23.000000 72.000000 10.000000 -> -23.000000 72.000000 11.000000, jump 1270 u, speed 5296
+[  132.3] missile->sw_f14a chunk -78.000000 -103.000000 -21.000000 -> -79.000000 -104.000000 -21.000000, jump 11879 u, speed 49500
+[  132.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  132.8] missile->sw_f14a chunk -21.000000 84.000000 7.000000 -> -21.000000 84.000000 8.000000, jump 1256 u, speed 4593
+[  132.8] missile->sw_f14a chunk -79.000000 -104.000000 -21.000000 -> -79.000000 -105.000000 -21.000000, jump 13365 u, speed 49500
+[  132.8] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  133.0] missile->sw_f14a chunk -79.000000 -105.000000 -21.000000 -> -79.000000 -105.000000 -22.000000, jump 11879 u, speed 49500
+[  133.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  133.3] missile->sw_f14a chunk -79.000000 -105.000000 -22.000000 -> -79.000000 -106.000000 -22.000000, jump 11880 u, speed 49500
+[  133.3] !! missile->sw_f14a teleported by 11880 u on chunk change
+[  133.5] missile->sw_f14a chunk -23.000000 72.000000 11.000000 -> -24.000000 72.000000 11.000000, jump 1438 u, speed 5330
+[  133.5] missile->sw_f14a chunk -79.000000 -106.000000 -22.000000 -> -80.000000 -107.000000 -22.000000, jump 13364 u, speed 49500
+[  133.5] !! missile->sw_f14a teleported by 13364 u on chunk change
+[  134.0] missile->sw_f14a chunk -80.000000 -107.000000 -22.000000 -> -80.000000 -108.000000 -22.000000, jump 11879 u, speed 49500
+[  134.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  134.5] missile->sw_f14a chunk -80.000000 -108.000000 -22.000000 -> -80.000000 -109.000000 -22.000000, jump 11879 u, speed 49500
+[  134.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  134.8] missile->sw_f14a chunk -80.000000 -109.000000 -22.000000 -> -81.000000 -109.000000 -22.000000, jump 11880 u, speed 49500
+[  134.8] !! missile->sw_f14a teleported by 11880 u on chunk change
+[  135.0] missile->sw_f14a chunk -81.000000 -109.000000 -22.000000 -> -81.000000 -110.000000 -22.000000, jump 13364 u, speed 49500
+[  135.0] !! missile->sw_f14a teleported by 13364 u on chunk change
+[  135.3] missile->sw_f14a chunk -81.000000 -110.000000 -22.000000 -> -81.000000 -111.000000 -22.000000, jump 11879 u, speed 49500
+[  135.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  135.5] missile->sw_f14a chunk -81.000000 -111.000000 -22.000000 -> -81.000000 -111.000000 -23.000000, jump 11879 u, speed 49500
+[  135.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  135.8] missile->sw_f14a chunk -81.000000 -111.000000 -23.000000 -> -81.000000 -112.000000 -23.000000, jump 13365 u, speed 49500
+[  135.8] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  136.3] missile->sw_f14a chunk -81.000000 -112.000000 -23.000000 -> -82.000000 -113.000000 -23.000000, jump 11879 u, speed 49500
+[  136.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  136.8] missile->sw_f14a chunk -82.000000 -113.000000 -23.000000 -> -82.000000 -114.000000 -23.000000, jump 11879 u, speed 49500
+[  136.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  137.0] missile->sw_f14a chunk -21.000000 84.000000 8.000000 -> -22.000000 84.000000 8.000000, jump 969 u, speed 4042
+[  137.0] missile->sw_f14a chunk -82.000000 -114.000000 -23.000000 -> -82.000000 -115.000000 -23.000000, jump 11879 u, speed 49500
+[  137.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  137.5] missile->sw_f14a chunk -82.000000 -115.000000 -23.000000 -> -83.000000 -116.000000 -23.000000, jump 11879 u, speed 49500
+[  137.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  137.8] missile->sw_f14a chunk -24.000000 72.000000 11.000000 -> -25.000000 72.000000 11.000000, jump 1307 u, speed 5451
+[  138.0] missile->sw_f14a chunk -83.000000 -116.000000 -23.000000 -> -83.000000 -117.000000 -24.000000, jump 13365 u, speed 49500
+[  138.0] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  138.3] missile->sw_f14a chunk -83.000000 -117.000000 -24.000000 -> -83.000000 -118.000000 -24.000000, jump 11879 u, speed 49500
+[  138.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  138.8] missile->sw_f14a chunk -22.000000 84.000000 8.000000 -> -22.000000 83.000000 8.000000, jump 1105 u, speed 4099
+[  138.8] missile->sw_f14a chunk -83.000000 -118.000000 -24.000000 -> -84.000000 -119.000000 -24.000000, jump 13365 u, speed 49500
+[  138.8] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  139.3] missile->sw_f14a chunk -84.000000 -119.000000 -24.000000 -> -84.000000 -120.000000 -24.000000, jump 11879 u, speed 49500
+[  139.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  139.8] missile->sw_f14a chunk -84.000000 -120.000000 -24.000000 -> -84.000000 -121.000000 -24.000000, jump 11879 u, speed 49500
+[  139.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  140.0] missile->sw_f14a chunk -84.000000 -121.000000 -24.000000 -> -85.000000 -122.000000 -24.000000, jump 11879 u, speed 49500
+[  140.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  140.3] missile->sw_f14a chunk -85.000000 -122.000000 -24.000000 -> -85.000000 -122.000000 -25.000000, jump 13365 u, speed 49500
+[  140.3] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  140.5] missile->sw_f14a chunk -85.000000 -122.000000 -25.000000 -> -85.000000 -123.000000 -25.000000, jump 11879 u, speed 49500
+[  140.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  141.0] missile->sw_f14a chunk -85.000000 -123.000000 -25.000000 -> -85.000000 -124.000000 -25.000000, jump 13365 u, speed 49500
+[  141.0] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  141.3] missile->sw_f14a chunk -85.000000 -124.000000 -25.000000 -> -86.000000 -124.000000 -25.000000, jump 11879 u, speed 49500
+[  141.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  141.5] missile->sw_f14a chunk -25.000000 72.000000 11.000000 -> -26.000000 72.000000 11.000000, jump 1336 u, speed 5572
+[  141.5] missile->sw_f14a chunk -86.000000 -124.000000 -25.000000 -> -86.000000 -125.000000 -25.000000, jump 11879 u, speed 49500
+[  141.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  141.8] missile->sw_f14a chunk -86.000000 -125.000000 -25.000000 -> -86.000000 -126.000000 -25.000000, jump 13365 u, speed 49500
+[  141.8] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  142.3] missile->sw_f14a chunk -86.000000 -126.000000 -25.000000 -> -86.000000 -127.000000 -25.000000, jump 11879 u, speed 49500
+[  142.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  142.5] missile->sw_f14a chunk -86.000000 -127.000000 -25.000000 -> -87.000000 -127.000000 -25.000000, jump 13365 u, speed 49500
+[  142.5] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  142.8] missile->sw_f14a chunk -87.000000 -127.000000 -25.000000 -> -87.000000 -128.000000 -26.000000, jump 11879 u, speed 49500
+[  142.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  143.0] missile->sw_f14a chunk -26.000000 72.000000 11.000000 -> -26.000000 73.000000 11.000000, jump 1347 u, speed 5617
+[  143.3] missile->sw_f14a chunk -22.000000 83.000000 8.000000 -> -23.000000 83.000000 8.000000, jump 1145 u, speed 4246
+[  143.3] missile->sw_f14a chunk -87.000000 -128.000000 -26.000000 -> -87.000000 -129.000000 -26.000000, jump 13365 u, speed 49500
+[  143.3] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  143.5] missile->sw_f14a chunk -87.000000 -129.000000 -26.000000 -> -87.000000 -130.000000 -26.000000, jump 11879 u, speed 49500
+[  143.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  143.8] missile->sw_f14a chunk -87.000000 -130.000000 -26.000000 -> -88.000000 -130.000000 -26.000000, jump 11879 u, speed 49500
+[  143.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  144.0] missile->sw_f14a chunk -88.000000 -130.000000 -26.000000 -> -88.000000 -131.000000 -26.000000, jump 13365 u, speed 49500
+[  144.0] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  144.5] missile->sw_f14a chunk -88.000000 -131.000000 -26.000000 -> -88.000000 -132.000000 -26.000000, jump 11879 u, speed 49500
+[  144.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  144.8] missile->sw_f14a chunk -88.000000 -132.000000 -26.000000 -> -88.000000 -133.000000 -26.000000, jump 13365 u, speed 49500
+[  144.8] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  145.0] missile->sw_f14a chunk -26.000000 73.000000 11.000000 -> -27.000000 73.000000 11.000000, jump 1362 u, speed 5678
+[  145.3] missile->sw_f14a chunk -88.000000 -133.000000 -26.000000 -> -89.000000 -134.000000 -27.000000, jump 11879 u, speed 49500
+[  145.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  145.8] missile->sw_f14a chunk -89.000000 -134.000000 -27.000000 -> -89.000000 -135.000000 -27.000000, jump 11879 u, speed 49500
+[  145.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  146.3] missile->sw_f14a chunk -89.000000 -135.000000 -27.000000 -> -89.000000 -136.000000 -27.000000, jump 13365 u, speed 49500
+[  146.3] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  146.5] missile->sw_f14a chunk -89.000000 -136.000000 -27.000000 -> -90.000000 -137.000000 -27.000000, jump 11879 u, speed 49500
+[  146.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  147.0] missile->sw_f14a chunk -90.000000 -137.000000 -27.000000 -> -90.000000 -138.000000 -27.000000, jump 13365 u, speed 49500
+[  147.0] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  147.3] missile->sw_f14a chunk -23.000000 83.000000 8.000000 -> -23.000000 82.000000 8.000000, jump 1049 u, speed 4377
+[  147.5] missile->sw_f14a chunk -90.000000 -138.000000 -27.000000 -> -90.000000 -139.000000 -27.000000, jump 11879 u, speed 49500
+[  147.5] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  147.8] missile->sw_f14a chunk -90.000000 -139.000000 -27.000000 -> -91.000000 -140.000000 -28.000000, jump 13365 u, speed 49500
+[  147.8] !! missile->sw_f14a teleported by 13365 u on chunk change
+[  148.3] missile->sw_f14a chunk -91.000000 -140.000000 -28.000000 -> -91.000000 -141.000000 -28.000000, jump 11879 u, speed 49500
+[  148.3] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  148.8] missile->sw_f14a chunk -27.000000 73.000000 11.000000 -> -28.000000 73.000000 11.000000, jump 1390 u, speed 5798
+[  148.8] missile->sw_f14a chunk -91.000000 -141.000000 -28.000000 -> -91.000000 -142.000000 -28.000000, jump 11879 u, speed 49500
+[  148.8] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  149.0] missile->sw_f14a chunk -23.000000 82.000000 8.000000 -> -24.000000 82.000000 8.000000, jump 1063 u, speed 4435
+[  149.0] missile->sw_f14a chunk -91.000000 -142.000000 -28.000000 -> -92.000000 -142.000000 -28.000000, jump 11879 u, speed 49500
+[  149.0] !! missile->sw_f14a teleported by 11879 u on chunk change
+[  149.1] missile->sw_su25sm3 removed at -546082.937500 819480.187500 167721.046875
+[  149.1] missile->sw_su25sm3 removed at -568866.437500 894139.687500 116760.773438
+[  149.1] missile->sw_f14a removed at -1831865.375000 -2847456.750000 -560639.000000
+[  149.1] missile->sw_f14a ended 325287 u from target (target chunk -33.000000 75.000000 11.000000, missile chunk -24.000000 62.000000 15.000000)
+[  149.1] missile->sw_f14a ended 163998 u from target (target chunk -35.000000 75.000000 8.000000, missile chunk -28.000000 73.000000 11.000000)
+[  149.1] missile->sw_f14a ended 213141 u from target (target chunk -32.000000 75.000000 8.000000, missile chunk -24.000000 82.000000 8.000000)
+[  149.1] missile->sw_f14a ended 293483 u from target (target chunk -32.000000 75.000000 8.000000, missile chunk -20.000000 84.000000 9.000000)
