@@ -81,14 +81,14 @@ end
 local function PickDrone( ply )
 	local d = D.GetLinked( ply )
 
-	if d and not IsValid( d:GetDriver() ) and not d:GetAI() then return d end
+	if d and not IsValid( d:GetDriver() ) and not d:GetAI() and SkyOps.Teams.Friendly( ply, d ) then return d end
 
 	local best, bestD
 
 	for _, drone in ipairs( D.All() ) do
 		local dist = drone:GetPos():DistToSqr( ply:GetPos() )
 
-		if not IsValid( drone:GetDriver() ) and not drone:GetAI() and ( not bestD or dist < bestD ) then
+		if not IsValid( drone:GetDriver() ) and not drone:GetAI() and SkyOps.Teams.Friendly( ply, drone ) and ( not bestD or dist < bestD ) then
 			best, bestD = drone, dist
 		end
 	end

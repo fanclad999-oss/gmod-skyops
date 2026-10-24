@@ -184,6 +184,7 @@ end
 local function CanPass( carrier, spg )
 	if not Alive( carrier ) or not Alive( spg ) then return false end
 	if carrier:GetNW2Int( "SkyOpsArty_Stock", 0 ) <= 0 then return false end
+	if not SkyOps.Teams.Friendly( carrier, spg ) then return false end -- команда на команду: чужим не подвозим
 	if SpeedMS( carrier ) > S.MAX_SPEED or SpeedMS( spg ) > S.MAX_SPEED then return false end
 
 	return carrier:GetPos():Distance( spg:GetPos() ) <= S.RANGE * Grid.UPM()

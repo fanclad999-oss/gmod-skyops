@@ -29,7 +29,7 @@ local function KitTruck()
 	local best, bestD = nil, S.KIT_RANGE * ( SkyOps.Arty.Grid and SkyOps.Arty.Grid.UPM() or 40 )
 
 	for _, ent in ipairs( ents.GetAll() ) do
-		if IsTruck( ent ) then
+		if IsTruck( ent ) and SkyOps.Teams.CanSee( ply, ent ) then
 			local d = ent:GetPos():Distance( ply:GetPos() )
 
 			if d < bestD then best, bestD = ent, d end

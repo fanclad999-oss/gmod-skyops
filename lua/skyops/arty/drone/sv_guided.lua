@@ -23,7 +23,8 @@ local cvCapture = CreateConVar( "skyops_arty_guided_capture", "1500", FCVAR_ARCH
 local function FindSpot( s, upm )
 	local best, bestD = nil, ( cvCapture:GetFloat() * upm ) ^ 2
 
-	for _, spot in ipairs( D.LaserSpots() ) do
+	-- снаряд идёт только на подсветку своей команды (s.spg — САУ, из которой выстрел)
+	for _, spot in ipairs( D.LaserSpots( IsValid( s.spg ) and s.spg or nil ) ) do
 		local dx, dy = spot.pos.x - s.pos.x, spot.pos.y - s.pos.y
 		local d = dx * dx + dy * dy
 

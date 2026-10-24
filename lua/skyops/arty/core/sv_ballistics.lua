@@ -253,7 +253,7 @@ local function Impact( shell, x, y, z )
 		net.WriteFloat( pos.y )
 		net.WriteFloat( pos.z )
 		net.WriteString( shell.shell )
-	net.Broadcast()
+	net.Send( SkyOps.Teams.Recipients( SkyOps.Teams.Of( shell.spg ) ~= 0 and shell.spg or shell.owner ) ) -- team vs team: only the gun's side logs the burst
 
 	RemoveShell( shell, "impact" )
 end

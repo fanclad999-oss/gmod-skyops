@@ -39,6 +39,20 @@ local function Now() return CurTime() end
 
 -- Players ------------------------------------------------------------------------------
 
+local Teams = SkyOps.Teams
+
+-- team vs team (core/sh_teams.lua): a mission belongs to the side of its leader; the other
+-- side does not see its state, cannot join and its drones do not count. Off: always true.
+local function OwnSide( run, ent )
+	local team = run and run.team or 0
+
+	if not Teams.TvT() or team == 0 then return true end
+
+	local t = Teams.Of( ent )
+
+	return t == 0 or t == team
+end
+
 local function Players( run )
 	local list = {}
 
@@ -179,6 +193,29 @@ end
 
 function M.SendState( to )
 	local run = M.Run
+
+	-- team vs team: the other side only learns that no mission of theirs runs
+	if run and Teams.TvT() and ( run.team or 0 ) ~= 0 then
+		local own, other = {}, {}
+
+		for _, ply in ipairs( to and { to } or player.GetAll() ) do
+			if OwnSide( run, ply ) then own[ #own + 1 ] = ply else other[ #other + 1 ] = ply end
+		end
+
+		if #own > 0 then
+			net.Start( M.NET_STATE )
+				M.WriteTable( BuildState( run ) )
+			net.Send( own )
+		end
+
+		if #other > 0 then
+			net.Start( M.NET_STATE )
+				M.WriteTable( BuildState( nil ) )
+			net.Send( other )
+		end
+
+		return
+	end
 
 	net.Start( M.NET_STATE )
 		M.WriteTable( BuildState( run ) )
@@ -473,7 +510,7 @@ end
 
 -- Starting ----------------------------------------------------------------------------------
 
-local function SpawnClass( class, pos, ang )
+local function SpawnClass( class, pos, ang, ply )
 	if not scripted_ents.GetStored( class ) then return NULL end
 
 	local ent = ents.Create( class )
@@ -486,6 +523,9 @@ local function SpawnClass( class, pos, ang )
 	ent:Activate()
 
 	if isfunction( ent.SetAITEAM ) then ent:SetAITEAM( SkyOps.Teams and SkyOps.Teams.BLUE or 1 ) end
+
+	-- team vs team: the kit belongs to the player's side (arty/tvt)
+	if IsValid( ply ) and SkyOps.Teams.Claim then SkyOps.Teams.Claim( ent, ply ) end
 
 	return ent
 end
@@ -507,7 +547,7 @@ local function SpawnKit( ply, run )
 	end
 
 	local spawned = {}
-	local spg = SpawnClass( "sw_2s35", At( 12, 0 ), yaw )
+	local spg = SpawnClass( "sw_2s35", At( 12, 0 ), yaw, ply )
 
 	if IsValid( spg ) then
 		spawned[ #spawned + 1 ] = "2С35"
@@ -518,13 +558,13 @@ local function SpawnKit( ply, run )
 		local stored = scripted_ents.GetStored( class )
 
 		if stored then
-			local drone = SpawnClass( class, At( 0, 18 ), yaw )
+			local drone = SpawnClass( class, At( 0, 18 ), yaw, ply )
 
 			if IsValid( drone ) then
 				spawned[ #spawned + 1 ] = UAV[ class ]
 
 				if stored.t and stored.t.CatapultLaunchable then
-					if IsValid( SpawnClass( "sw_uav_catapult", At( -4, 30 ), yaw ) ) then spawned[ #spawned + 1 ] = "катапульта" end
+					if IsValid( SpawnClass( "sw_uav_catapult", At( -4, 30 ), yaw, ply ) ) then spawned[ #spawned + 1 ] = "катапульта" end
 				end
 			end
 
@@ -550,7 +590,7 @@ local function FindSPGFor( ply )
 	for _, ent in ipairs( ents.FindByClass( SPG.CLASS ) ) do
 		local d = ent:GetPos():Distance( ply:GetPos() )
 
-		if d < 100 * Grid.UPM() and ( not bestD or d < bestD ) then best, bestD = ent, d end
+		if d < 100 * Grid.UPM() and Teams.Friendly( ply, ent ) and ( not bestD or d < bestD ) then best, bestD = ent, d end
 	end
 
 	return best
@@ -566,12 +606,18 @@ function M.Start( ply, opts )
 	local def = M.GetType( opts.type ) or M.Types[ 1 ]
 	local range = M.GetRange( opts.range )
 
-	if M.Run then M.Clear() end
-
 	if not IsValid( ply ) then
 		ply = player.GetHumans()[ 1 ]
 		if not IsValid( ply ) then return false end
 	end
+
+	-- one mission at a time: in team vs team the other side may not cancel ours
+	if M.Run and M.Run.stage ~= M.STAGE_DONE and Teams.TvT() and not OwnSide( M.Run, ply ) then
+		Tell( ply, "Сейчас идёт задание другой команды. Дождитесь его конца." )
+		return false
+	end
+
+	if M.Run then M.Clear() end
 
 	local run = {
 		def = def,
@@ -580,6 +626,7 @@ function M.Start( ply, opts )
 		mode = SPGApi() and SPGApi().Mode() or "hardcore",
 		players = { [ ply ] = "командир" },
 		leader = ply,
+		team = Teams.Of( ply ),
 		start = Now(),
 		stageStart = Now(),
 		stage = M.STAGE_NONE,
@@ -690,6 +737,7 @@ function M.Join( ply, role )
 	local run = M.Run
 
 	if not run or not IsValid( ply ) then return end
+	if not OwnSide( run, ply ) then return Tell( ply, "Это задание другой команды." ) end
 
 	run.players[ ply ] = role or run.players[ ply ] or "оператор дрона"
 
@@ -733,7 +781,7 @@ end
 
 -- the drone module (arty/drone) calls this when the operator presses "send"
 hook.Add( "SkyOps.Arty.TargetSent", "SkyOps.Arty.Missions", function( drone, pos, err, ply )
-	if M.Run then TryDroneFix( M.Run, drone, pos, err, ply ) end
+	if M.Run and OwnSide( M.Run, drone ) then TryDroneFix( M.Run, drone, pos, err, ply ) end
 end )
 
 -- the drone module asks where to put a drone in the air for this player's mission:
@@ -770,7 +818,7 @@ local function PollDroneLocks( run, dt )
 		for _, drone in ipairs( ents.FindByClass( class ) ) do
 			local tp = drone:GetNWVector( "TrackPos", vector_origin )
 
-			if isvector( tp ) and tp:LengthSqr() > 100 then
+			if OwnSide( run, drone ) and isvector( tp ) and tp:LengthSqr() > 100 then
 				local x, y = Grid.ToGrid( tp )
 				local t, d = M.Targets.Nearest( run.targets, x, y )
 
@@ -834,7 +882,7 @@ local function Observer( run, x, y )
 		for _, drone in ipairs( ents.FindByClass( class ) ) do
 			local dx, dy = Grid.ToGrid( drone:GetPos() )
 
-			if ( dx - x ) ^ 2 + ( dy - y ) ^ 2 < M.OBSERVE_RANGE ^ 2 then return "Дрон" end
+			if OwnSide( run, drone ) and ( dx - x ) ^ 2 + ( dy - y ) ^ 2 < M.OBSERVE_RANGE ^ 2 then return "Дрон" end
 		end
 	end
 
@@ -1111,6 +1159,7 @@ net.Receive( M.NET_REQ, function( _, ply )
 	elseif cmd == "abort" then
 		if not M.Run then return end
 		if not ( M.CanControl( ply ) or M.Run.leader == ply ) then return end
+		if not OwnSide( M.Run, ply ) then return end
 
 		if M.Run.stage ~= M.STAGE_DONE then
 			M.End( false, "Прервано: " .. ply:Nick() .. "." )

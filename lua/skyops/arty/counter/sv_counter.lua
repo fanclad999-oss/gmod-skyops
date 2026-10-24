@@ -60,6 +60,16 @@ if not CB.Stats.fired then ResetStats() end
 
 -- Radio --------------------------------------------------------------------------------------
 
+local Teams = SkyOps.Teams
+
+-- who hears the counter-battery outside a mission: everybody, or in team vs team only the
+-- side whose gun the enemy radar tracks (CB.Team, set on every counted shot)
+local function Audience()
+	if Teams.TvT() then return Teams.Recipients( CB.Team or 0 ) end
+
+	return player.GetHumans()
+end
+
 -- the mission crew hears it on the mission radio; outside missions every player does
 local function Radio( from, text )
 	local M = Missions()
@@ -69,13 +79,13 @@ local function Radio( from, text )
 		if run and run.stage ~= M.STAGE_DONE then
 			M.Radio( run, from, text )
 		else
-			M.Radio( nil, from, text, player.GetHumans() )
+			M.Radio( nil, from, text, Audience() )
 		end
 
 		return
 	end
 
-	PrintMessage( HUD_PRINTTALK, "[" .. from .. "] " .. text )
+	for _, ply in ipairs( Audience() ) do ply:ChatPrint( "[" .. from .. "] " .. text ) end
 end
 
 -- Which shots count ---------------------------------------------------------------------------
@@ -91,7 +101,8 @@ local function Enabled( spg, shell )
 	local mode = CB.Mode()
 
 	if mode <= 0 then return false end
-	if mode >= 2 then return true end
+	-- team vs team: the enemy is the other side, the AI battery only answers during a mission
+	if mode >= 2 and not Teams.TvT() then return true end
 
 	local run = MissionActive()
 
@@ -140,7 +151,7 @@ local function SendBattery( to )
 		net.WriteFloat( bat and bat.reveal and bat.reveal.err or 0 )
 		net.WriteBool( BatteryAlive( bat ) )
 
-	if to then net.Send( to ) else net.Broadcast() end
+	if to then net.Send( to ) else net.Send( Audience() ) end
 end
 
 function CB.ClearBattery()
@@ -265,6 +276,8 @@ end
 hook.Add( "SkyOps.Arty.SPGFired", "SkyOps.Arty.Counter", function( spg, shell )
 	if not IsValid( spg ) or not Enabled( spg, shell ) then return end
 
+	CB.Team = Teams.Of( spg )
+
 	local x, y = Grid.ToGrid( spg:GetPos() )
 	local st = CB.Spots[ spg ]
 
@@ -364,7 +377,7 @@ local function FireSalvo( salvo )
 		net.WriteFloat( salvo.y )
 		net.WriteFloat( tof )
 		net.WriteUInt( n, 8 )
-	net.Broadcast()
+	net.Send( Audience() )
 
 	Radio( "Зоопарк", string.format( "Пуски противника: %d снаряд(ов) по %s. Прилёт через %d с!", n,
 		gone and "старой позиции" or "вашей позиции", math.Round( tof ) ) )
@@ -601,7 +614,7 @@ end )
 
 hook.Add( "PlayerInitialSpawn", "SkyOps.Arty.Counter", function( ply )
 	timer.Simple( 5, function()
-		if IsValid( ply ) and CB.Battery then SendBattery( ply ) end
+		if IsValid( ply ) and CB.Battery and ( not Teams.TvT() or Teams.Of( ply ) == ( CB.Team or 0 ) ) then SendBattery( ply ) end
 	end )
 end )
 

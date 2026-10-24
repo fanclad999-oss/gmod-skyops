@@ -115,14 +115,15 @@ hook.Add( "Tick", "SkyOpsArty.Drone.Laser", function()
 	end
 end )
 
--- все незаблокированные пятна подсветки: { drone, pos }
-function D.LaserSpots()
+-- все незаблокированные пятна подсветки: { drone, pos }; с viewer (САУ, игрок) — только
+-- пятна его команды (режим команда на команду, core/sh_teams.lua)
+function D.LaserSpots( viewer )
 	local list = {}
 
 	for _, drone in ipairs( D.All() ) do
 		local pos, blocked = D.LaserPos( drone )
 
-		if pos and not blocked then list[ #list + 1 ] = { drone = drone, pos = pos } end
+		if pos and not blocked and ( viewer == nil or SkyOps.Teams.Friendly( viewer, drone ) ) then list[ #list + 1 ] = { drone = drone, pos = pos } end
 	end
 
 	return list
@@ -174,7 +175,7 @@ function D.SendTarget( drone, ply )
 	net.WriteFloat( pos.z )
 	net.WriteFloat( err )
 	net.WriteEntity( drone )
-	net.Broadcast()
+	net.Send( SkyOps.Teams.Recipients( SkyOps.Teams.Of( drone ) ~= 0 and drone or ply ) ) -- команда на команду: только своей команде
 
 	hook.Run( "SkyOpsArty.TargetSent", drone, pos, err, ply )
 	hook.Run( "SkyOps.Arty.TargetSent", drone, pos, err, ply ) -- то же имя, что ждут задания (arty/missions)

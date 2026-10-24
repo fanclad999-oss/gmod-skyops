@@ -510,7 +510,7 @@ function PANEL:Paint( w, h )
 	local mySPG = A.MySPG()
 
 	for _, spg in ipairs( ents.FindByClass( A.SPG_CLASS ) ) do
-		self:PaintSPG( spg, spg == mySPG )
+		if A.Visible( spg ) then self:PaintSPG( spg, spg == mySPG ) end
 	end
 
 	local myDrone = A.LinkedDrone()

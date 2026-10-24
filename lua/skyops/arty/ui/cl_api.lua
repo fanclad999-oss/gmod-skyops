@@ -412,6 +412,14 @@ end
 
 -- Техника -------------------------------------------------------------------
 
+-- видит ли игрок метки этой техники: в режиме команда на команду только своей команды
+-- (core/sh_teams.lua), иначе всё
+function A.Visible( ent )
+	local T = SkyOps.Teams
+
+	return not ( T and T.CanSee ) or T.CanSee( LocalPlayer(), ent )
+end
+
 function A.Vehicle( ply )
 	ply = ply or LocalPlayer()
 
@@ -432,7 +440,7 @@ function A.MySPG()
 		return veh
 	end
 
-	if IsValid( A.LastSPG ) then return A.LastSPG end
+	if IsValid( A.LastSPG ) and A.Visible( A.LastSPG ) then return A.LastSPG end
 
 	local ply = LocalPlayer()
 	local best, bestD = nil, ( 500 * A.UPM() ) ^ 2
@@ -440,7 +448,7 @@ function A.MySPG()
 	for _, spg in ipairs( ents.FindByClass( A.SPG_CLASS ) ) do
 		local d = A.EntPos( spg ):DistToSqr( A.EntPos( ply ) )
 
-		if d < bestD then best, bestD = spg, d end
+		if d < bestD and A.Visible( spg ) then best, bestD = spg, d end
 	end
 
 	return best
@@ -626,7 +634,9 @@ function A.AllDrones()
 	local list = {}
 
 	for class in pairs( A.UAV ) do
-		for _, e in ipairs( ents.FindByClass( class ) ) do list[ #list + 1 ] = e end
+		for _, e in ipairs( ents.FindByClass( class ) ) do
+			if A.Visible( e ) then list[ #list + 1 ] = e end
+		end
 	end
 
 	return list
@@ -767,6 +777,9 @@ net.Receive( "skyops_arty_target", function()
 	local pos = A.ReadPos()
 	local err = net.ReadFloat()
 	local drone = net.ReadEntity()
+
+	-- сервер шлёт координаты только своей команде; это на случай старого сервера
+	if IsValid( drone ) and not A.Visible( drone ) then return end
 
 	A.SetTarget( pos, IsValid( drone ) and ( A.UAV[ drone:GetClass() ] or "дрон" ) or "дрон", err )
 
