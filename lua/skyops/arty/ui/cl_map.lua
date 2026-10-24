@@ -15,6 +15,8 @@ function PANEL:Init()
 	self.MPP = 25
 	self:SetCursor( "crosshair" )
 	self:CenterOnUnit()
+
+	if UI.Relief then UI.Relief.Request() end
 end
 
 function PANEL:CenterOn( e, n )
@@ -297,6 +299,10 @@ function PANEL:PaintTarget()
 		UI.Circle( x, y, math.max( t.err / self.MPP, 3 ), 1, Color( C.threat.r, C.threat.g, C.threat.b, 90 ), nil, true )
 	end
 
+	-- мягкая пульсация, чтобы цель находилась взглядом на любом масштабе
+	local pulse = ( RealTime() * 0.8 ) % 1
+
+	UI.Circle( x, y, s + pulse * s * 2.2, 1, Color( C.threat.r, C.threat.g, C.threat.b, 160 * ( 1 - pulse ) ) )
 	UI.Circle( x, y, s, 2, C.threat )
 	UI.Line( x - s * 1.6, y, x - s * 0.5, y, 2, C.threat )
 	UI.Line( x + s * 0.5, y, x + s * 1.6, y, 2, C.threat )
@@ -350,17 +356,28 @@ function PANEL:PaintRangeRings()
 
 	if not IsValid( spg ) then return end
 
+	-- заряд «авто»: круг по рассчитанному заряду, без расчёта по самому сильному
 	local st = UI.State
-	local minR, maxR = A.ChargeRange( st.shell, st.charge )
+	local charge = st.charge
+
+	if charge == 0 then
+		charge = st.solution and st.solution.charge or ( A.Charges( st.shell )[ 1 ] or {} ).id
+	end
+
+	local minR, maxR, minHigh = A.ChargeRange( st.shell, charge )
 
 	if not maxR then return end
 
 	local x, y = self:WorldToScreen( spg:GetPos() )
 	local col = Color( C.accent.r, C.accent.g, C.accent.b, 70 )
+	local r = maxR / self.MPP
 
-	UI.Circle( x, y, maxR / self.MPP, 1, col, 128, true )
+	UI.Circle( x, y, r, 1, col, 128, true )
+	UI.HText( string.format( "%s %.1f км", A.ChargeName( st.shell, charge ), maxR / 1000 ), "SkyOpsArty_Label", x, y - r - UI.S( 2 ), col, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM )
 
-	if minR and minR > 0 then UI.Circle( x, y, minR / self.MPP, 1, col, 96, true ) end
+	local inner = st.high and minHigh or minR
+
+	if inner and inner > 0 then UI.Circle( x, y, inner / self.MPP, 1, col, 96, true ) end
 end
 
 function PANEL:PaintOverlay( w, h )
@@ -369,6 +386,19 @@ function PANEL:PaintOverlay( w, h )
 
 	UI.Pointer( nx, ny - UI.S( 16 ), UI.S( 7 ), "up", C.text )
 	UI.Text( "С", "SkyOpsArty_H2", nx, ny - UI.S( 4 ), C.text, TEXT_ALIGN_CENTER )
+
+	-- построение рельефа
+	local R = UI.Relief
+
+	if R and ( R.State == "sampling" or R.State == "drawing" ) then
+		local pw = UI.S( 160 )
+
+		UI.Text( "РЕЛЬЕФ", "SkyOpsArty_Label", UI.S( 34 ), UI.S( 10 ), C.muted )
+		UI.Box( UI.S( 34 ), UI.S( 28 ), pw, UI.S( 3 ), C.line )
+		UI.Box( UI.S( 34 ), UI.S( 28 ), pw * R.Progress(), UI.S( 3 ), C.accent )
+	end
+
+	self:PaintLegend( w, h )
 
 	-- нижняя строка: координаты под курсором и масштаб
 	local bh = UI.S( 30 )
@@ -407,12 +437,55 @@ function PANEL:PaintOverlay( w, h )
 	UI.Text( metres >= 1000 and ( metres / 1000 .. " км" ) or ( metres .. " м" ), "SkyOpsArty_Label", x1 - UI.S( 8 ), y1, C.text, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 end
 
+-- легенда в левом нижнем углу; сворачивается, когда курсор над ней
+function PANEL:PaintLegend( w, h )
+	local items = {
+		{ "2С35", C.accent, "box" },
+		{ "дрон / его камера", C.friend, "tri" },
+		{ "цель", C.threat, "ring" },
+		{ "разрыв", C.accent, "x" },
+	}
+	local lh = UI.S( 18 )
+	local bw, bh = UI.S( 170 ), lh * #items + UI.S( 12 )
+	local bx, by = UI.S( 10 ), h - UI.S( 30 ) - bh - UI.S( 10 )
+	local mx, my = self:CursorPos()
+
+	if self:IsHovered() and mx >= bx and mx <= bx + bw and my >= by and my <= by + bh then return end
+
+	UI.Box( bx, by, bw, bh, C.panelAlpha )
+
+	for i, it in ipairs( items ) do
+		local cx, cy = bx + UI.S( 14 ), by + UI.S( 6 ) + ( i - 0.5 ) * lh
+		local s = UI.S( 5 )
+
+		if it[ 3 ] == "box" then
+			UI.Outline( cx - s, cy - s, s * 2, s * 2, it[ 2 ], 2 )
+		elseif it[ 3 ] == "tri" then
+			draw.NoTexture()
+			surface.SetDrawColor( it[ 2 ] )
+			surface.DrawPoly( { { x = cx, y = cy - s }, { x = cx + s, y = cy + s }, { x = cx - s, y = cy + s } } )
+		elseif it[ 3 ] == "ring" then
+			UI.Circle( cx, cy, s, 2, it[ 2 ], 12 )
+		else
+			UI.Line( cx - s, cy - s, cx + s, cy + s, 2, it[ 2 ] )
+			UI.Line( cx - s, cy + s, cx + s, cy - s, 2, it[ 2 ] )
+		end
+
+		UI.Text( it[ 1 ], "SkyOpsArty_Label", cx + UI.S( 14 ), cy, C.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+	end
+end
+
 function PANEL:Paint( w, h )
 	UI.Box( 0, 0, w, h, C.map )
 
 	local x, y = self:LocalToScreen( 0, 0 )
 
 	render.SetScissorRect( x, y, x + w, y + h, true )
+
+	if UI.Relief then
+		-- в Paint координаты surface локальные для панели
+		UI.Relief.Paint( function( e, n ) return self:ToScreen( e, n ) end )
+	end
 
 	self:PaintGrid( w, h )
 	self:PaintRangeRings()
