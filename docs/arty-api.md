@@ -53,13 +53,13 @@ InfMap, то есть то, что возвращает `GetPos()` (InfMap ег�
 - NW2: `SkyOpsArty_Deployed` (bool), `SkyOpsArty_BaseDir` (тыс.),
   `SkyOpsArty_State` (0 марш, 1 развёртывание, 2 развёрнута, 3 свёртывание), `SkyOpsArty_StateEnd` (время),
   `SkyOpsArty_Lay`, `SkyOpsArty_LayP` / `SkyOpsArty_LayY` (установки наводки), `SkyOpsArty_Charge`, `SkyOpsArty_Auto`
-- net клиент -> сервер `skyops_arty_auto { Entity spg, Vector target, String shell, UInt8 charge }`
+- net клиент -> сервер `skyops_arty_auto { Entity spg, Float x, Float y, Float z, String shell, UInt8 charge }`
   (режим авто: навести и выстрелить; `charge = 0` выбрать заряд сам)
 - Команды: `skyops_arty_deploy`, `skyops_arty_charge`, `skyops_arty_basedir`
 - Convar'ы: `skyops_arty_timescale`, `skyops_arty_dispersion`, `skyops_arty_deploy_time`, `skyops_arty_stow_time`
 - Клавиши: H развернуть/свернуть, K заряд, стрелки наводка, Shift x10.
   Клавиши интерфейса: N, T, G, J, B (не пересекаются).
-- net сервер -> клиент `skyops_arty_impact { Vector pos, String shell }`
+- net сервер -> клиент `skyops_arty_impact { Float x, Float y, Float z, String shell }`
 - Режим: реплицируемый convar `skyops_arty_mode` = `hardcore` | `auto`
 
 ## Баллистика `SkyOps.Arty.Ballistics` (server)
