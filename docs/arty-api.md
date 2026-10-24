@@ -27,6 +27,9 @@ InfMap, то есть то, что возвращает `GetPos()` (InfMap ег�
   обратно (серверная позиция -> где рисовать) вычитаем. Готовая функция: `FX.ToRender`
   в `arty/fx/sh_fx.lua`. `Grid.ToGrid` на клиенте ждёт абсолютную позицию.
 
+Клиентские помощники интерфейса (`arty/ui/cl_api.lua`): `A.EntPos( ent )` абсолютная позиция
+сущности на клиенте, `A.ToRender( pos )` абсолютная -> где рисовать.
+
 ## Сетка `SkyOps.Arty.Grid` (shared)
 
 - `ToGrid( worldPos ) -> x_m, y_m`
@@ -76,7 +79,7 @@ InfMap, то есть то, что возвращает `GetPos()` (InfMap ег�
 - `GetControlled( ply ) -> ent`
 - NW2 на дроне: `SkyOpsArty_Laser` (bool), `SkyOpsArty_Loiter` (bool),
   `SkyOpsArty_LoiterCenter_X/_Y/_Z` (Float), `SkyOpsArty_LoiterRadius` (float, юниты)
-- Shared: `Drone.LaserPos( drone )`, `Drone.LoiterCenter( drone )` собирают Vector из NW2Float
+- Shared: `Drone.TrackPos( drone )`, `Drone.LaserPos( drone )`, `Drone.LoiterCenter( drone )` отдают абсолютный Vector
 - Точка камеры: стоковый `NWVector "TrackPos"` дронов Ryuunosuke (без захвата там 1)
 - net клиент -> сервер `skyops_arty_drone { String cmd }`, cmd = `laser` | `loiter` | `send` | `switch`
   (`switch` в одиночке переключает игрока между САУ и дроном, `arty/drone/sv_switch.lua`)
