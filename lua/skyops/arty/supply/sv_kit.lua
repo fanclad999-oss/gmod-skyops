@@ -103,6 +103,7 @@ local function Unload( truck, ply )
 			Own( drone, ply )
 
 			kit.drone = drone
+			ply:SetNW2Entity( "SkyOpsArty_Drone", drone ) -- switch (U) and quick deploy (I) take this drone
 			truck:SetNW2Int( "SkyOpsArty_KitDrones", truck:GetNW2Int( "SkyOpsArty_KitDrones", 0 ) - 1 )
 
 			-- mount on the catapult and put the control station at the truck's side
