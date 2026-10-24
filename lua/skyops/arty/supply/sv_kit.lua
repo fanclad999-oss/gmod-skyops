@@ -1,10 +1,13 @@
 -- Artillery supply: the KamAZ carries a drone kit (a catapult and drones). One press of
 -- the kit key at the truck unloads a catapult behind it with a drone mounted and the
--- drone's control station at its side; the next press packs them back, if the drone
--- is back on the ground or the catapult next to the truck. A lost drone stays lost.
+-- drone's control station at its side; the next press packs them back. A drone that is
+-- not standing by the truck is recalled first: it flies home on the drone module's
+-- loiter and is packed over the truck; a press during the return blows it up and packs
+-- the catapult at once. A lost drone stays lost.
 --
 -- NW2 on the truck: SkyOpsArty_KitDrones (int) drones in the body,
---                   SkyOpsArty_KitOut (bool) the kit is unloaded
+--                   SkyOpsArty_KitOut (bool) the kit is unloaded,
+--                   SkyOpsArty_KitRecall (bool) the drone is flying home
 -- Command: skyops_arty_kit (the client sends it on the key, sh_supply S.KIT_RANGE)
 
 local S = SkyOps.Arty.Supply
@@ -17,6 +20,7 @@ local CATAPULT = "sw_uav_catapult"
 local FALLBACK_DRONES = { "sw_orlan10", "sw_zala", "sw_pchela1t" }
 local PACK_RANGE = 40 -- m from the truck to the drone and the catapult
 local PACK_SPEED = 2 -- m/s: the drone is not flying
+local RECALL_RANGE = 700 -- m, horizontal: a returning drone on its loiter circle (350-500 m) over the truck is packed
 local COOLDOWN = 2
 
 local function Tell( ply, msg )
@@ -132,37 +136,108 @@ local function Unload( truck, ply )
 	end
 end
 
-local function Near( a, b )
-	return IsValid( a ) and IsValid( b ) and a:GetPos():Distance( b:GetPos() ) <= PACK_RANGE * Grid.UPM()
+local function Near( a, b, m )
+	return IsValid( a ) and IsValid( b ) and a:GetPos():Distance( b:GetPos() ) <= ( m or PACK_RANGE ) * Grid.UPM()
+end
+
+local function Drones( truck )
+	return truck:GetNW2Int( "SkyOpsArty_KitDrones", 0 )
+end
+
+-- everything back into the body; a valid drone counts as returned
+local function PackAll( truck, ply, note )
+	local kit = truck.SkyOpsArty_Kit or {}
+	local lost = kit.drone ~= nil and not IsValid( kit.drone )
+
+	if IsValid( kit.drone ) then
+		truck:SetNW2Int( "SkyOpsArty_KitDrones", Drones( truck ) + 1 )
+		kit.drone:Remove() -- the drone removes its control station itself
+	end
+
+	if IsValid( kit.catapult ) then kit.catapult:Remove() end
+
+	truck.SkyOpsArty_Kit = nil
+	truck:SetNW2Bool( "SkyOpsArty_KitOut", false )
+	truck:SetNW2Bool( "SkyOpsArty_KitRecall", false )
+	Tell( ply, string.format( "%s. Дронов в кузове: %d", note or ( lost and "Катапульта убрана, дрон потерян" or "Убрано в кузов" ), Drones( truck ) ) )
+end
+
+-- self-destruct: the drone is lost, the catapult goes back
+local function Destroy( truck, ply )
+	local drone = truck.SkyOpsArty_Kit.drone
+
+	if IsValid( drone ) and IsValid( drone:GetDriver() ) then
+		return Tell( ply, "В дроне сидит игрок: сначала выйдите из него" )
+	end
+
+	if IsValid( drone ) then
+		if drone.Explode then drone:Explode() end
+		if IsValid( drone ) then drone:Remove() end
+	end
+
+	PackAll( truck, ply, "Дрон подорван, катапульта убрана" )
+end
+
+-- the drone flies home on the drone module's loiter, centred on the truck
+local function Recall( truck, ply, drone )
+	local D = SkyOps.Arty.Drone
+	local ok = D and D.StartLoiter and D.StartLoiter( drone, truck:GetPos() )
+
+	truck:SetNW2Bool( "SkyOpsArty_KitRecall", true )
+	truck.SkyOpsArty_Kit.recallBy = ply
+
+	if not ok then
+		return Tell( ply, "Дрон не может вернуться сам. Нажмите ещё раз, чтобы подорвать его и убрать катапульту" )
+	end
+
+	local km = drone:GetPos():Distance( truck:GetPos() ) / Grid.UPM() / 1000
+
+	Tell( ply, string.format( "Дрон возвращается (%.1f км), уберётся в кузов над машиной. Нажмите ещё раз, чтобы подорвать его сразу", km ) )
 end
 
 local function Pack( truck, ply )
 	local kit = truck.SkyOpsArty_Kit or {}
-	local drone, cat = kit.drone, kit.catapult
+	local drone = kit.drone
 
-	if IsValid( drone ) then
-		if not Near( drone, truck ) or IsValid( drone:GetDriver() ) or drone:GetVelocity():Length() / Grid.UPM() > PACK_SPEED then
-			return Tell( ply, string.format( "Дрон не у машины: посадите его не дальше %d м от КамАЗа и выйдите из пульта", PACK_RANGE ) )
+	if not IsValid( drone ) or ( Near( drone, truck ) and drone:GetVelocity():Length() / Grid.UPM() <= PACK_SPEED and not IsValid( drone:GetDriver() ) ) then
+		return PackAll( truck, ply )
+	end
+
+	if truck:GetNW2Bool( "SkyOpsArty_KitRecall", false ) then return Destroy( truck, ply ) end
+
+	if IsValid( drone:GetDriver() ) and Near( drone, truck ) then
+		return Tell( ply, "Из дрона нужно выйти" )
+	end
+
+	Recall( truck, ply, drone )
+end
+
+-- returning drones: follow the truck, pack when overhead, drop the recall on manual control
+timer.Create( "SkyOps.Arty.KitRecall", 1, 0, function()
+	local D = SkyOps.Arty.Drone
+
+	for _, truck in ipairs( ents.GetAll() ) do
+		local kit = truck.SkyOpsArty_Kit
+
+		if kit and truck:GetNW2Bool( "SkyOpsArty_KitRecall", false ) then
+			local drone = kit.drone
+
+			if not IsValid( drone ) then
+				truck:SetNW2Bool( "SkyOpsArty_KitRecall", false )
+				Tell( kit.recallBy, "Дрон потерян по дороге" )
+			elseif drone:GetPos():Distance2D( truck:GetPos() ) <= RECALL_RANGE * Grid.UPM() and not IsValid( drone:GetDriver() ) then
+				PackAll( truck, kit.recallBy, "Дрон вернулся и убран в кузов вместе с катапультой" )
+			elseif D and D.IsLoitering and D.SetNWPos then
+				if D.IsLoitering( drone ) then
+					D.SetNWPos( drone, "SkyOpsArty_LoiterCenter", truck:GetPos() )
+				else
+					truck:SetNW2Bool( "SkyOpsArty_KitRecall", false )
+					Tell( kit.recallBy, "Возврат дрона отменён: ручное управление" )
+				end
+			end
 		end
 	end
-
-	if IsValid( cat ) and not Near( cat, truck ) then
-		return Tell( ply, string.format( "Катапульта дальше %d м от КамАЗа", PACK_RANGE ) )
-	end
-
-	local lost = kit.drone ~= nil and not IsValid( drone )
-
-	if IsValid( drone ) then
-		truck:SetNW2Int( "SkyOpsArty_KitDrones", truck:GetNW2Int( "SkyOpsArty_KitDrones", 0 ) + 1 )
-		drone:Remove() -- the drone removes its control station itself
-	end
-
-	if IsValid( cat ) then cat:Remove() end
-
-	truck.SkyOpsArty_Kit = nil
-	truck:SetNW2Bool( "SkyOpsArty_KitOut", false )
-	Tell( ply, string.format( "Убрано в кузов%s. Дронов в кузове: %d", lost and " (дрон потерян)" or "", truck:GetNW2Int( "SkyOpsArty_KitDrones", 0 ) ) )
-end
+end )
 
 -- the truck the player sits in, or the nearest one on foot within S.KIT_RANGE
 function S.KitTruck( ply )

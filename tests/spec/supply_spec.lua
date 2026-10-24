@@ -93,6 +93,14 @@ end
 local function kitWorld( A )
 	_G.scripted_ents.GetStored = function( c ) return ( c == "sw_uav_catapult" or c == "sw_orlan10" ) and {} or nil end
 
+	-- модуль дрона: барраж запоминаем в поле дрона
+	A.Drone = {
+		Station = function( d ) return d.station end,
+		StartLoiter = function( d, c ) d.loiter = c return true end,
+		IsLoitering = function( d ) return d.loiter ~= nil end,
+		SetNWPos = function( d, _, v ) d.loiter = v end,
+	}
+
 	gm.entityFactory = function( class )
 		local e = gm.entity( { class = class } )
 
@@ -107,6 +115,7 @@ local function kitWorld( A )
 			e.station = st
 			function e:GetNWEntity( k ) return k == "UAVControl" and self.station or _G.NULL end
 			function e:Remove() self.valid = false st.valid = false end
+			function e:Explode() self.exploded = true self:Remove() end
 		end
 
 		table.insert( gm.entities, e )
@@ -295,12 +304,66 @@ T.describe( "Боекомплект и подвоз", function()
 		T.ok( truck.nw.SkyOpsArty_KitOut )
 		T.ok( drone.station.pos:Distance( truck.pos ) < 20 * UPM, "пульт не у машины" )
 
-		-- дрон улетел: не убирается
-		drone.pos = truck.pos + Vector( 500 * UPM, 0, 0 )
+		-- дрон далеко и не стоит: первое нажатие отправляет его домой
+		drone.pos = truck.pos + Vector( 3000 * UPM, 0, 0 )
 		seconds( 3 )
 		gm.commands.skyops_arty_kit( ply, "skyops_arty_kit", {} )
 		T.ok( drone:IsValid(), "убрали дрон в полёте" )
-		T.ok( ply.chat[ #ply.chat ]:find( "Дрон не у машины" ), ply.chat[ #ply.chat ] )
+		T.ok( truck.nw.SkyOpsArty_KitRecall, "возврат не включён" )
+		T.ok( drone.loiter and drone.loiter:Distance( truck.pos ) < 1, "барраж не над машиной" )
+		T.ok( ply.chat[ #ply.chat ]:find( "возвращается" ), ply.chat[ #ply.chat ] )
+
+		-- машина поехала: центр барража за ней
+		truck.pos = truck.pos + Vector( 0, 100 * UPM, 0 )
+		seconds( 2 )
+		T.ok( drone.loiter:Distance( truck.pos ) < 1, "центр не следует за машиной" )
+
+		-- долетел до машины: убран вместе с катапультой
+		drone.pos = truck.pos + Vector( 200 * UPM, 0, 300 * UPM / 3 )
+		seconds( 2 )
+		T.ok( not drone:IsValid() and not cat:IsValid(), "не убрано после возврата" )
+		T.eq( truck.nw.SkyOpsArty_KitDrones, 2 )
+		T.eq( truck.nw.SkyOpsArty_KitOut, false )
+		T.eq( truck.nw.SkyOpsArty_KitRecall, false )
+		teardown()
+	end )
+
+	T.it( "КамАЗ: второе нажатие во время возврата подрывает дрон и убирает катапульту", function()
+		local A, spg, ply = setup()
+		local truck = addTruck( A, spg, 30 )
+
+		kitWorld( A )
+		ply.veh = truck
+
+		gm.commands.skyops_arty_kit( ply, "skyops_arty_kit", {} )
+		gm.think( 30 )
+
+		local cat, drone = kitOf( "sw_uav_catapult" ), kitOf( "sw_orlan10" )
+
+		drone.pos = truck.pos + Vector( 5000 * UPM, 0, 0 )
+		seconds( 3 )
+		gm.commands.skyops_arty_kit( ply, "skyops_arty_kit", {} )
+		seconds( 3 )
+		gm.commands.skyops_arty_kit( ply, "skyops_arty_kit", {} )
+		T.ok( drone.exploded, "дрон не подорван" )
+		T.ok( not cat:IsValid(), "катапульта осталась" )
+		T.eq( truck.nw.SkyOpsArty_KitDrones, 1, "подорванный дрон вернулся в кузов" )
+		T.eq( truck.nw.SkyOpsArty_KitOut, false )
+		T.ok( ply.chat[ #ply.chat ]:find( "подорван" ), ply.chat[ #ply.chat ] )
+		teardown()
+	end )
+
+	T.it( "КамАЗ: дрон стоит рядом — убирается сразу", function()
+		local A, spg, ply = setup()
+		local truck = addTruck( A, spg, 30 )
+
+		kitWorld( A )
+		ply.veh = truck
+
+		gm.commands.skyops_arty_kit( ply, "skyops_arty_kit", {} )
+		gm.think( 30 )
+
+		local cat, drone = kitOf( "sw_uav_catapult" ), kitOf( "sw_orlan10" )
 
 		-- вернулся и стоит
 		drone.pos = truck.pos + Vector( 0, 15 * UPM, 0 )
