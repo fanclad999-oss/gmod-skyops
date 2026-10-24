@@ -69,7 +69,7 @@ function D.StartLoiter( drone, center )
 
 	drone.SkyOpsArty_LoiterZ = drone:GetPos().z
 	drone.SkyOpsArty_LoiterAng = drone:GetAngles()
-	drone:SetNW2Vector( "SkyOpsArty_LoiterCenter", center )
+	D.SetNWPos( drone, "SkyOpsArty_LoiterCenter", center )
 	drone:SetNW2Float( "SkyOpsArty_LoiterRadius", radius )
 	drone:SetNW2Bool( "SkyOpsArty_Loiter", true )
 
@@ -86,7 +86,7 @@ end
 
 local function Steer( drone, cfg )
 	local pos = drone:GetPos()
-	local center = drone:GetNW2Vector( "SkyOpsArty_LoiterCenter" )
+	local center = D.GetNWPos( drone, "SkyOpsArty_LoiterCenter" )
 	local radius = drone:GetNW2Float( "SkyOpsArty_LoiterRadius" )
 
 	local dx, dy = pos.x - center.x, pos.y - center.y

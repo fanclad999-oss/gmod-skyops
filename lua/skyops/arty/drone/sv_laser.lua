@@ -62,7 +62,7 @@ function D.SetLaser( drone, on )
 
 	drone.SkyOpsArty_LaserEnt = ent
 	drone.SkyOpsArty_LaserSince = CurTime()
-	drone:SetNW2Vector( "SkyOpsArty_LaserPos", pos )
+	D.SetNWPos( drone, "SkyOpsArty_LaserPos", pos )
 	drone:SetNW2Bool( "SkyOpsArty_LaserBlocked", false )
 	drone:SetNW2Bool( "SkyOpsArty_Laser", true )
 
@@ -100,11 +100,11 @@ local function UpdateLaser( drone )
 			drone.SkyOpsArty_LaserEnt = nil
 		else
 			pos = EntCenter( ent )
-			drone:SetNW2Vector( "SkyOpsArty_LaserPos", pos )
+			D.SetNWPos( drone, "SkyOpsArty_LaserPos", pos )
 		end
 	end
 
-	pos = pos or drone:GetNW2Vector( "SkyOpsArty_LaserPos" )
+	pos = pos or D.GetNWPos( drone, "SkyOpsArty_LaserPos" )
 
 	drone:SetNW2Bool( "SkyOpsArty_LaserBlocked", not Visible( drone, pos, drone.SkyOpsArty_LaserEnt ) )
 end
@@ -168,7 +168,10 @@ function D.SendTarget( drone, ply )
 	end
 
 	net.Start( "skyops_arty_target" )
-	net.WriteVector( pos )
+	-- три float, а не WriteVector: тот обрезает координаты дальше ±16384 u
+	net.WriteFloat( pos.x )
+	net.WriteFloat( pos.y )
+	net.WriteFloat( pos.z )
 	net.WriteFloat( err )
 	net.WriteEntity( drone )
 	net.Broadcast()

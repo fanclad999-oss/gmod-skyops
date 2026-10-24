@@ -30,22 +30,28 @@
 - `GetLinked( ply )` — последний дрон игрока (NW2 `SkyOpsArty_Drone` на игроке), в т. ч. когда он в САУ
 - `Station( drone )` — пульт `sw_uav_control`
 - `TrackPos( drone )` — точка стокового захвата или nil
-- `LaserPos( drone )` -> `pos, blocked` или nil
+- `LaserPos( drone )` -> `pos, blocked` или nil; `LoiterCenter( drone )` -> `pos, radius` или nil
+- `SetNWPos( ent, key, v )`, `GetNWPos( ent, key )` — позиция тремя NW2Float
 - сервер: `SetLaser( drone, on )`, `LaserSpots()`, `SendTarget( drone, ply )`,
   `StartLoiter( drone, center? )`, `StopLoiter( drone )`, `IsLoitering( drone )`, `Switch( ply )`
 
 ## NW2 на дроне
 
-- `SkyOpsArty_Laser` (bool), **новые:** `SkyOpsArty_LaserPos` (Vector, мировая),
+Позиции лежат тремя NW2Float `<имя>_X`, `<имя>_Y`, `<имя>_Z` (NW2Vector обрезает координаты
+дальше ±16384 u). Значения абсолютные, как `GetPos()` на сервере; на клиенте InfMap их надо
+перевести в чанк `LocalPlayer` (см. «Правила для позиций в сети» в `arty-api.md`).
+Читать проще через `D.LaserPos( drone )` и `D.LoiterCenter( drone )`.
+
+- `SkyOpsArty_Laser` (bool), `SkyOpsArty_LaserPos_X/_Y/_Z` (точка подсветки),
   `SkyOpsArty_LaserBlocked` (bool: точка вне дальности или за препятствием)
-- `SkyOpsArty_Loiter` (bool), `SkyOpsArty_LoiterCenter` (Vector), `SkyOpsArty_LoiterRadius` (юниты)
+- `SkyOpsArty_Loiter` (bool), `SkyOpsArty_LoiterCenter_X/_Y/_Z`, `SkyOpsArty_LoiterRadius` (юниты)
 
 ## Сеть и консоль
 
 - клиент -> сервер `skyops_arty_drone { String cmd }`: `laser` | `loiter` | `send` | **`switch`**
   (`switch` работает и из САУ, остальные только из кресла дрона)
 - то же из консоли: `skyops_arty_drone_cmd <cmd>`, плюс `skyops_arty_switch`
-- сервер -> все `skyops_arty_target { Vector pos, Float err_m, Entity drone }`
+- сервер -> все `skyops_arty_target { Float x, Float y, Float z, Float err_m, Entity drone }` (абсолютная позиция)
 - хуки сервера: `SkyOpsArty.TargetSent( drone, pos, err, ply )`, `SkyOpsArty.GuidedLocked( s, drone )`
 
 ## Управляемый снаряд `SkyOps.Arty.Guided` (сервер)

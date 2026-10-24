@@ -82,11 +82,31 @@ function D.TrackPos( drone )
 	return p
 end
 
--- подсветка: точка (мировая) и сорван ли луч
+-- Позиции в NW2 храним тремя float: NW2Vector, как и net.WriteVector, сжимает
+-- координаты в ±16384 u, а на InfMap они намного больше. Значения абсолютные (как
+-- GetPos() на сервере); на клиенте InfMap их ещё надо перевести в чанк LocalPlayer.
+function D.SetNWPos( ent, key, v )
+	ent:SetNW2Float( key .. "_X", v.x )
+	ent:SetNW2Float( key .. "_Y", v.y )
+	ent:SetNW2Float( key .. "_Z", v.z )
+end
+
+function D.GetNWPos( ent, key )
+	return Vector( ent:GetNW2Float( key .. "_X", 0 ), ent:GetNW2Float( key .. "_Y", 0 ), ent:GetNW2Float( key .. "_Z", 0 ) )
+end
+
+-- центр круга барража (абсолютная мировая) и радиус в юнитах или nil
+function D.LoiterCenter( drone )
+	if not drone:GetNW2Bool( "SkyOpsArty_Loiter", false ) then return nil end
+
+	return D.GetNWPos( drone, "SkyOpsArty_LoiterCenter" ), drone:GetNW2Float( "SkyOpsArty_LoiterRadius", 0 )
+end
+
+-- подсветка: точка (абсолютная мировая) и сорван ли луч
 function D.LaserPos( drone )
 	if not drone:GetNW2Bool( "SkyOpsArty_Laser", false ) then return nil end
 
-	return drone:GetNW2Vector( "SkyOpsArty_LaserPos", vector_origin ), drone:GetNW2Bool( "SkyOpsArty_LaserBlocked", false )
+	return D.GetNWPos( drone, "SkyOpsArty_LaserPos" ), drone:GetNW2Bool( "SkyOpsArty_LaserBlocked", false )
 end
 
 function D.All()
