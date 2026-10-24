@@ -146,7 +146,7 @@ function Run:BuildBrief()
 			local pos = self.unitPos[ unit.id ]
 
 			if pos then
-				local entry = { id = unit.id, label = unit.label, kind = unit.kind, system = unit.system, role = unit.role, count = unit.count or 1, pos = PosTable( pos ) }
+				local entry = { id = unit.id, label = unit.label, kind = unit.kind, system = unit.system, role = unit.role, count = unit.count or 1, pos = PosTable( pos ), moving = unit.follow ~= nil or nil }
 
 				if unit.kind == "airdefense" then
 					local range = M.ThreatRange[ unit.system ]
@@ -686,6 +686,18 @@ function Run:OnUnitKilled( ent, attacker )
 	end
 
 	self.totalKills = self.totalKills + 1
+
+	if group.total > 0 and group.killed >= group.total then
+		self:SendUnitDown( groupId )
+	end
+end
+
+-- Сообщаем клиентам, что группа уничтожена: её метка на экране гаснет
+function Run:SendUnitDown( groupId, ply )
+	net.Start( "skyops_unitdown" )
+	net.WriteString( groupId )
+
+	if ply then net.Send( ply ) else net.Broadcast() end
 end
 
 function Run:IsObjectiveDone( id )
@@ -1080,6 +1092,10 @@ net.Receive( "skyops_sync", function( len, ply )
 		run:SendLobby( ply )
 	elseif run.state == M.STATE_RUNNING then
 		run:SendObjectives( ply )
+
+		for id, group in pairs( run.groups ) do
+			if group.total > 0 and group.killed >= group.total then run:SendUnitDown( id, ply ) end
+		end
 	elseif run.state == M.STATE_DEBRIEF and run.debrief then
 		SendTable( "skyops_debrief", run.debrief, ply )
 	end

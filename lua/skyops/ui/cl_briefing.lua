@@ -364,6 +364,42 @@ function BRIEF:Rebuild()
 	end
 end
 
+-- Карточка оружия: способ наведения, что это, по каким целям и как применять
+function BRIEF:PaintWeaponInfo( name, x, y, w, maxY )
+	local S = UI.S
+	local info = SkyOps.WeaponInfo and SkyOps.WeaponInfo.Describe( name )
+
+	if not info then return end
+
+	local g = SkyOps.WeaponInfo.Guidance[ info.guide ] or SkyOps.WeaponInfo.Guidance.none
+	local tw = UI.TextSize( g[1], "SkyOps_Label" )
+
+	UI.Outline( x, y, tw + S( 16 ), S( 24 ), g[2] )
+	UI.Text( g[1], "SkyOps_Label", x + S( 8 ), y + S( 4 ), g[2] )
+	y = y + S( 32 )
+
+	local function Lines( text, font, col, lineH )
+		for _, line in ipairs( UI.Wrap( text, font, w ) ) do
+			if y + lineH > maxY then return false end
+
+			UI.Text( line, font, x, y, col )
+			y = y + lineH
+		end
+
+		return true
+	end
+
+	if not Lines( info.kind, "SkyOps_TextSmall", UI.C.text, S( 24 ) ) then return end
+
+	y = y + S( 4 )
+
+	if not Lines( "Цели: " .. info.targets, "SkyOps_TextSmall", UI.C.ok, S( 24 ) ) then return end
+
+	y = y + S( 4 )
+
+	Lines( info.text, "SkyOps_TextSmall", UI.C.muted, S( 24 ) )
+end
+
 function BRIEF:PaintRight( w, h )
 	local S = UI.S
 	local client = C()
@@ -430,7 +466,10 @@ function BRIEF:PaintRight( w, h )
 
 			if #ac.loadouts > 1 then
 				UI.Text( string.format( "вариант %d из %d", selected[2], #ac.loadouts ), "SkyOps_Label", pad, y, UI.C.muted )
+				y = y + S( 26 )
 			end
+
+			self:PaintWeaponInfo( selected[1].name, pad, y + S( 6 ), bw, h - S( 130 ) )
 		elseif ac.loadoutText then
 			for _, line in ipairs( ac.loadoutText ) do
 				UI.Text( line, "SkyOps_Text", pad, y, UI.C.text )

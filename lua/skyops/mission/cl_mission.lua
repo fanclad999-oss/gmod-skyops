@@ -14,6 +14,7 @@ SkyOps.Client = SkyOps.Client or {
 	lobby = nil,
 	lobbyTime = 0,
 	objState = {},
+	unitDown = {},
 	messages = {},
 	list = {},
 	debrief = nil,
@@ -38,9 +39,15 @@ end
 net.Receive( "skyops_brief", function()
 	C.brief = ReadTable()
 	C.objState = {}
+	C.unitDown = {}
 	C.debrief = nil
 
 	hook.Run( "SkyOps.BriefReceived", C.brief )
+end )
+
+net.Receive( "skyops_unitdown", function()
+	C.unitDown = C.unitDown or {}
+	C.unitDown[ net.ReadString() ] = true
 end )
 
 net.Receive( "skyops_lobby", function()
