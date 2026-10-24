@@ -187,6 +187,8 @@ local function Recall( truck, ply, drone )
 	truck.SkyOpsArty_Kit.recallBy = ply
 
 	if not ok then
+		truck.SkyOpsArty_Kit.noLoiter = true -- nothing to follow: the next press blows it up
+
 		return Tell( ply, "Дрон не может вернуться сам. Нажмите ещё раз, чтобы подорвать его и убрать катапульту" )
 	end
 
@@ -227,7 +229,7 @@ timer.Create( "SkyOps.Arty.KitRecall", 1, 0, function()
 				Tell( kit.recallBy, "Дрон потерян по дороге" )
 			elseif drone:GetPos():Distance2D( truck:GetPos() ) <= RECALL_RANGE * Grid.UPM() and not IsValid( drone:GetDriver() ) then
 				PackAll( truck, kit.recallBy, "Дрон вернулся и убран в кузов вместе с катапультой" )
-			elseif D and D.IsLoitering and D.SetNWPos then
+			elseif not kit.noLoiter and D and D.IsLoitering and D.SetNWPos then
 				if D.IsLoitering( drone ) then
 					D.SetNWPos( drone, "SkyOpsArty_LoiterCenter", truck:GetPos() )
 				else

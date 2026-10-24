@@ -392,4 +392,28 @@ T.describe( "Боекомплект и подвоз", function()
 		T.ok( ply.chat[ #ply.chat ]:find( "потерян" ), ply.chat[ #ply.chat ] )
 		teardown()
 	end )
+	T.it( "КамАЗ: дрон без барража (вертолёт) не возвращается, второе нажатие подрывает", function()
+		local A, spg, ply = setup()
+		local truck = addTruck( A, spg, 30 )
+
+		kitWorld( A )
+		A.Drone.StartLoiter = function() return false, "Этот дрон не умеет барражировать" end
+		ply.veh = truck
+
+		gm.commands.skyops_arty_kit( ply, "skyops_arty_kit", {} )
+		gm.think( 30 )
+
+		local drone = kitOf( "sw_orlan10" )
+
+		drone.pos = truck.pos + Vector( 4000 * UPM, 0, 0 )
+		seconds( 3 )
+		gm.commands.skyops_arty_kit( ply, "skyops_arty_kit", {} )
+		T.ok( ply.chat[ #ply.chat ]:find( "не может вернуться" ), ply.chat[ #ply.chat ] )
+		seconds( 3 )
+		T.ok( truck.nw.SkyOpsArty_KitRecall, "возврат сброшен таймером" )
+		gm.commands.skyops_arty_kit( ply, "skyops_arty_kit", {} )
+		T.ok( drone.exploded, "дрон не подорван" )
+		T.eq( truck.nw.SkyOpsArty_KitOut, false )
+		teardown()
+	end )
 end )
