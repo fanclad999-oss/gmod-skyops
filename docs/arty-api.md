@@ -89,7 +89,7 @@ InfMap, то есть то, что возвращает `GetPos()` (InfMap ег�
 - NW2 на дроне: `SkyOpsArty_LaserPos_X/_Y/_Z` (Float, точка подсветки), `SkyOpsArty_LaserBlocked` (bool, луч закрыт)
 - NW2Entity на игроке: `SkyOpsArty_Drone` (его дрон)
 - Сервер: `SkyOps.Arty.Guided.Steer( s, dt )` (`arty/drone/sv_guided.lua`), его вызывает `sv_ballistics`
-- Хуки: `SkyOps.Arty.TargetSent( drone, worldPos, err_m, ply )`, `SkyOps.Arty.GuidedLocked`
+- Хуки: `SkyOps.Arty.TargetSent( drone, worldPos, err_m, ply )`, `SkyOps.Arty.GuidedLocked( s, drone )`
   (все хуки модуля называются `SkyOps.Arty.*`)
 - Подробности: `docs/arty-drone.md`
 - net сервер -> клиент `skyops_arty_target { Float x, Float y, Float z, Float err_m, Entity drone }`
