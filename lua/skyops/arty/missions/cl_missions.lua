@@ -198,12 +198,24 @@ local function Waypoint( st )
 	end
 end
 
+-- InfMap: on the client Entity:GetPos() is relative to the LocalPlayer chunk, while the
+-- server and Grid work with absolute positions (same shift as A.EntPos in arty/ui/cl_api)
+local function AbsPos( ent )
+	local ply = LocalPlayer()
+
+	if InfMap and InfMap.unlocalize_vector and ply.CHUNK_OFFSET then
+		return ent:GetPos() + InfMap.unlocalize_vector( Vector(), ply.CHUNK_OFFSET )
+	end
+
+	return ent:GetPos()
+end
+
 local function MyGrid()
 	local ply = LocalPlayer()
 	local veh = ply.lvsGetVehicle and ply:lvsGetVehicle()
 	local ent = IsValid( veh ) and veh or ply
 
-	return Grid.ToGrid( ent:GetPos() )
+	return Grid.ToGrid( AbsPos( ent ) )
 end
 
 -- Mission HUD ---------------------------------------------------------------------------------------
