@@ -83,6 +83,7 @@ InfMap, то есть то, что возвращает `GetPos()` (InfMap ег�
   `SkyOpsArty_LoiterCenter_X/_Y/_Z` (Float), `SkyOpsArty_LoiterRadius` (float, юниты)
 - Shared: `Drone.TrackPos( drone )`, `Drone.LaserPos( drone )`, `Drone.LoiterCenter( drone )` отдают абсолютный Vector
 - Точка камеры: стоковый `NWVector "TrackPos"` дронов Ryuunosuke (без захвата там 1)
+- Наша копия точки захвата без сжатия: NW2 `SkyOpsArty_Track` (bool), `SkyOpsArty_TrackPos_X/_Y/_Z` (Float)
 - net клиент -> сервер `skyops_arty_drone { String cmd }`, cmd = `laser` | `loiter` | `send` | `switch`
   (`switch` в одиночке переключает игрока между САУ и дроном, `arty/drone/sv_switch.lua`)
 - Консоль: `skyops_arty_switch`, `skyops_arty_drone_cmd <cmd>`
