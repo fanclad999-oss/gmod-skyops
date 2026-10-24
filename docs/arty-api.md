@@ -9,6 +9,7 @@
 | Интерфейс | `arty/ui/cl_*.lua` (все обращения к API собраны в `arty/ui/cl_api.lua`) |
 | Задания | `arty/missions/*` (описание в `docs/arty-missions.md`) |
 | Эффекты | `arty/fx/*` |
+| Боекомплект и подвоз | `arty/supply/*` |
 | Разведка, план | `arty/debug/*`, этот файл |
 
 Единицы: координаты сетки в метрах (X на восток, Y на север), углы в тысячных
@@ -149,3 +150,20 @@ InfMap, то есть то, что возвращает `GetPos()` (InfMap ег�
 - Клавиша F7 (`skyops_arty_key_missions`)
 - Использует `SPGFired`, `ShellImpact` (возвращает nil), `ShellRemoved`, поле `shell.data.mission`;
   дополняет карту планшета обёрткой `PaintTarget` у `SkyOpsArtyMap`
+
+## Боекомплект и подвоз `SkyOps.Arty.Supply` (`arty/supply/`)
+
+- NW2 на `sw_2s35`: `SkyOpsArty_Ammo_<shell>` (int, остаток), `SkyOpsArty_Order_<shell>` (int, заявка),
+  `SkyOpsArty_Resupply` (entity, кто сейчас подаёт)
+- Перевозчики: КамАЗ `sw_kamaz5350*` (Workshop 3198481596) и ящики `skyops_arty_ammocrate`.
+  NW2: `SkyOpsArty_Stock` (int), `SkyOpsArty_Supplying` (entity); на КамАЗе ещё
+  `SkyOpsArty_KitDrones` (int), `SkyOpsArty_KitOut` (bool)
+- Хуки: слушает `SkyOps.Arty.CanFireShell` (false + причина, когда снаряды кончились;
+  вызывать перед выстрелом) и `SkyOps.Arty.SPGFired`; вызывает `SkyOps.Arty.Resupplied( spg, carrier, shellId )`
+- Shared: `Supply.Count`, `Ordered`, `Total`, `Capacity`, `Shells`, `IsCarrier`, `LoadedShell`
+- Команды: `skyops_arty_ammo`, `skyops_arty_ammo_order he=N ...|default`, `skyops_arty_ammo_fill` (админ),
+  `skyops_arty_supply_refill` (админ), `skyops_arty_kit` (клавиша O, `skyops_arty_key_kit`: выгрузить/убрать
+  катапульту с дроном у КамАЗа)
+- Convar'ы: `skyops_arty_ammo_limit`, `skyops_arty_ammo_cap`, `skyops_arty_supply_classes`,
+  `skyops_arty_supply_stock`, `skyops_arty_crate_stock`, `skyops_arty_supply_time`, `skyops_arty_kit_drones`,
+  `skyops_arty_kit_class`, клиент `skyops_arty_ui_ammo`
