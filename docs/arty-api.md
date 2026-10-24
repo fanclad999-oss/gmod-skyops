@@ -46,8 +46,15 @@ InfMap, то есть то, что возвращает `GetPos()` (InfMap ег�
 
 ## Огневой компьютер `SkyOps.Arty.FireComp` (shared)
 
-- `Solve{ gun = {x,y,h}, target = {x,y,h}, shell = "he"|"krasnopol", charge = id, high = bool, basedir = тыс. }`
-  -> `{ ok, err, range, bearing, deflection, elevation, tof, apex, charge, high }`
+- `Solve{ gun = {x,y,h}, target = {x,y,h}, shell = id, charge = id, high = bool, basedir = тыс., wind = {x,y} | false | nil }`
+  -> `{ ok, err, range, bearing, deflection, elevation, tof, apex, charge, high, targetBearing, drift }`.
+  `wind = nil` — ветер метеобюллетеня, `false` — без ветра. `bearing`/`deflection` уже с поправкой на снос
+  (`drift`, м вправо), `targetBearing` — дирекционный на цель.
+- Снаряды: `ShellOrder = { "he", "krasnopol", "smoke", "illum", "cluster" }`, описание `Shells[id]`
+  (`name`, `k`, `charges`, `blast`, `effect` = `smoke`|`illum`|`cluster`, `burstHeight`, `bomblets`).
+- `LoadedShell( spg )` — снаряд в САУ (NW2String `SkyOpsArty_Shell`, иначе по стоковому ShellType).
+- `BombletPattern( seed, count, radius )` — точки суббоеприпасов кассетного, одинаковые на сервере и клиенте.
+- `Step( s, k, dt, ax, ay, az, wx, wy )` — шаг полёта, `wx, wy` ветер м/с по осям сетки.
 - `Charges( shell ) -> { {id, name, min, max, minHigh, v0}, ... }` (дальности в метрах, `minHigh` для навесной, `v0` м/с)
 - `GunLaying( spg ) -> deflection, elevation, bearing` текущие установки и дирекционный ствола
 - Угломер: `deflection = (3000 + basedir - bearing) mod 6000`
@@ -60,7 +67,10 @@ InfMap, то есть то, что возвращает `GetPos()` (InfMap ег�
   `SkyOpsArty_Lay`, `SkyOpsArty_LayP` / `SkyOpsArty_LayY` (установки наводки), `SkyOpsArty_Charge`, `SkyOpsArty_Auto`
 - net клиент -> сервер `skyops_arty_auto { Entity spg, Float x, Float y, Float z, String shell, UInt8 charge }`
   (режим авто: навести и выстрелить; `charge = 0` выбрать заряд сам)
-- Команды: `skyops_arty_deploy`, `skyops_arty_charge`, `skyops_arty_basedir`
+- Команды: `skyops_arty_deploy`, `skyops_arty_charge`, `skyops_arty_shell next|<id>`, `skyops_arty_basedir`.
+  Стоковая клавиша смены снаряда 2S35 листает все `ShellOrder`; сервер: `SPG.SetShell( spg, id )`.
+- Хук боекомплекта: `SkyOps.Arty.CanFireShell( spg, shellId, ply ) -> false, "причина"` запрещает выстрел
+  (стоковый снаряд возвращается в пушку) и пропускает снаряд при смене. Расход — по `SkyOps.Arty.SPGFired`.
 - Convar'ы: `skyops_arty_timescale`, `skyops_arty_dispersion`, `skyops_arty_deploy_time`, `skyops_arty_stow_time`
 - Клавиши: H развернуть/свернуть, K заряд, стрелки наводка, Shift x10.
   Клавиши интерфейса: N, T, G, J, B (не пересекаются).
@@ -75,6 +85,19 @@ InfMap, то есть то, что возвращает `GetPos()` (InfMap ег�
   `SkyOps.Arty.ShellImpact`, `SkyOps.Arty.ShellRemoved`
 - Для Краснополя баллистика каждый шаг вызывает `SkyOps.Arty.Guided.Steer( s, dt )`
   (реализует тред дрона в `arty/drone/sv_guided.lua`)
+- `Fire{ ..., wind = {x,y} | false | nil }`: по умолчанию реальный ветер в момент выстрела, держится весь полёт
+  (`s.wx`, `s.wy`). Дымовой и осветительный не взрываются, кассетный раскидывает `bomblets`
+  (урон `Splash( pos, радиус м, урон, attacker )` по сущностям, не `util.BlastDamage`: на InfMap он бьёт по всем чанкам).
+
+## Ветер `SkyOps.Arty.Wind` (`arty/core/sh_wind.lua`, `sv_wind.lua`)
+
+- Новый случайный ветер при каждом старте задания (хук `SkyOps.Arty.MissionStart`) и при старте сервера.
+- Бюллетень: `BulletinDirSpeed()` (откуда, тыс.; м/с), `Bulletin()` вектор, `Format()` текст для планшета.
+- Реальный: `ActualDirSpeed()`, `Actual()` — гуляет вокруг бюллетеня (скорость ±30 %, направление ±2-00, за 1–2 мин).
+- Global2: `SkyOpsArty_WindDir/Speed`, `SkyOpsArty_WindDirReal/SpeedReal`. Сервер: `Set( dir, speed )`, `Randomize()`,
+  хук `SkyOps.Arty.WindChanged( dir, speed )`.
+- Convar'ы: `skyops_arty_wind` (0 выкл), `skyops_arty_wind_max` (6 м/с), `skyops_arty_wind_gusts` (1, 0 = точно бюллетень).
+  Команда: `skyops_arty_wind [random | off | <откуда тыс.> <м/с>]`.
 
 ## Дрон `SkyOps.Arty.Drone`
 
