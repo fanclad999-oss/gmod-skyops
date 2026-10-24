@@ -5,7 +5,7 @@
 
 local gm, T = ...
 
-local FILES = { "skyops/arty/supply/sh_supply.lua", "skyops/arty/supply/sv_supply.lua", "skyops/arty/core/sv_spg.lua" }
+local FILES = { "skyops/arty/supply/sh_supply.lua", "skyops/arty/supply/sv_supply.lua", "skyops/arty/supply/sv_kit.lua", "skyops/arty/core/sv_spg.lua" }
 
 local UPM = 40
 
@@ -78,6 +78,9 @@ local function addTruck( A, spg, dist )
 	local truck = gm.entity( { class = "sw_kamaz5350", pos = spg:GetPos() + Vector( dist * UPM, 0, 0 ), hp = 1000 } )
 
 	function truck:GetHP() return self.hp end
+	function truck:OBBMins() return Vector( -150, -50, 0 ) end
+	function truck:OBBMaxs() return Vector( 150, 50, 120 ) end
+	function truck:LocalToWorld( v ) return self.pos + v end -- курс 0
 
 	table.insert( gm.entities, truck )
 	_G.hook.Run( "OnEntityCreated", truck )
@@ -86,9 +89,41 @@ local function addTruck( A, spg, dist )
 	return truck
 end
 
+-- КамАЗ с набором дрона: катапульта, дрон и пульт создаются через ents.Create
+local function kitWorld( A )
+	_G.scripted_ents.GetStored = function( c ) return ( c == "sw_uav_catapult" or c == "sw_orlan10" ) and {} or nil end
+
+	gm.entityFactory = function( class )
+		local e = gm.entity( { class = class } )
+
+		function e:GetDriver() return _G.NULL end
+
+		if class == "sw_uav_catapult" then
+			function e:Mount( d ) self.mounted = d end
+		elseif class == "sw_orlan10" then
+			local st = gm.entity( { class = "sw_uav_control" } )
+
+			table.insert( gm.entities, st )
+			e.station = st
+			function e:GetNWEntity( k ) return k == "UAVControl" and self.station or _G.NULL end
+			function e:Remove() self.valid = false st.valid = false end
+		end
+
+		table.insert( gm.entities, e )
+
+		return e
+	end
+end
+
+local function kitOf( class )
+	for _, e in ipairs( gm.entities ) do
+		if e.class == class and e:IsValid() then return e end
+	end
+end
+
 local function seconds( s ) gm.think( math.ceil( s * 66 ), 1 / 66 ) end
 
-local function teardown() _G.KIR = nil end
+local function teardown() _G.KIR = nil gm.entityFactory = nil end
 
 local ok, why = T.requires( gm, unpack( FILES ) )
 
@@ -237,6 +272,61 @@ T.describe( "Боекомплект и подвоз", function()
 
 		gm.commands.skyops_arty_ammo_order( ply, "skyops_arty_ammo_order", { "bogus=3" } )
 		T.ok( ply.chat[ #ply.chat ]:find( "skyops_arty_ammo_order" ), "нет подсказки" )
+		teardown()
+	end )
+	T.it( "КамАЗ: кнопка выгружает катапульту с дроном, вторая убирает обратно", function()
+		local A, spg, ply = setup()
+		local truck = addTruck( A, spg, 30 )
+
+		kitWorld( A )
+		ply.veh = nil
+		function ply:InVehicle() return false end
+		ply.pos = truck:GetPos() + Vector( 5 * UPM, 0, 0 )
+
+		T.eq( truck.nw.SkyOpsArty_KitDrones, 2 )
+		gm.commands.skyops_arty_kit( ply, "skyops_arty_kit", {} )
+		gm.think( 30 )
+
+		local cat, drone = kitOf( "sw_uav_catapult" ), kitOf( "sw_orlan10" )
+
+		T.ok( cat and drone, "катапульта или дрон не созданы" )
+		T.eq( cat.mounted, drone, "дрон не на катапульте" )
+		T.eq( truck.nw.SkyOpsArty_KitDrones, 1 )
+		T.ok( truck.nw.SkyOpsArty_KitOut )
+		T.ok( drone.station.pos:Distance( truck.pos ) < 20 * UPM, "пульт не у машины" )
+
+		-- дрон улетел: не убирается
+		drone.pos = truck.pos + Vector( 500 * UPM, 0, 0 )
+		seconds( 3 )
+		gm.commands.skyops_arty_kit( ply, "skyops_arty_kit", {} )
+		T.ok( drone:IsValid(), "убрали дрон в полёте" )
+		T.ok( ply.chat[ #ply.chat ]:find( "Дрон не у машины" ), ply.chat[ #ply.chat ] )
+
+		-- вернулся и стоит
+		drone.pos = truck.pos + Vector( 0, 15 * UPM, 0 )
+		seconds( 3 )
+		gm.commands.skyops_arty_kit( ply, "skyops_arty_kit", {} )
+		T.ok( not drone:IsValid() and not cat:IsValid() and not drone.station:IsValid(), "не убрано" )
+		T.eq( truck.nw.SkyOpsArty_KitDrones, 2 )
+		T.eq( truck.nw.SkyOpsArty_KitOut, false )
+		teardown()
+	end )
+
+	T.it( "КамАЗ: сбитый дрон потерян, катапульта возвращается", function()
+		local A, spg, ply = setup()
+		local truck = addTruck( A, spg, 30 )
+
+		kitWorld( A )
+		ply.veh = truck
+
+		gm.commands.skyops_arty_kit( ply, "skyops_arty_kit", {} )
+		gm.think( 30 )
+		kitOf( "sw_orlan10" ):Remove()
+		seconds( 3 )
+		gm.commands.skyops_arty_kit( ply, "skyops_arty_kit", {} )
+		T.eq( truck.nw.SkyOpsArty_KitDrones, 1 )
+		T.ok( not kitOf( "sw_uav_catapult" ), "катапульта осталась" )
+		T.ok( ply.chat[ #ply.chat ]:find( "потерян" ), ply.chat[ #ply.chat ] )
 		teardown()
 	end )
 end )

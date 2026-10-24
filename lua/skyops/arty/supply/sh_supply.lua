@@ -24,6 +24,7 @@ S.cvCarriers = CreateConVar( "skyops_arty_supply_classes", "sw_kamaz5350", FLAGS
 S.CRATE_CLASS = "skyops_arty_ammocrate"
 S.RANGE = 15 -- m between the gun and the carrier
 S.MAX_SPEED = 1 -- m/s, both must stand still
+S.KIT_RANGE = 10 -- m: on foot this close to the truck to unload / pack the drone kit
 
 -- load of a fresh gun, for capacity 40; other capacities scale it
 S.DEFAULT_LOAD = { he = 28, krasnopol = 6, smoke = 3, illum = 2, cluster = 1 }
