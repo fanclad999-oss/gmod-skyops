@@ -79,6 +79,15 @@ function PANEL:Init()
 	self:FillGunFromNav()
 	self:FillTarget( A.Target )
 
+	-- в САУ вычислитель берёт снаряд, выбранный в самой САУ
+	local spg = A.InSPG()
+
+	if spg and A.HasFireComp() and A.LoadedShell( spg ) ~= UI.State.shell then
+		UI.State.shell = A.LoadedShell( spg )
+		self.Shell:SetValue( UI.State.shell )
+		self:RebuildCharges()
+	end
+
 	hook.Add( "SkyOpsArty.TargetChanged", self, function( pnl, t )
 		pnl:FillTarget( t )
 
@@ -306,6 +315,11 @@ function PANEL:RebuildCharges()
 
 	box:Clear()
 
+	-- 0: вычислитель сам берёт самый слабый заряд, который достаёт до цели
+	box:AddChoice( "Авто (по дальности)", 0, st.charge == 0 )
+
+	if st.charge == 0 then found = true end
+
 	for _, c in ipairs( A.Charges( st.shell ) ) do
 		local _, maxR = A.ChargeRange( st.shell, c.id )
 		local label = maxR and string.format( "%s  (до %.1f км)", c.name, maxR / 1000 ) or c.name
@@ -316,9 +330,7 @@ function PANEL:RebuildCharges()
 	end
 
 	if not found then
-		local first = A.Charges( st.shell )[ 1 ]
-
-		st.charge = first and first.id or 1
+		st.charge = 0
 		box:ChooseOptionID( 1 )
 	end
 end
@@ -326,7 +338,7 @@ end
 -- Расчёт --------------------------------------------------------------------
 
 function PANEL:BuildResult( parent )
-	local sec = Section( parent, "УСТАНОВКИ", UI.S( 236 ) )
+	local sec = Section( parent, "УСТАНОВКИ", UI.S( 330 ) )
 
 	self.SolveBtn = UI.Button( sec, "РАСЧЁТ", "primary", function() self:Solve() end )
 
@@ -402,9 +414,88 @@ function PANEL:PaintResult( w, h )
 		UI.Text( r[ 2 ], "SkyOpsArty_Text", cx + half, cy, C.text, TEXT_ALIGN_RIGHT )
 	end
 
-	if sol.approx then
-		UI.Text( "черновой расчёт: модуля баллистики ещё нет", "SkyOpsArty_Label", pad, y + UI.S( 48 ), C.muted )
+	y = y + UI.S( 48 )
+
+	local st = UI.State
+	local chargeTxt = "заряд " .. A.ChargeName( st.shell, sol.charge or st.charge ) .. ( st.charge == 0 and " (авто)" or "" ) .. ( sol.high and ", навесная" or "" )
+
+	UI.Text( chargeTxt, "SkyOpsArty_Label", pad, y, C.text )
+
+	-- что заложено в САУ: подсветка, если не совпадает с расчётом
+	local spg = A.InSPG()
+
+	if spg and A.HasFireComp() then
+		local shell, charge = A.LoadedShell( spg ), A.LoadedCharge( spg )
+		local same = shell == st.shell and ( charge == 0 or charge == sol.charge )
+		local txt = "в САУ: " .. A.ShellName( shell ) .. ", " .. A.ChargeName( shell, charge )
+
+		UI.Text( txt, "SkyOpsArty_Label", w - pad, y, same and C.ok or C.threat, TEXT_ALIGN_RIGHT )
 	end
+
+	if sol.approx then
+		UI.Text( "черновой расчёт: модуля баллистики ещё нет", "SkyOpsArty_Label", pad, y + UI.S( 18 ), C.muted )
+	end
+
+	self:PaintProfile( sol, pad, y + UI.S( 38 ), w - pad * 2, h - UI.S( 56 ) - ( y + UI.S( 38 ) ) )
+end
+
+-- профиль траектории: ОП слева, цель справа, вершина подписана
+function PANEL:PaintProfile( sol, x, y, w, h )
+	if h < UI.S( 30 ) or not sol.apex then return end
+
+	UI.Box( x, y, w, h, C.bg )
+
+	local ge, gn, gh = self:GunInput()
+	local th = ( A.Target and A.Target.h ) or gh or 0
+
+	gh = gh or 0
+
+	local lo = math.min( gh, th )
+	local top = math.max( sol.apex, gh, th )
+	local span = math.max( top - lo, 1 )
+	local mx, my = UI.S( 14 ), UI.S( 12 )
+	local function P( t, hh ) return x + mx + t * ( w - mx * 2 ), y + h - my - ( hh - lo ) / span * ( h - my * 2 ) end
+
+	-- линия цели и «земля»
+	local x0, y0 = P( 0, gh )
+	local x1, y1 = P( 1, th )
+
+	UI.DashedLine( x0, y0, x1, y1, 1, 4, 4, C.line )
+
+	-- приближение траектории: подъём до вершины и спуск к цели. Вершина ближе к цели
+	-- на настильной стрельбе и посередине на навесной.
+	local peakT = sol.high and 0.52 or 0.58
+	local prevX, prevY = x0, y0
+	local n = 32
+	local t0 = math.Clamp( ( RealTime() - ( UI.State.solutionShown or 0 ) ) * 1.5, 0, 1 )
+
+	for i = 1, math.floor( n * t0 ) do
+		local t = i / n
+		local base = gh + ( th - gh ) * t
+		local hump
+
+		if t <= peakT then
+			local u = t / peakT
+
+			hump = ( sol.apex - gh ) * ( 1 - ( 1 - u ) ^ 2 ) - ( base - gh )
+		else
+			local u = ( t - peakT ) / ( 1 - peakT )
+
+			hump = ( sol.apex - th ) * ( 1 - u ^ 2 ) - ( base - th )
+		end
+
+		local px, py = P( t, base + hump )
+
+		UI.Line( prevX, prevY, px, py, 2, C.accent )
+		prevX, prevY = px, py
+	end
+
+	local ax, ay = P( peakT, sol.apex )
+
+	UI.FilledCircle( x0, y0, UI.S( 3 ), C.friend, 10 )
+	UI.FilledCircle( x1, y1, UI.S( 3 ), C.threat, 10 )
+	UI.Text( string.format( "%.0f м", sol.apex ), "SkyOpsArty_Label", ax, ay - UI.S( 4 ), C.muted, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM )
+	UI.Text( string.format( "%.1f км", ( sol.range or 0 ) / 1000 ), "SkyOpsArty_Label", x + w - UI.S( 4 ), y + h - UI.S( 2 ), C.muted, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM )
 end
 
 -- quiet: пересчёт по событию, без звука и без ошибок про пустые поля
@@ -427,16 +518,36 @@ function PANEL:Solve( quiet )
 	local base = IsValid( spg ) and ( A.BaseDir( spg ) ) or 0
 	local ae, an, ah = A.AimPoint( ge, gn )
 	local st = UI.State
+	local charge = st.charge
+
+	if charge == 0 then
+		local range = math.sqrt( ( ae - ge ) ^ 2 + ( an - gn ) ^ 2 )
+
+		charge = A.BestCharge( st.shell, range, ( ah or 0 ) - gh )
+	end
+
+	local prev = st.solution
 
 	st.solution = A.Solve( {
 		gun = { x = ge, y = gn, h = gh },
 		target = { x = ae, y = an, h = ah or 0 },
 		shell = st.shell,
-		charge = st.charge,
+		charge = charge,
 		high = st.high,
 		basedir = base,
 	} )
+	st.solution.charge = st.solution.charge or charge
 	st.solutionTime = CurTime()
+
+	-- профиль перерисовывается с анимацией только при новых установках
+	if not prev or prev.deflection ~= st.solution.deflection or prev.elevation ~= st.solution.elevation then
+		st.solutionShown = RealTime()
+	end
+
+	-- по кнопке РАСЧЁТ сидящий в САУ сразу закладывает нужный заряд
+	if not quiet and st.solution.ok and A.InSPG() and A.LoadedCharge( A.InSPG() ) ~= charge then
+		A.SetGunCharge( charge )
+	end
 
 	if not quiet then surface.PlaySound( st.solution.ok and "buttons/button24.wav" or "buttons/button10.wav" ) end
 

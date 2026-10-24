@@ -59,6 +59,10 @@ end
 -- Единицы и координаты ------------------------------------------------------
 
 function A.UPM()
+	local G = Grid()
+
+	if G and G.UPM then return G.UPM() end
+
 	return ( KIR and KIR.S ) or SkyOps.M_TO_HU or 40
 end
 
@@ -86,7 +90,7 @@ function A.FromGrid( e, n, h )
 	local pos
 
 	if G and G.FromGrid then
-		pos = G.FromGrid( e, n )
+		pos = G.FromGrid( e, n, h )
 	else
 		pos = Vector( ( e - FALLBACK_ORIGIN ) * upm, ( n - FALLBACK_ORIGIN ) * upm, 0 )
 	end
@@ -104,6 +108,10 @@ end
 
 -- высота рельефа в мировых юнитах или nil
 function A.GroundZ( x, y )
+	local G = Grid()
+
+	if G and G.GroundZ then return G.GroundZ( x, y ) end
+
 	local fn = SkyOps.Map and ( SkyOps.Map.SafeGroundZ or SkyOps.Map.GroundZ )
 
 	if not fn then return nil end
@@ -144,11 +152,8 @@ function A.Square( e, n )
 	return string.format( "%02d-%02d", sn % 100, se % 100 ), SNAIL[ fn ][ fe + 1 ]
 end
 
+-- своя запись, а не Grid.Format: квадрат и улитку интерфейс показывает отдельно
 function A.FormatGrid( e, n )
-	local G = Grid()
-
-	if G and G.Format then return G.Format( e, n ) end
-
 	return string.format( "С %05d  В %05d", math.Round( n ), math.Round( e ) )
 end
 
@@ -318,7 +323,7 @@ local RangeCache = {}
 function A.ChargeRange( shell, chargeId )
 	for _, c in ipairs( A.Charges( shell ) ) do
 		if c.id == chargeId then
-			if c.max then return c.min or 0, c.max end
+			if c.max then return c.min or 0, c.max, c.minHigh end
 
 			local key = shell .. "/" .. chargeId
 
@@ -333,6 +338,23 @@ function A.ChargeRange( shell, chargeId )
 			return 0, RangeCache[ key ]
 		end
 	end
+end
+
+-- самый слабый заряд, который достаёт до дальности (заряд «авто»)
+function A.BestCharge( shell, range, dh )
+	local F = FC()
+
+	if F and F.BestCharge then return F.BestCharge( shell, range, dh ) end
+
+	local list = A.Charges( shell )
+
+	for i = #list, 1, -1 do
+		local _, maxR = A.ChargeRange( shell, list[ i ].id )
+
+		if maxR and maxR >= range * 1.05 then return list[ i ].id end
+	end
+
+	return list[ 1 ] and list[ 1 ].id or 1
 end
 
 -- q = { gun = {x, y, h}, target = {x, y, h}, shell, charge, high, basedir }
@@ -415,6 +437,69 @@ function A.GunLaying( spg )
 	local bearing = A.DegToMils( A.YawToBearing( ang.y ) )
 
 	return A.Deflection( bearing, ( A.BaseDir( spg ) ) ), A.DegToMils( -ang.p ), bearing
+end
+
+-- состояние ОП (arty/core/sv_spg): марш, развёртывание, развёрнута, свёртывание
+A.STATE_MARCH, A.STATE_DEPLOYING, A.STATE_DEPLOYED, A.STATE_STOWING = 0, 1, 2, 3
+A.STATE_NAMES = {
+	[ 0 ] = "ПОХОДНОЕ ПОЛОЖЕНИЕ",
+	[ 1 ] = "РАЗВЁРТЫВАНИЕ",
+	[ 2 ] = "РАЗВЁРНУТА",
+	[ 3 ] = "СВЁРТЫВАНИЕ",
+}
+
+-- состояние и оставшееся время перехода, с
+function A.SPGState( spg )
+	if not A.HasFireComp() then return A.STATE_DEPLOYED, 0 end
+
+	local state = spg:GetNW2Int( "SkyOpsArty_State", spg:GetNW2Bool( "SkyOpsArty_Deployed", false ) and A.STATE_DEPLOYED or A.STATE_MARCH )
+
+	return state, math.max( spg:GetNW2Float( "SkyOpsArty_StateEnd", 0 ) - CurTime(), 0 )
+end
+
+-- снаряд, который сейчас выбран в самой САУ (стоковая клавиша смены снаряда)
+function A.LoadedShell( spg )
+	local F = FC()
+	local t = spg.GetShellType and spg:GetShellType() or 0
+
+	if F and F.ShellForStockType then return F.ShellForStockType( t ) end
+
+	return t == 1 and "krasnopol" or "he"
+end
+
+-- заряд, заложенный в САУ (0 = модуль баллистики не задал)
+function A.LoadedCharge( spg )
+	return spg:GetNW2Int( "SkyOpsArty_Charge", 0 )
+end
+
+function A.AutoLaying( spg ) return spg:GetNW2Bool( "SkyOpsArty_Auto", false ) end
+
+-- выбрать заряд в САУ, в которой сидит игрок
+function A.SetGunCharge( id )
+	if A.InSPG() and A.HasFireComp() then RunConsoleCommand( "skyops_arty_charge", tostring( id ) ) end
+end
+
+function A.ShellName( id )
+	for _, s in ipairs( A.SHELLS ) do
+		if s.id == id then return s.name end
+	end
+
+	return "?"
+end
+
+function A.ChargeName( shell, id )
+	for _, c in ipairs( A.Charges( shell ) ) do
+		if c.id == id then return c.name end
+	end
+
+	return id == 0 and "авто" or "?"
+end
+
+-- клавиши САУ из arty/core/sh_spg (развернуть, заряд, наводка)
+function A.SPGKey( name )
+	local S = SkyOps.Arty.SPG
+
+	return S and S.KeyName and S.KeyName( name ) or nil
 end
 
 function A.IsUAV( ent )
@@ -505,7 +590,7 @@ A.Shift = A.Shift or { lat = 0, rng = 0 } -- поправки, м: правее 
 A.Impacts = A.Impacts or {}
 
 -- выбор в вычислителе и последний расчёт; читают карта и шкалы наводчика
-UI.State = UI.State or { shell = "he", charge = 1, high = false, solution = nil }
+UI.State = UI.State or { shell = "he", charge = 0, high = false, solution = nil }
 
 function A.SetTarget( pos, src, err )
 	local e, n, h = A.ToGrid( pos )
