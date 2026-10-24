@@ -736,6 +736,32 @@ hook.Add( "SkyOps.Arty.TargetSent", "SkyOps.Arty.Missions", function( drone, pos
 	if M.Run then TryDroneFix( M.Run, drone, pos, err, ply ) end
 end )
 
+-- the drone module asks where to put a drone in the air for this player's mission:
+-- the search area, else the known target point, else roughly (+-400 m) the target group
+hook.Add( "SkyOps.Arty.DroneDeployPoint", "SkyOps.Arty.Missions", function( ply )
+	local run = M.Run
+
+	if not run or run.stage == M.STAGE_DONE or not run.players[ ply ] then return end
+
+	local x, y
+
+	if run.intel then
+		x, y = run.intel.x, run.intel.y
+	elseif run.area then
+		x, y = run.area.x, run.area.y
+	else
+		run.roughPoint = run.roughPoint or { math.Rand( -400, 400 ), math.Rand( -400, 400 ) }
+
+		local cx, cy = M.Targets.Center( run.targets )
+
+		if not cx then return end
+
+		x, y = cx + run.roughPoint[ 1 ], cy + run.roughPoint[ 2 ]
+	end
+
+	return Grid.FromGrid( x, y )
+end )
+
 -- without the drone module: a stock camera lock (NWVector TrackPos) held on the target
 local function PollDroneLocks( run, dt )
 	local best

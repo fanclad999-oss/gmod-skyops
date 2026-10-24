@@ -59,6 +59,7 @@ S ≥ 90 %, A ≥ 75, B ≥ 55, C ≥ 35. В авто не выше A, при п
   остаётся), `SkyOps.Arty.ShellRemoved`; `shell.data.mission`, `shell.data.missionShot`.
 - **Ждём от модуля дрона**: `hook.Run( "SkyOps.Arty.TargetSent", drone, worldPos, err_m, ply )`
   на «передать». Без него работает захват камерой.
+- `hook.Run( "SkyOps.Arty.DroneDeployPoint", ply ) -> Vector` (абсолютная, Z по земле): район поиска, иначе точка цели, иначе цель ±400 м; nil без задания. Зовёт модуль дрона для «дрон сразу в воздух».
 - net `skyops_arty_target` задание тоже шлёт (координаты штаба и дрона) в формате модуля дрона (PR #6): `Float x, Float y, Float z, Float err_m, Entity drone`. Хук `SkyOps.Arty.TargetSent` есть в PR #6.
 - Карта планшета: оборачиваем `PaintTarget` у панели `SkyOpsArtyMap` (ОП, район поиска,
   точка цели, в авто — сами цели). Файлы `arty/ui` не трогаем.
