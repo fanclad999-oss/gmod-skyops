@@ -458,8 +458,8 @@ function A.DroneTrack( drone )
 	local p = drone:GetNWVector( "TrackPos", vector_origin )
 	local tracking = drone.GetTracking and drone:GetTracking()
 
-	-- без захвата стоковый код держит там единичное значение, не точку
-	if p:LengthSqr() < 100 or tracking == false then return nil end
+	-- без захвата стоковый код кладёт туда число 1, а не точку
+	if not isvector( p ) or p:LengthSqr() < 100 or tracking == false then return nil end
 
 	return p
 end
