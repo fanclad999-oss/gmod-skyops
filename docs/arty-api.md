@@ -16,7 +16,10 @@ InfMap, то есть то, что возвращает `GetPos()` (InfMap ег�
 ## Сетка `SkyOps.Arty.Grid` (shared)
 
 - `ToGrid( worldPos ) -> x_m, y_m`
-- `FromGrid( x_m, y_m ) -> worldPos` (Z по рельефу)
+- `FromGrid( x_m, y_m, h_m? ) -> worldPos` (без `h` Z по рельефу)
+- `ToGrid3( worldPos ) -> x_m, y_m, h_m`
+- `YawToMils( yaw ) -> mils`, `MilsToYaw( mils ) -> yaw`
+- `Bearing( fromPos, toPos ) -> mils` дирекционный угол, `Direction( mils ) -> Vector`
 - `Height( x_m, y_m ) -> h_m` высота рельефа (на Кировском по `KIR.MeshHeight`)
 - `Format( x_m, y_m ) -> string` (квадрат + улитка и полные координаты)
 - `SquareSize = 1000`
@@ -25,18 +28,34 @@ InfMap, то есть то, что возвращает `GetPos()` (InfMap ег�
 ## Огневой компьютер `SkyOps.Arty.FireComp` (shared)
 
 - `Solve{ gun = {x,y,h}, target = {x,y,h}, shell = "he"|"krasnopol", charge = id, high = bool, basedir = тыс. }`
-  -> `{ ok, err, range, bearing, deflection, elevation, tof, apex }`
-- `Charges( shell ) -> { {id, name, min, max}, ... }` (дальности в метрах)
-- `GunLaying( spg ) -> deflection, elevation` текущие установки ствола
+  -> `{ ok, err, range, bearing, deflection, elevation, tof, apex, charge, high }`
+- `Charges( shell ) -> { {id, name, min, max, minHigh, v0}, ... }` (дальности в метрах, `minHigh` для навесной, `v0` м/с)
+- `GunLaying( spg ) -> deflection, elevation, bearing` текущие установки и дирекционный ствола
 - Угломер: `deflection = (3000 + basedir - bearing) mod 6000`
 
-## САУ `sw_2s35`
+## САУ `sw_2s35` (`arty/core/sh_spg.lua`, `SkyOps.Arty.SPG`)
 
-- NW2: `SkyOpsArty_Deployed` (bool), `SkyOpsArty_BaseDir` (тыс.)
+- На время развёртывания стоковый `AimTurret` заменяется нашей наводкой.
+- NW2: `SkyOpsArty_Deployed` (bool), `SkyOpsArty_BaseDir` (тыс.),
+  `SkyOpsArty_State` (0 марш, 1 развёртывание, 2 развёрнута, 3 свёртывание), `SkyOpsArty_StateEnd` (время),
+  `SkyOpsArty_Lay`, `SkyOpsArty_LayP` / `SkyOpsArty_LayY` (установки наводки), `SkyOpsArty_Charge`, `SkyOpsArty_Auto`
 - net клиент -> сервер `skyops_arty_auto { Entity spg, Vector target, String shell, UInt8 charge }`
-  (режим авто: навести и выстрелить)
+  (режим авто: навести и выстрелить; `charge = 0` выбрать заряд сам)
+- Команды: `skyops_arty_deploy`, `skyops_arty_charge`, `skyops_arty_basedir`
+- Convar'ы: `skyops_arty_timescale`, `skyops_arty_dispersion`, `skyops_arty_deploy_time`, `skyops_arty_stow_time`
+- Клавиши: H развернуть/свернуть, K заряд, стрелки наводка, Shift x10.
+  Клавиши интерфейса: N, T, G, J, B (не пересекаются).
 - net сервер -> клиент `skyops_arty_impact { Vector pos, String shell }`
 - Режим: реплицируемый convar `skyops_arty_mode` = `hardcore` | `auto`
+
+## Баллистика `SkyOps.Arty.Ballistics` (server)
+
+- `Fire{ ... }` запускает расчётный снаряд, `Active` таблица летящих снарядов,
+  `WorldPos( s )` / `WorldVel( s )`
+- Хуки: `SkyOps.Arty.SPGFired`, `SkyOps.Arty.ShellFired`, `SkyOps.Arty.ShellThink`,
+  `SkyOps.Arty.ShellImpact`, `SkyOps.Arty.ShellRemoved`
+- Для Краснополя баллистика каждый шаг вызывает `SkyOps.Arty.Guided.Steer( s, dt )`
+  (реализует тред дрона в `arty/drone/sv_guided.lua`)
 
 ## Дрон `SkyOps.Arty.Drone`
 
