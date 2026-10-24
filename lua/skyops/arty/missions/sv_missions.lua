@@ -243,8 +243,13 @@ local function Reveal( run, x, y, err, src )
 	M.Radio( run, src == "штаб" and "Штаб" or "Дрон", text )
 
 	-- the fire computer of every crew member gets the point, like a drone "send"
+	-- same layout as the drone module: floats, WriteVector loses precision far out on InfMap
+	local wp = Grid.FromGrid( x, y )
+
 	net.Start( "skyops_arty_target" )
-		net.WriteVector( Grid.FromGrid( x, y ) )
+		net.WriteFloat( wp.x )
+		net.WriteFloat( wp.y )
+		net.WriteFloat( wp.z )
 		net.WriteFloat( err or 0 )
 		net.WriteEntity( run.intelDrone or NULL )
 	net.Send( Players( run ) )
