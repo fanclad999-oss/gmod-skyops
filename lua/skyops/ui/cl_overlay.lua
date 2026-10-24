@@ -51,7 +51,12 @@ local function PaintObjectives()
 
 		if surface.GetTextSize( text ) > w - S( 52 ) then
 			while #text > 0 and surface.GetTextSize( text .. "…" ) > w - S( 52 ) do
-				text = string.sub( text, 1, (utf8.offset( text, -1 ) or #text) - 1 )
+				-- срезаем последний символ UTF-8: байты продолжения 0x80..0xBF и его первый байт
+				local cut = #text
+
+				while cut > 1 and string.byte( text, cut ) >= 0x80 and string.byte( text, cut ) < 0xC0 do cut = cut - 1 end
+
+				text = string.sub( text, 1, cut - 1 )
 			end
 
 			text = text .. "…"
