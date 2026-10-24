@@ -8,7 +8,7 @@
 --   skyops_arty_basedir <mils>|here|off   basic direction of the position; "here" makes
 --                                     the current barrel bearing read 30-00
 -- net:
---   skyops_arty_lay  client -> server { UInt(5) mask }  laying keys held (SPG.LAY_*)
+--   skyops_arty_lay  client -> server { UInt(6) mask }  laying keys held (SPG.LAY_*)
 --   skyops_arty_auto client -> server { Entity spg, Float x, Float y, Float z (target), String shell, UInt8 charge }
 --                    charge 0 = pick the weakest charge that reaches
 
@@ -28,7 +28,7 @@ local MAX_DEPLOY_SPEED = 1 -- m/s
 local UNDEPLOYED_DISPERSION = 3
 
 local LAY_STEP, LAY_STEP_FAST = 1, 10 -- mils per key press
-local LAY_RATE, LAY_RATE_FAST = 20, 200 -- mils per second while held
+local LAY_RATE, LAY_RATE_FAST, LAY_RATE_SLOW = 20, 200, 2 -- mils per second while held
 local LAY_HOLD = 0.35 -- s before a held key starts to slew
 
 local AUTO_TOL = 0.3 -- mils: laid closely enough to fire
@@ -167,7 +167,7 @@ local function FinishDeploy( spg )
 
 	local defl, elev = FC.GunLaying( spg )
 
-	TellCrew( spg, string.format( "Развёрнута. Основное направление %s, угломер %s, прицел %s. Наводка стрелками (с Shift по 10 тыс.), заряд K.",
+	TellCrew( spg, string.format( "Развёрнута. Основное направление %s, угломер %s, прицел %s. Наводка стрелками: с Shift по 10 тыс., с Alt медленно; заряд K.",
 		FmtMils( spg:GetNW2Float( "SkyOpsArty_BaseDir", 0 ) ), FmtMils( defl ), FmtMils( elev ) ) )
 end
 
@@ -201,7 +201,7 @@ local function Nudge( spg, d, mils )
 end
 
 net.Receive( "skyops_arty_lay", function( _, ply )
-	local mask = net.ReadUInt( 5 )
+	local mask = net.ReadUInt( 6 )
 	local spg = SPG.Of( ply )
 	local h = Held[ ply ] or { mask = 0, since = {} }
 
@@ -213,6 +213,7 @@ net.Receive( "skyops_arty_lay", function( _, ply )
 	end
 
 	local fast = bit.band( mask, SPG.LAY_FAST ) ~= 0
+	local slow = bit.band( mask, SPG.LAY_SLOW ) ~= 0
 
 	for _, d in ipairs( DIRS ) do
 		local now = bit.band( mask, d.bit ) ~= 0
@@ -221,7 +222,7 @@ net.Receive( "skyops_arty_lay", function( _, ply )
 		if now and not before then
 			if spg.SkyOpsArty_Job then CancelAuto( spg, "отменено ручной наводкой" ) end
 
-			Nudge( spg, d, fast and LAY_STEP_FAST or LAY_STEP )
+			if not slow then Nudge( spg, d, fast and LAY_STEP_FAST or LAY_STEP ) end
 			h.since[ d.bit ] = CurTime()
 		end
 	end
@@ -237,10 +238,13 @@ local function LayThink( spg )
 			Held[ ply ] = nil
 		elseif h.mask ~= 0 and SPG.Of( ply ) == spg then
 			local fast = bit.band( h.mask, SPG.LAY_FAST ) ~= 0
+			local slow = bit.band( h.mask, SPG.LAY_SLOW ) ~= 0
+			local rate = slow and LAY_RATE_SLOW or fast and LAY_RATE_FAST or LAY_RATE
 
 			for _, d in ipairs( DIRS ) do
-				if bit.band( h.mask, d.bit ) ~= 0 and CurTime() - ( h.since[ d.bit ] or 0 ) > LAY_HOLD then
-					Nudge( spg, d, ( fast and LAY_RATE_FAST or LAY_RATE ) * ft )
+				-- slow laying creeps from the first moment, so the gunner can stop on the mark
+				if bit.band( h.mask, d.bit ) ~= 0 and ( slow or CurTime() - ( h.since[ d.bit ] or 0 ) > LAY_HOLD ) then
+					Nudge( spg, d, rate * ft )
 				end
 			end
 		end
@@ -271,8 +275,6 @@ local function Intercept( spg, stock )
 
 	local shellId = order and order.shell or CurrentShell( spg )
 	local charge = UsableCharge( shellId, order and order.charge or spg:GetNW2Int( "SkyOpsArty_Charge", 1 ) )
-
-	spg:InvalidateBoneCache()
 
 	local pos, dir = FC.Muzzle( spg )
 
@@ -354,8 +356,6 @@ end
 -- solves from where the muzzle is now (it moves as the barrel elevates); with job.sol
 -- set, keeps its charge and angle group so the laying can be refined
 local function AutoSolve( spg, job )
-	spg:InvalidateBoneCache()
-
 	local mx, my, mh = Grid.ToGrid3( ( FC.Muzzle( spg ) ) )
 	local gx, gy, gh = mx, my, mh - FC.MUZZLE_H -- Solve adds MUZZLE_H to the gun height
 	local tx, ty, th = Grid.ToGrid3( job.target )

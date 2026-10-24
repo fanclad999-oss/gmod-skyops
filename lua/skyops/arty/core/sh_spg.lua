@@ -21,7 +21,7 @@ SPG.GUNNER_POD = 2 -- TurretPodIndex of sw_2s35
 SPG.STATE_MARCH, SPG.STATE_DEPLOYING, SPG.STATE_DEPLOYED, SPG.STATE_STOWING = 0, 1, 2, 3
 
 -- bits of the skyops_arty_lay message: laying keys held by the gunner
-SPG.LAY_LEFT, SPG.LAY_RIGHT, SPG.LAY_UP, SPG.LAY_DOWN, SPG.LAY_FAST = 1, 2, 4, 8, 16
+SPG.LAY_LEFT, SPG.LAY_RIGHT, SPG.LAY_UP, SPG.LAY_DOWN, SPG.LAY_FAST, SPG.LAY_SLOW = 1, 2, 4, 8, 16, 32
 
 -- hardcore: manual laying from the fire computer; auto: one button lays and fires
 SPG.cvMode = CreateConVar( "skyops_arty_mode", "hardcore", bit.bor( FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY ), "Artillery mode: hardcore | auto" )
@@ -123,6 +123,7 @@ local Keys = {
 	up = CreateClientConVar( "skyops_arty_key_up", tostring( KEY_UP ), true, false, "2S35: ствол вверх (прицел больше)" ),
 	down = CreateClientConVar( "skyops_arty_key_down", tostring( KEY_DOWN ), true, false, "2S35: ствол вниз (прицел меньше)" ),
 	fast = CreateClientConVar( "skyops_arty_key_fast", tostring( KEY_LSHIFT ), true, false, "2S35: держать для наводки по 10 тысячных" ),
+	slow = CreateClientConVar( "skyops_arty_key_slow", tostring( KEY_LALT ), true, false, "2S35: держать для медленной точной наводки (2 тысячных в секунду)" ),
 }
 
 local function Down( cv )
@@ -160,7 +161,11 @@ hook.Add( "Think", "SkyOps.Arty.SPGKeys", function()
 			if Down( Keys.right ) then mask = mask + SPG.LAY_RIGHT end
 			if Down( Keys.up ) then mask = mask + SPG.LAY_UP end
 			if Down( Keys.down ) then mask = mask + SPG.LAY_DOWN end
-			if mask > 0 and Down( Keys.fast ) then mask = mask + SPG.LAY_FAST end
+			if mask > 0 and Down( Keys.slow ) then
+				mask = mask + SPG.LAY_SLOW
+			elseif mask > 0 and Down( Keys.fast ) then
+				mask = mask + SPG.LAY_FAST
+			end
 		end
 	else
 		was = {}
@@ -171,7 +176,7 @@ hook.Add( "Think", "SkyOps.Arty.SPGKeys", function()
 
 		if util.NetworkStringToID( "skyops_arty_lay" ) ~= 0 then
 			net.Start( "skyops_arty_lay" )
-				net.WriteUInt( mask, 5 )
+				net.WriteUInt( mask, 6 )
 			net.SendToServer()
 		end
 	end
