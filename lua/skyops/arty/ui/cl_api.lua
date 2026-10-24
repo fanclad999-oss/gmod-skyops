@@ -68,6 +68,39 @@ end
 
 local FALLBACK_ORIGIN = 50000 -- м: сдвиг, чтобы координаты без модуля сетки были положительными
 
+-- InfMap на клиенте: Entity:GetPos() считается от чанка LocalPlayer, а сервер, сеть и
+-- Grid.ToGrid работают с абсолютными (развёрнутыми) позициями. Все позиции сущностей в
+-- интерфейсе берём через A.EntPos.
+local function ChunkShift()
+	local ply = LocalPlayer()
+
+	if not InfMap or not InfMap.unlocalize_vector or not IsValid( ply ) or not ply.CHUNK_OFFSET then return nil end
+
+	return InfMap.unlocalize_vector( Vector(), ply.CHUNK_OFFSET )
+end
+
+function A.EntPos( ent )
+	local shift = ChunkShift()
+
+	return shift and ( ent:GetPos() + shift ) or ent:GetPos()
+end
+
+-- абсолютная позиция -> позиция для отрисовки у этого клиента
+function A.ToRender( pos )
+	local shift = ChunkShift()
+
+	return shift and ( pos - shift ) or pos
+end
+
+-- позиция в сети: три Float, net.WriteVector обрезает дальше ±16384 u
+function A.ReadPos() return Vector( net.ReadFloat(), net.ReadFloat(), net.ReadFloat() ) end
+
+function A.WritePos( v )
+	net.WriteFloat( v.x )
+	net.WriteFloat( v.y )
+	net.WriteFloat( v.z )
+end
+
 -- мировая позиция -> восток, север, высота в метрах
 function A.ToGrid( pos )
 	local G = Grid()
@@ -394,7 +427,7 @@ function A.MySPG()
 	local best, bestD = nil, ( 500 * A.UPM() ) ^ 2
 
 	for _, spg in ipairs( ents.FindByClass( A.SPG_CLASS ) ) do
-		local d = spg:GetPos():DistToSqr( ply:GetPos() )
+		local d = A.EntPos( spg ):DistToSqr( A.EntPos( ply ) )
 
 		if d < bestD then best, bestD = spg, d end
 	end
@@ -547,6 +580,16 @@ end
 function A.DroneLaserSpot( drone )
 	if not A.DroneLaser( drone ) then return nil end
 
+	local D = Drone()
+
+	if D and D.LaserPos then
+		local p, blocked = D.LaserPos( drone )
+
+		if p and p ~= vector_origin then return p, blocked end
+
+		return A.DroneTrack( drone ), false
+	end
+
 	local p = drone:GetNW2Vector( "SkyOpsArty_LaserPos", vector_origin )
 
 	if p == vector_origin then return A.DroneTrack( drone ), false end
@@ -565,7 +608,13 @@ function A.AllDrones()
 end
 
 -- точка, куда смотрит камера дрона (мировая) или nil
+-- позиции с дрона берём через функции модуля дрона: как они упакованы в NW2
+-- (вектор или три числа, см. «Правила для позиций в сети»), знает только он
 function A.DroneTrack( drone )
+	local D = Drone()
+
+	if D and D.TrackPos then return D.TrackPos( drone ) end
+
 	local p = drone:GetNWVector( "TrackPos", vector_origin )
 	local tracking = drone.GetTracking and drone:GetTracking()
 
@@ -580,7 +629,17 @@ function A.DroneLaser( drone ) return drone:GetNW2Bool( "SkyOpsArty_Laser", fals
 function A.DroneLoiter( drone )
 	if not drone:GetNW2Bool( "SkyOpsArty_Loiter", false ) then return nil end
 
-	return drone:GetNW2Vector( "SkyOpsArty_LoiterCenter", drone:GetPos() ), drone:GetNW2Float( "SkyOpsArty_LoiterRadius", 0 )
+	local D = Drone()
+
+	if D and D.LoiterCenter then
+		local c, r = D.LoiterCenter( drone )
+
+		if c then return c, r or drone:GetNW2Float( "SkyOpsArty_LoiterRadius", 0 ) end
+	end
+
+	local c = Vector( drone:GetNW2Float( "SkyOpsArty_LoiterCenter_X", 0 ), drone:GetNW2Float( "SkyOpsArty_LoiterCenter_Y", 0 ), drone:GetNW2Float( "SkyOpsArty_LoiterCenter_Z", 0 ) )
+
+	return c ~= vector_origin and c or A.EntPos( drone ), drone:GetNW2Float( "SkyOpsArty_LoiterRadius", 0 )
 end
 
 -- Сеть ----------------------------------------------------------------------
@@ -603,7 +662,7 @@ end
 function A.AutoFire( spg, pos, shell, charge )
 	return A.Send( "skyops_arty_auto", function()
 		net.WriteEntity( spg )
-		net.WriteVector( pos )
+		A.WritePos( pos )
 		net.WriteString( shell or "he" )
 		net.WriteUInt( charge or 1, 8 )
 	end )
@@ -664,7 +723,7 @@ function A.FmtDeviation( lat, rng )
 end
 
 net.Receive( "skyops_arty_impact", function()
-	local pos = net.ReadVector()
+	local pos = A.ReadPos()
 	local shell = net.ReadString()
 
 	table.insert( A.Impacts, 1, { pos = pos, shell = shell, time = CurTime() } )
@@ -675,7 +734,7 @@ net.Receive( "skyops_arty_impact", function()
 end )
 
 net.Receive( "skyops_arty_target", function()
-	local pos = net.ReadVector()
+	local pos = A.ReadPos()
 	local err = net.ReadFloat()
 	local drone = net.ReadEntity()
 

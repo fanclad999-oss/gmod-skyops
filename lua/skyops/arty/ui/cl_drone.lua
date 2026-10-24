@@ -22,7 +22,7 @@ local function InDrone() return IsValid( A.MyDrone() ) end
 -- Точка мира -> экран. Направление не зависит от того, в каком чанке InfMap рисуется
 -- мир, поэтому проецируем направление от дрона, а не саму позицию.
 local function Project( drone, pos )
-	local dir = ( pos - drone:GetPos() ):GetNormalized()
+	local dir = ( pos - A.EntPos( drone ) ):GetNormalized()
 	local s = ( EyePos() + dir * 100 ):ToScreen()
 
 	if not s.visible or EyeVector():Dot( dir ) <= 0 then return nil end
@@ -116,7 +116,7 @@ concommand.Add( "skyops_arty_firecam", function() if InDrone() then FireAtTrack(
 
 local function PaintTelemetry( drone )
 	local upm = A.UPM()
-	local pos = drone:GetPos()
+	local pos = A.EntPos( drone )
 	local e, n, h = A.ToGrid( pos )
 	local gh = A.GroundH( e, n )
 	local speed = drone:GetVelocity():Length() / upm * 3.6
@@ -181,7 +181,7 @@ local function PaintTrack( drone )
 
 	local e, n, h = A.ToGrid( track )
 	local sq, snail = A.Square( e, n )
-	local dist = track:Distance( drone:GetPos() ) / A.UPM()
+	local dist = track:Distance( A.EntPos( drone ) ) / A.UPM()
 	local px, py = Project( drone, track )
 	local col = laser and C.laser or C.hud
 
@@ -204,7 +204,7 @@ local function PaintTrack( drone )
 	local spg = A.MySPG()
 
 	if IsValid( spg ) then
-		local ge, gn = A.ToGrid( spg:GetPos() )
+		local ge, gn = A.ToGrid( A.EntPos( spg ) )
 
 		lines[ #lines + 1 ] = { string.format( "от САУ %.2f км  %s", math.sqrt( ( e - ge ) ^ 2 + ( n - gn ) ^ 2 ) / 1000, A.FmtMils( A.Bearing( ge, gn, e, n ) ) ), C.muted, "SkyOpsArty_HUDSmall" }
 	end
@@ -245,7 +245,7 @@ local function PaintImpacts( drone )
 
 	if not seen then return end
 
-	local ge, gn = A.ToGrid( spg:GetPos() )
+	local ge, gn = A.ToGrid( A.EntPos( spg ) )
 	local ie, inn = A.ToGrid( last.pos )
 	local lat, rng = A.Deviation( ge, gn, t.e, t.n, ie, inn )
 	local text
@@ -321,7 +321,7 @@ local function PaintMinimap( drone )
 	local x, y = UI.S( 24 ), ScrH() - size - UI.S( 70 )
 	local r = size / 2
 	local cx, cy = x + r, y + r
-	local de, dn = A.ToGrid( drone:GetPos() )
+	local de, dn = A.ToGrid( A.EntPos( drone ) )
 	local mpp = MINIMAP_KM * 1000 / r
 
 	local function P( pos )
@@ -383,13 +383,13 @@ local function PaintMinimap( drone )
 	local spg = A.MySPG()
 
 	if IsValid( spg ) then
-		local sx, sy, edge = P( spg:GetPos() )
+		local sx, sy, edge = P( A.EntPos( spg ) )
 		local s = UI.S( 4 )
 
 		UI.Outline( sx - s, sy - s, s * 2, s * 2, C.accent, 2 )
 
 		if edge then
-			local ge, gn = A.ToGrid( spg:GetPos() )
+			local ge, gn = A.ToGrid( A.EntPos( spg ) )
 
 			UI.Text( string.format( "%.0f км", math.sqrt( ( ge - de ) ^ 2 + ( gn - dn ) ^ 2 ) / 1000 ), "SkyOpsArty_Label", sx, sy + s + 2, C.accent, TEXT_ALIGN_CENTER )
 		end

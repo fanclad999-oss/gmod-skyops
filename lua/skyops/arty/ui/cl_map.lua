@@ -25,7 +25,7 @@ end
 
 function PANEL:CenterOnUnit()
 	local spg = A.MySPG()
-	local pos = IsValid( spg ) and spg:GetPos() or LocalPlayer():GetPos()
+	local pos = IsValid( spg ) and A.EntPos( spg ) or A.EntPos( LocalPlayer() )
 	local e, n = A.ToGrid( pos )
 
 	self:CenterOn( e, n )
@@ -122,7 +122,7 @@ function PANEL:OpenMenu()
 	local drone = A.MyDrone() or A.AllDrones()[ 1 ]
 
 	if IsValid( drone ) then
-		menu:AddOption( "Центр на дроне", function() self:CenterOn( A.ToGrid( drone:GetPos() ) ) end ):SetIcon( "icon16/eye.png" )
+		menu:AddOption( "Центр на дроне", function() self:CenterOn( A.ToGrid( A.EntPos( drone ) ) ) end ):SetIcon( "icon16/eye.png" )
 	end
 
 	if A.Target then
@@ -227,7 +227,7 @@ function PANEL:PaintGrid( w, h )
 end
 
 function PANEL:PaintSPG( spg, own )
-	local x, y = self:WorldToScreen( spg:GetPos() )
+	local x, y = self:WorldToScreen( A.EntPos( spg ) )
 	local s = UI.S( 7 )
 	local col = own and C.accent or C.friend
 	-- третье значение (дирекционный угол ствола) есть только у запасного GunLaying
@@ -248,7 +248,7 @@ function PANEL:PaintSPG( spg, own )
 end
 
 function PANEL:PaintDrone( drone, own )
-	local x, y = self:WorldToScreen( drone:GetPos() )
+	local x, y = self:WorldToScreen( A.EntPos( drone ) )
 	local col = own and C.accent or C.friend
 	local r = math.rad( A.YawToBearing( drone:GetAngles().y ) )
 	local s = UI.S( 9 )
@@ -328,7 +328,7 @@ function PANEL:PaintTarget()
 
 	if not IsValid( spg ) then return end
 
-	local ge, gn = A.ToGrid( spg:GetPos() )
+	local ge, gn = A.ToGrid( A.EntPos( spg ) )
 	local gx, gy = self:ToScreen( ge, gn )
 	local ae, an = A.AimPoint( ge, gn )
 	local ax, ay = self:ToScreen( ae, an )
@@ -381,7 +381,7 @@ function PANEL:PaintRangeRings()
 
 	if not maxR then return end
 
-	local x, y = self:WorldToScreen( spg:GetPos() )
+	local x, y = self:WorldToScreen( A.EntPos( spg ) )
 	local col = Color( C.accent.r, C.accent.g, C.accent.b, 70 )
 	local r = maxR / self.MPP
 
@@ -430,7 +430,7 @@ function PANEL:PaintOverlay( w, h )
 		local spg = A.MySPG()
 
 		if IsValid( spg ) then
-			local ge, gn = A.ToGrid( spg:GetPos() )
+			local ge, gn = A.ToGrid( A.EntPos( spg ) )
 
 			line = line .. string.format( "   Д %.2f км  %s", math.sqrt( ( e - ge ) ^ 2 + ( n - gn ) ^ 2 ) / 1000, A.FmtMils( A.Bearing( ge, gn, e, n ) ) )
 		end
@@ -520,7 +520,7 @@ function PANEL:Paint( w, h )
 
 	-- сам игрок, если он не в технике
 	if not A.Vehicle() then
-		local px, py = self:WorldToScreen( LocalPlayer():GetPos() )
+		local px, py = self:WorldToScreen( A.EntPos( LocalPlayer() ) )
 
 		UI.FilledCircle( px, py, UI.S( 4 ), C.ok, 12 )
 	end

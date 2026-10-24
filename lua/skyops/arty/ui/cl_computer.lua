@@ -170,7 +170,7 @@ end
 
 function PANEL:FillGunFromNav()
 	local spg = A.MySPG()
-	local pos = IsValid( spg ) and spg:GetPos() or LocalPlayer():GetPos()
+	local pos = IsValid( spg ) and A.EntPos( spg ) or A.EntPos( LocalPlayer() )
 	local e, n, h = A.ToGrid( pos )
 
 	self.GunN:SetNumber( n )
