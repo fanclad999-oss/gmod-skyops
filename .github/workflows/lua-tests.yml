@@ -1,0 +1,34 @@
+# Тесты и линтер аддона без запуска игры: tests/run.lua (LuaJIT + заглушки GMod API)
+# и tests/lint.sh (luacheck по коду с переписанным синтаксисом GLua).
+name: Lua tests
+
+on:
+  push:
+    paths:
+      - "lua/**"
+      - "tests/**"
+      - ".github/workflows/lua-tests.yml"
+  pull_request:
+    paths:
+      - "lua/**"
+      - "tests/**"
+      - ".github/workflows/lua-tests.yml"
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Установить LuaJIT и luacheck
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q luajit lua-check
+
+      - name: Тесты
+        run: luajit tests/run.lua
+
+      - name: Линтер
+        if: always()
+        run: tests/lint.sh
