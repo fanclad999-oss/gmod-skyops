@@ -47,6 +47,29 @@ local function Handler( launcher )
 	}
 end
 
+-- The stock radar/seeker weapon OnThink clears IsLocked/ClosestEnt every tick
+-- while no gunner aims it, and the vehicle's OnTick cuts missile guidance as
+-- soon as IsLocked is false. On an AI-run site only SkyOps may write them.
+local function TakeLockControl( ctrl )
+	if ctrl.SkyOpsLockControl then return end
+	ctrl.SkyOpsLockControl = true
+	for _, name in ipairs( { "SetIsLocked", "SetClosestEnt" } ) do
+		local orig = ctrl[ name ]
+		if not isfunction( orig ) then continue end
+		ctrl[ name ] = function( self, v )
+			if self.SkyOpsAI and not self.SkyOpsWriting then return end
+			return orig( self, v )
+		end
+	end
+end
+
+local function SetLock( ctrl, ent, locked )
+	ctrl.SkyOpsWriting = true
+	ctrl:SetClosestEnt( ent )
+	ctrl:SetIsLocked( locked )
+	ctrl.SkyOpsWriting = nil
+end
+
 local function SetRadar( ctrl, on )
 	if isfunction( ctrl.SetRadar ) and ctrl:GetRadar() ~= on then
 		ctrl:SetRadar( on )
@@ -63,12 +86,15 @@ local function Think( site, info, data, now )
 	local st = info.sam or {}
 	info.sam = st
 
+	TakeLockControl( ctrl )
+	ctrl.SkyOpsAI = true
 	SetRadar( ctrl, true )
 
 	local radarPos = ( IsValid( parts.p12_radar ) and parts.p12_radar or ctrl ):GetPos()
+	local antenna = ctrl:GetPos() + Vector( 0, 0, data.radar.mast * SkyOps.M_TO_HU )
 	local target
 	for _, c in ipairs( SkyOps.Radar.FindTargets( radarPos, info.team, data.radar.search, data.radar.mast ) ) do
-		if SkyOps.Radar.LineOfSight( ctrl:WorldSpaceCenter() + Vector( 0, 0, 200 ), c.ent ) then
+		if SkyOps.Radar.LineOfSight( antenna, c.ent ) then
 			target = c
 			break
 		end
@@ -76,7 +102,7 @@ local function Think( site, info, data, now )
 
 	if not target then
 		State( site, st, "search" )
-		if st.target then ctrl:SetClosestEnt( NULL ) ctrl:SetIsLocked( false ) end
+		if st.target then SetLock( ctrl, NULL, false ) end
 		st.target = nil
 		site.SkyOpsTarget = nil
 		return
@@ -85,16 +111,15 @@ local function Think( site, info, data, now )
 	if st.target ~= target.ent then
 		st.target = target.ent
 		st.lockStart = now
-		ctrl:SetClosestEnt( target.ent )
-		ctrl:SetIsLocked( false )
 	end
+	SetLock( ctrl, target.ent, false )
 	site.SkyOpsTarget = target.ent
 
 	if now - st.lockStart < ( LOCK_TIME[ info.system ] or 4 ) then
 		State( site, st, "track", target.ent, math.Round( target.dist ) )
 		return
 	end
-	ctrl:SetIsLocked( true )
+	SetLock( ctrl, target.ent, true )
 	State( site, st, "lock", target.ent, math.Round( target.dist ) )
 
 	if target.dist > data.radar.engage then return end
@@ -125,7 +150,11 @@ timer.Create( "SkyOps.SAM", 0.25, 0, function()
 	for site, info in pairs( SkyOps.Units.list ) do
 		local data = info.system and SkyOps.Registry.GetAirDefense( info.system )
 		if not ( IsValid( site ) and data and data.radar ) then continue end
-		if HasPlayerGunner( site ) or ( info.parts and IsValid( info.parts.snr75 ) and HasPlayerGunner( info.parts.snr75 ) ) then continue end
+		local ctrl = info.parts and IsValid( info.parts.snr75 ) and info.parts.snr75 or site
+		if HasPlayerGunner( site ) or HasPlayerGunner( ctrl ) then
+			ctrl.SkyOpsAI = false  -- a player runs it: stock lock logic again
+			continue
+		end
 
 		Think( site, info, data, now )
 	end

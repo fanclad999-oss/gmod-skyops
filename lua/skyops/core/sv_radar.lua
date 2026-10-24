@@ -19,12 +19,36 @@ local function TerrainOnly( ent )
 	return string.StartWith( ent:GetClass(), "infmap_" )
 end
 
+local STEP_M = 100        -- height-grid sample spacing along the beam
+local MAX_STEPS = 600
+local CLEARANCE_M = 3
+
+-- On InfMap a trace is clipped to the start chunk and runs into the real map
+-- bounds after ~16000 u (that capped SAM detection at ~500 m), and far terrain
+-- colliders are not streamed in. With the Kirovskoe height grid the beam is
+-- marched over the terrain instead.
 function SkyOps.Radar.LineOfSight( fromPos, target )
+	local toPos = isvector( target ) and target or target:WorldSpaceCenter()
+
+	if KIR and KIR.MeshHeight then
+		local dist = fromPos:Distance( toPos )
+		local steps = math.Clamp( math.ceil( dist * HU_TO_M / STEP_M ), 1, MAX_STEPS )
+		local clearance = CLEARANCE_M * SkyOps.M_TO_HU
+		for i = 1, steps - 1 do
+			local p = LerpVector( i / steps, fromPos, toPos )
+			local ground = KIR.MeshHeight( p.x, p.y )
+			if ground and p.z < ground + clearance then return false end
+		end
+		return true
+	end
+
+	-- other InfMaps: traces only work inside one chunk, trust the horizon beyond
+	if InfMap and fromPos:Distance( toPos ) > 10000 then return true end
+
 	local tr = util.TraceLine( {
 		start = fromPos,
-		endpos = target:WorldSpaceCenter(),
+		endpos = toPos,
 		filter = TerrainOnly,
-		ignoreworld = false,
 	} )
 	return not tr.Hit
 end
