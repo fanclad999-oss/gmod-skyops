@@ -176,8 +176,7 @@ function D.SendTarget( drone, ply )
 	net.WriteEntity( drone )
 	net.Broadcast()
 
-	hook.Run( "SkyOpsArty.TargetSent", drone, pos, err, ply )
-	hook.Run( "SkyOps.Arty.TargetSent", drone, pos, err, ply ) -- то же имя, что ждут задания (arty/missions)
+	hook.Run( "SkyOps.Arty.TargetSent", drone, pos, err, ply )
 
 	return true
 end

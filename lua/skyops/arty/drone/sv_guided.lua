@@ -74,7 +74,7 @@ function G.Steer( s, dt )
 			s.guided_drone = spot.drone
 			target = spot.pos
 
-			hook.Run( "SkyOpsArty.GuidedLocked", s, spot.drone )
+			hook.Run( "SkyOps.Arty.GuidedLocked", s, spot.drone )
 		end
 	end
 

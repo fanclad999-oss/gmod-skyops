@@ -52,7 +52,7 @@
   (`switch` работает и из САУ, остальные только из кресла дрона)
 - то же из консоли: `skyops_arty_drone_cmd <cmd>`, плюс `skyops_arty_switch`
 - сервер -> все `skyops_arty_target { Float x, Float y, Float z, Float err_m, Entity drone }` (абсолютная позиция)
-- хуки сервера: `SkyOpsArty.TargetSent( drone, pos, err, ply )` (дублируется как `SkyOps.Arty.TargetSent` для заданий), `SkyOpsArty.GuidedLocked( s, drone )`
+- хуки сервера: `SkyOps.Arty.TargetSent( drone, worldPos, err_m, ply )`, `SkyOps.Arty.GuidedLocked( s, drone )`
 
 ## Управляемый снаряд `SkyOps.Arty.Guided` (сервер)
 
