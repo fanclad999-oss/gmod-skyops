@@ -38,12 +38,36 @@ local LAYOUT = {
 	north_edge = { 10, 60, 3000, -90 },
 }
 
+-- Высота рельефа или nil: за краем сетки высот карта отдаёт -inf/NaN, а с такой
+-- высотой юниты улетают в бесконечность
+local function SafeGround( x, y, fromZ )
+	if not SkyOps.Map.GroundZ then return nil end
+
+	local z = SkyOps.Map.GroundZ( x, y, fromZ )
+
+	if not z or z ~= z or z == math.huge or z == -math.huge or math.abs( z - fromZ ) > 400000 then return nil end
+
+	return z
+end
+
+SkyOps.Map.SafeGroundZ = SafeGround
+
 local function Layout( base, baseZ, useGround )
 	local K = (SkyOps.M_TO_HU or 40) * 1000
 
 	for name, l in pairs( LAYOUT ) do
 		local pos = base + Vector( l[1] * K, l[2] * K, 0 )
-		local ground = useGround and SkyOps.Map.GroundZ and SkyOps.Map.GroundZ( pos.x, pos.y, baseZ )
+		local ground = useGround and SafeGround( pos.x, pos.y, baseZ )
+
+		-- точка за краем карты: подтягиваем её к аэродрому, пока не окажется над рельефом
+		if useGround and not ground and SkyOps.Map.GroundZ then
+			for k = 9, 1, -1 do
+				local p = base + Vector( l[1] * K * k / 10, l[2] * K * k / 10, 0 )
+				local z = SafeGround( p.x, p.y, baseZ )
+
+				if z then pos, ground = p, z break end
+			end
+		end
 
 		pos.z = (ground or baseZ) + (l[3] or 0) * (SkyOps.M_TO_HU or 40)
 

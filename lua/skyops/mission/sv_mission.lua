@@ -576,6 +576,8 @@ function Run:SpawnFlights()
 					-- высота над рельефом у якоря; без карты высот от уровня моря
 					local ground = SkyOps.Map.GroundZ and SkyOps.Map.GroundZ( basePos.x, basePos.y, basePos.z )
 
+					if ground and (ground ~= ground or math.abs( ground ) == math.huge) then ground = nil end
+
 					pos.z = (ground or SkyOps.Map.SeaLevel()) + U.FromMeters( start.alt )
 				end
 			end
