@@ -151,7 +151,3 @@ D.Commands.switch = function( ply )
 
 	if not ok then D.Notify( ply, err ) end
 end
-
-concommand.Add( "skyops_arty_switch", function( ply )
-	if IsValid( ply ) then D.Commands.switch( ply ) end
-end )

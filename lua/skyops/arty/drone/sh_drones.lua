@@ -142,8 +142,37 @@ if SERVER then
 		Run( ply, net.ReadString() )
 	end )
 
-	-- то же из консоли, для биндов: skyops_arty_drone_cmd laser | loiter | send | switch
-	concommand.Add( "skyops_arty_drone_cmd", function( ply, _, args )
-		if IsValid( ply ) and args[ 1 ] then Run( ply, args[ 1 ] ) end
-	end )
+end
+
+-- консольная команда на клиенте (с автодополнением), чтобы её знала консоль игрока:
+-- skyops_arty_drone_cmd laser | loiter | send | switch. Клавиши по умолчанию даёт интерфейс:
+-- T передать, G подсветка, J барраж, U пересесть.
+if CLIENT then
+	local CMDS = { "laser", "loiter", "send", "switch" }
+
+	concommand.Add( "skyops_arty_drone_cmd", function( _, _, args )
+		local cmd = args[ 1 ]
+
+		if not cmd or not table.HasValue( CMDS, cmd ) then
+			print( "skyops_arty_drone_cmd: " .. table.concat( CMDS, " | " ) )
+
+			return
+		end
+
+		if util.NetworkStringToID( "skyops_arty_drone" ) == 0 then
+			print( "skyops_arty_drone_cmd: на сервере нет модуля дрона" )
+
+			return
+		end
+
+		net.Start( "skyops_arty_drone" )
+		net.WriteString( cmd )
+		net.SendToServer()
+	end, function( name )
+		local list = {}
+
+		for _, c in ipairs( CMDS ) do list[ #list + 1 ] = name .. " " .. c end
+
+		return list
+	end, "Команда дрону: laser | loiter | send | switch" )
 end
