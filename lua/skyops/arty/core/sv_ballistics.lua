@@ -185,8 +185,11 @@ local function Impact( shell, x, y, z )
 		B.Explode( pos, shell.def.blast, shell.attacker )
 	end
 
+	-- three floats: net.WriteVector clamps to +-16384 u (docs/arty-api.md)
 	net.Start( "skyops_arty_impact" )
-		net.WriteVector( pos )
+		net.WriteFloat( pos.x )
+		net.WriteFloat( pos.y )
+		net.WriteFloat( pos.z )
 		net.WriteString( shell.shell )
 	net.Broadcast()
 

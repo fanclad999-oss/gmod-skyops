@@ -9,7 +9,7 @@
 --                                     the current barrel bearing read 30-00
 -- net:
 --   skyops_arty_lay  client -> server { UInt(5) mask }  laying keys held (SPG.LAY_*)
---   skyops_arty_auto client -> server { Entity spg, Vector target, String shell, UInt8 charge }
+--   skyops_arty_auto client -> server { Entity spg, Float x, Float y, Float z (target), String shell, UInt8 charge }
 --                    charge 0 = pick the weakest charge that reaches
 
 local SPG = SkyOps.Arty.SPG
@@ -351,8 +351,13 @@ end
 
 -- Auto mode ------------------------------------------------------------------------
 
+-- solves from where the muzzle is now (it moves as the barrel elevates); with job.sol
+-- set, keeps its charge and angle group so the laying can be refined
 local function AutoSolve( spg, job )
-	local gx, gy, gh = Grid.ToGrid3( spg:GetPos() )
+	spg:InvalidateBoneCache()
+
+	local mx, my, mh = Grid.ToGrid3( ( FC.Muzzle( spg ) ) )
+	local gx, gy, gh = mx, my, mh - FC.MUZZLE_H -- Solve adds MUZZLE_H to the gun height
 	local tx, ty, th = Grid.ToGrid3( job.target )
 	local q = {
 		gun = { x = gx, y = gy, h = gh },
@@ -361,13 +366,23 @@ local function AutoSolve( spg, job )
 		basedir = FC.BaseDir( spg ),
 	}
 
+	if job.sol then
+		q.charge, q.high = job.sol.charge, job.sol.high
+
+		local sol = FC.Solve( q )
+
+		if sol.ok then return sol end
+
+		return nil, sol.err
+	end
+
 	local range = math.sqrt( ( tx - gx ) ^ 2 + ( ty - gy ) ^ 2 )
-	local dh = th - gh - FC.MUZZLE_H
+	local dh = th - mh
 	local charges = {}
 
 	if FC.GetCharge( job.shell, job.charge ) then charges[ 1 ] = job.charge end
 
-	charges[ #charges + 1 ] = FC.BestCharge( job.shell, range, dh, gh + FC.MUZZLE_H )
+	charges[ #charges + 1 ] = FC.BestCharge( job.shell, range, dh, mh )
 
 	local last
 
@@ -424,7 +439,9 @@ local function AutoThink( spg, job )
 
 		-- the hull stands on a slope and the barrel model is not exactly the turret
 		-- angles: measure the barrel and correct until it reads the solution
-		spg:InvalidateBoneCache()
+		local sol = AutoSolve( spg, job )
+
+		if sol then job.sol = sol end
 
 		local defl, elev = FC.GunLaying( spg )
 		local dDefl = FC.MilsDiff( job.sol.deflection, defl )
@@ -461,7 +478,7 @@ local NextAuto = {}
 
 net.Receive( "skyops_arty_auto", function( _, ply )
 	local spg = net.ReadEntity()
-	local target = net.ReadVector()
+	local target = Vector( net.ReadFloat(), net.ReadFloat(), net.ReadFloat() )
 	local shellId = net.ReadString()
 	local charge = net.ReadUInt( 8 )
 
