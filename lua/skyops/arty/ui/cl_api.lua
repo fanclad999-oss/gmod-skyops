@@ -528,6 +528,32 @@ function A.MyDrone()
 	end
 end
 
+-- последний дрон игрока (arty/drone), в том числе пока он сидит в САУ
+function A.LinkedDrone()
+	local D = Drone()
+
+	if D and D.GetLinked then
+		local d = D.GetLinked( LocalPlayer() )
+
+		if IsValid( d ) then return d end
+	end
+
+	local d = LocalPlayer():GetNW2Entity( "SkyOpsArty_Drone" )
+
+	return IsValid( d ) and d or A.MyDrone()
+end
+
+-- пятно подсветки (мировое) и сорван ли луч, или nil
+function A.DroneLaserSpot( drone )
+	if not A.DroneLaser( drone ) then return nil end
+
+	local p = drone:GetNW2Vector( "SkyOpsArty_LaserPos", vector_origin )
+
+	if p == vector_origin then return A.DroneTrack( drone ), false end
+
+	return p, drone:GetNW2Bool( "SkyOpsArty_LaserBlocked", false )
+end
+
 function A.AllDrones()
 	local list = {}
 

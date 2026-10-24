@@ -182,6 +182,19 @@ local function PaintInfo( spg, set, sh )
 	Row( "ДАЛЬН.", set and string.format( "%.0f м", set.range ) or "—" )
 	Row( "РЕЖИМ", A.IsAuto() and "АВТО" or "ХАРДКОР", A.IsAuto() and C.ok or C.accent )
 
+	-- свой дрон, пока игрок в САУ: подсветка держится? кружит?
+	local drone = A.LinkedDrone()
+
+	if IsValid( drone ) then
+		local spot, blocked = A.DroneLaserSpot( drone )
+
+		if spot then
+			Row( "ЛАЗЕР", blocked and "СОРВАН" or "ДЕРЖИТ", blocked and C.threat or C.laser )
+		else
+			Row( "ДРОН", A.DroneLoiter( drone ) and "барраж" or "в полёте", C.muted )
+		end
+	end
+
 	local x, w = UI.S( 24 ), UI.S( 250 )
 	local rh = UI.S( 26 )
 	local y = sh / 2 - #rows * rh / 2
@@ -226,6 +239,8 @@ local function PaintKeys( spg, sw, sh )
 	K( "left", "влево" ) K( "right", "вправо" ) K( "up", "выше" ) K( "down", "ниже" )
 	K( "fast", "x10" ) K( "charge", "заряд" ) K( "deploy", "свернуть" )
 	parts[ #parts + 1 ] = "[" .. UI.TabletKeyName() .. "] планшет"
+
+	if UI.SwitchKeyName and IsValid( A.LinkedDrone() ) then parts[ #parts + 1 ] = "[" .. UI.SwitchKeyName() .. "] в дрон" end
 
 	UI.HText( table.concat( parts, "   " ), "SkyOpsArty_HUDSmall", sw / 2, sh - UI.S( 36 ), C.muted, TEXT_ALIGN_CENTER )
 end

@@ -98,6 +98,15 @@ local keyLaser = A.Bind( "skyops_arty_key_laser", KEY_G, "Дрон: лазер �
 local keyLoiter = A.Bind( "skyops_arty_key_loiter", KEY_J, "Дрон: барражирование вкл/выкл", ToggleLoiter, InDrone )
 local keyFire = A.Bind( "skyops_arty_key_fire", KEY_B, "Дрон, режим авто: огонь САУ по точке камеры", FireAtTrack, InDrone )
 
+-- пересесть САУ <-> дрон (arty/drone/sv_switch), работает и из САУ
+local function Switch()
+	if not A.DroneCmd( "switch" ) then Say( "ПЕРЕСАДКА НЕДОСТУПНА: нет модуля дрона", C.threat ) end
+end
+
+local keySwitch = A.Bind( "skyops_arty_key_switch", KEY_U, "Пересесть САУ <-> дрон", Switch, function() return InDrone() or A.InSPG() ~= nil end )
+
+UI.SwitchKeyName = function() return A.KeyName( keySwitch ) end
+
 concommand.Add( "skyops_arty_send", function() if InDrone() then SendTarget() end end )
 concommand.Add( "skyops_arty_laser", function() if InDrone() then ToggleLaser() end end )
 concommand.Add( "skyops_arty_loiter", function() if InDrone() then ToggleLoiter() end end )
@@ -140,7 +149,28 @@ local function PaintTrack( drone )
 	if laser then
 		local blink = math.floor( CurTime() * 3 ) % 2 == 0
 
-		UI.HText( string.format( "ЛАЗЕР  %.0f с", CurTime() - LaserSince ), "SkyOpsArty_HUDLarge", bx, by, blink and C.laser or Color( C.laser.r, C.laser.g, C.laser.b, 120 ), TEXT_ALIGN_CENTER )
+		local spot, blocked = A.DroneLaserSpot( drone )
+
+		if blocked then
+			UI.HText( "ЛАЗЕР СОРВАН: далеко или за препятствием", "SkyOpsArty_HUDLarge", bx, by, blink and C.threat or C.accent, TEXT_ALIGN_CENTER )
+		else
+			UI.HText( string.format( "ЛАЗЕР  %.0f с", CurTime() - LaserSince ), "SkyOpsArty_HUDLarge", bx, by, blink and C.laser or Color( C.laser.r, C.laser.g, C.laser.b, 120 ), TEXT_ALIGN_CENTER )
+		end
+
+		-- пятно подсветки на экране: ромб с лучами
+		local sx, sy
+
+		if spot then sx, sy = Project( drone, spot ) end
+
+		if sx then
+			local r = UI.S( 10 ) + math.sin( RealTime() * 8 ) * UI.S( 2 )
+			local lc = blocked and C.accent or C.laser
+
+			UI.Line( sx - r, sy, sx, sy - r, 2, lc )
+			UI.Line( sx, sy - r, sx + r, sy, 2, lc )
+			UI.Line( sx + r, sy, sx, sy + r, 2, lc )
+			UI.Line( sx, sy + r, sx - r, sy, 2, lc )
+		end
 	end
 
 	if not track then
@@ -387,6 +417,7 @@ local function PaintHints()
 	if auto then parts[ #parts + 1 ] = "[" .. A.KeyName( keyFire ) .. "] огонь САУ" end
 
 	parts[ #parts + 1 ] = "[" .. UI.TabletKeyName() .. "] планшет"
+	parts[ #parts + 1 ] = "[" .. A.KeyName( keySwitch ) .. "] в САУ"
 
 	UI.HText( table.concat( parts, "   " ), "SkyOpsArty_HUDSmall", ScrW() / 2, ScrH() - UI.S( 40 ), C.muted, TEXT_ALIGN_CENTER )
 

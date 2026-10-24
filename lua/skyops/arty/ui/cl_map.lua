@@ -276,6 +276,19 @@ function PANEL:PaintDrone( drone, own )
 		UI.Line( tx, ty + 6, tx - 6, ty, 2, lc )
 	end
 
+	local spot, blocked = A.DroneLaserSpot( drone )
+
+	if spot then
+		local lx, ly = self:WorldToScreen( spot )
+		local r = UI.S( 6 ) + math.sin( RealTime() * 6 ) * UI.S( 2 )
+		local lc = blocked and C.accent or C.laser
+
+		UI.FilledCircle( lx, ly, UI.S( 3 ), lc, 10 )
+		UI.Circle( lx, ly, r, 2, lc, 16 )
+
+		if blocked then UI.HText( "луч сорван", "SkyOpsArty_Label", lx + r + 4, ly, lc, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER ) end
+	end
+
 	local ax, ay = P( 0, s * 1.4 )
 	local bx, by = P( 2.5, s )
 	local cx2, cy2 = P( -2.5, s )
@@ -496,7 +509,7 @@ function PANEL:Paint( w, h )
 		self:PaintSPG( spg, spg == mySPG )
 	end
 
-	local myDrone = A.MyDrone()
+	local myDrone = A.LinkedDrone()
 
 	for _, drone in ipairs( A.AllDrones() ) do
 		self:PaintDrone( drone, drone == myDrone )
