@@ -52,6 +52,41 @@ local function Steer( self, brain )
 	self:SetThrottle( 1 )
 end
 
+local MISSILE_MAX = 15000  -- m, AI launches inside this
+local MISSILE_MIN = 800
+local MISSILE_GAP = 8      -- s between AI missile shots
+
+local function MissileWeapon( self )
+	for id, w in pairs( self.WEAPONS and self.WEAPONS[1] or {} ) do
+		local ok, name = pcall( function() return w.Icon:GetName() end )
+		if ok and string.find( name or "", "missile", 1, true ) then return id end
+	end
+end
+
+-- Stock LVS AI only fires guns inside 22 deg, so AI jets circled the player
+-- without shooting. Inside missile range with the target ahead SkyOps selects
+-- the missile; the jet's own seeker (weapon OnThink) locks, then it fires.
+local function Missiles( self, brain )
+	local target = brain.target
+	if not IsValid( target ) then return end
+
+	local dist = self:GetPos():Distance( target:GetPos() ) * SkyOps.HU_TO_M
+	local id = brain.missileId or MissileWeapon( self )
+	brain.missileId = id
+	if not id or dist > MISSILE_MAX or dist < MISSILE_MIN or not self:AITargetInFront( target, 30 ) then return end
+
+	if self:GetSelectedWeapon() ~= id then self:SelectWeapon( id ) end
+	self._nextAISwitchWeapon = CurTime() + 3 -- keep stock code from switching back to guns
+
+	local locked = isfunction( self.GetIsLocked ) and self:GetIsLocked() and self:GetClosestEnt() == target
+	if locked and CurTime() > ( brain.nextMissile or 0 ) then
+		self._AIFireInput = true
+		brain.nextMissile = CurTime() + MISSILE_GAP
+	else
+		self._AIFireInput = false
+	end
+end
+
 function SkyOps.AIFlight.Attach( ent, task )
 	local brain = { task = task or {} }
 	ent.SkyOpsBrain = brain
@@ -71,6 +106,7 @@ function SkyOps.AIFlight.Attach( ent, task )
 	ent.RunAI = function( self )
 		origRun( self )
 		Steer( self, brain )
+		Missiles( self, brain )
 	end
 end
 

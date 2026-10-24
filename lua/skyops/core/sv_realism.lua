@@ -5,10 +5,10 @@
 local M_TO_HU = SkyOps.M_TO_HU
 
 SkyOps.SeekerRange = {
-	sw_su34 = 12000,      -- R-73 IR lock, R-27R needs the radar anyway
-	sw_su25sm3 = 8000,    -- R-73 only
-	sw_f14a = 20000,      -- AWG-9 + AIM-7/AIM-54, capped for gameplay
-	sw_tornado = 8000,    -- AIM-9
+	sw_su34 = 30000,      -- radar lock for R-27R/R-77 class shots
+	sw_su25sm3 = 10000,   -- R-73 only
+	sw_f14a = 40000,      -- AWG-9 + AIM-54, capped for gameplay
+	sw_tornado = 15000,   -- AIM-9 / Sky Flash class
 	sw_snr75 = 45000,     -- SNR-75 fire control
 	sw_torm1 = 12000,
 	sw_9k33m3 = 10000,
@@ -67,6 +67,39 @@ local function ApplyPerformance( ent, perf )
 	end
 end
 
+-- seeker cone (Ryuunosuke units: radians * 200 / pi, stock 7 = 6 deg, which
+-- is hard to hold on a manoeuvring target) and lock time in seconds
+SkyOps.SeekerCone = {
+	sw_su34 = { angle = 20, lock = 1 },
+	sw_su25sm3 = { angle = 12, lock = 1 },
+	sw_f14a = { angle = 25, lock = 1 },
+	sw_tornado = { angle = 15, lock = 1 },
+}
+
+local function EnforceSeeker( ent )
+	local class = ent:GetClass()
+	local range = SkyOps.SeekerRange[ class ]
+	if not range or not isfunction( ent.SetSeekerDist ) then return end
+
+	local dist = math.floor( range * M_TO_HU )
+	if ent:GetSeekerDist() ~= dist then ent:SetSeekerDist( dist ) end
+
+	local cone = SkyOps.SeekerCone[ class ]
+	if cone then
+		if isfunction( ent.SetSeekerAngle ) and ent:GetSeekerAngle() ~= cone.angle then ent:SetSeekerAngle( cone.angle ) end
+		if isfunction( ent.SetLockTimer ) and ent:GetLockTimer() ~= cone.lock then ent:SetLockTimer( cone.lock ) end
+	end
+	if isfunction( ent.CanSeeMis ) and ent.CanSeeMis ~= CanSeeMis then ent.CanSeeMis = CanSeeMis end
+end
+
+-- the jets reset SeekerDist/Angle/LockTimer to stock whenever their loadout
+-- is rebuilt (mission loadouts are set after spawn), so keep re-applying
+timer.Create( "SkyOps.Seekers", 1, 0, function()
+	for _, veh in pairs( LVS:GetVehicles() ) do
+		if IsValid( veh ) then EnforceSeeker( veh ) end
+	end
+end )
+
 local function Apply( ent )
 	local perf = SkyOps.Performance[ ent:GetClass() ]
 	if perf and not ent.SkyOpsPerf then
@@ -74,11 +107,7 @@ local function Apply( ent )
 		ApplyPerformance( ent, perf )
 	end
 
-	local range = SkyOps.SeekerRange[ ent:GetClass() ]
-	if not range or not isfunction( ent.SetSeekerDist ) then return end
-
-	ent:SetSeekerDist( range * M_TO_HU )
-	if isfunction( ent.CanSeeMis ) then ent.CanSeeMis = CanSeeMis end
+	EnforceSeeker( ent )
 end
 
 hook.Add( "OnEntityCreated", "SkyOps.Realism", function( ent )
