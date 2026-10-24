@@ -13,6 +13,11 @@
 -- Guided shells (def.guided) also go through SkyOps.Arty.Guided.Steer( shell, dt ) before
 -- each step, with shell.pos (world Vector) and shell.vel (world units/s) filled in; the
 -- turned shell.vel is taken back. Steer belongs to the drone module (arty/drone/sv_guided).
+--
+-- Wind: a shell takes the real wind (SkyOps.Arty.Wind.Actual) when fired and keeps it to
+-- the end of its flight (shell.wx, shell.wy, m/s).
+-- Shells with def.effect do not blow up like HE where they fall: "smoke" and "illum" only
+-- leave their effect (drawn by arty/fx), "cluster" scatters def.bomblets around the point.
 
 SkyOps.Arty = SkyOps.Arty or {}
 SkyOps.Arty.Ballistics = SkyOps.Arty.Ballistics or {}
@@ -62,7 +67,8 @@ end
 
 -- opts = { pos = world Vector (muzzle), dir = world unit Vector, shell = id, charge = id,
 --          v0 = m/s (optional, else from the charge), attacker = Entity, spg = Entity,
---          dispersion = multiplier (default 1) }
+--          dispersion = multiplier (default 1), wind = {x, y} m/s | false (none) | nil
+--          (the real wind now) }
 -- -> shell table, or nil and an error
 function B.Fire( opts )
 	local def = FC.GetShell( opts.shell )
@@ -85,6 +91,13 @@ function B.Fire( opts )
 	local b = bearing / FC.MILS * 2 * math.pi
 	local e = elev / FC.MILS * 2 * math.pi
 	local x, y, z = Grid.ToGrid3( opts.pos )
+	local wind = opts.wind
+
+	if wind == nil then
+		local Wind = SkyOps.Arty.Wind
+
+		wind = Wind and Wind.Actual and Wind.Actual()
+	end
 
 	B.NextId = B.NextId + 1
 
@@ -98,6 +111,8 @@ function B.Fire( opts )
 		vx = v0 * math.cos( e ) * math.sin( b ),
 		vy = v0 * math.cos( e ) * math.cos( b ),
 		vz = v0 * math.sin( e ),
+		wx = wind and wind.x or 0,
+		wy = wind and wind.y or 0,
 		t = 0,
 		start = { x = x, y = y, h = z },
 		attacker = opts.attacker,
@@ -176,13 +191,60 @@ function B.Explode( pos, blast, attacker )
 	util.Effect( "Explosion", ed, true, true )
 end
 
+-- damage to everything within radius (m) of a world position, falling off to the edge.
+-- Done by hand instead of util.BlastDamage: on InfMap the engine sees positions inside
+-- a chunk and would also hit things at the same spot of other chunks.
+function B.Splash( pos, radius, damage, attacker )
+	local r = radius * Grid.UPM()
+	local world = game.GetWorld()
+
+	attacker = IsValid( attacker ) and attacker or world
+
+	for _, ent in ipairs( ents.GetAll() ) do
+		if ent:IsPlayer() or ent:IsNPC() or ent.LVS or ent:GetClass() == "prop_physics" then
+			local d = ent:GetPos():Distance( pos )
+
+			if d < r then
+				local dmg = DamageInfo()
+
+				dmg:SetDamage( damage * ( 1 - d / r ) )
+				dmg:SetDamageType( DMG_BLAST )
+				dmg:SetAttacker( attacker )
+				dmg:SetInflictor( world )
+				dmg:SetDamagePosition( pos )
+				dmg:SetDamageForce( ( ent:GetPos() - pos ):GetNormalized() * damage * 50 )
+				ent:TakeDamageInfo( dmg )
+			end
+		end
+	end
+end
+
+local function Bomblets( shell, x, y, z )
+	local b = shell.def.bomblets
+	local attacker = shell.attacker
+
+	for _, o in ipairs( FC.BombletPattern( shell.id % 65536, b.count, b.radius ) ) do
+		local bx, by = x + o[ 1 ], y + o[ 2 ]
+		local bz = Grid.Height( bx, by ) or z
+
+		timer.Simple( o[ 3 ], function()
+			B.Splash( Grid.FromGrid( bx, by, bz + 0.5 ), b.blast.blastRadius, b.blast.damage / 10, attacker )
+		end )
+	end
+end
+
 local function Impact( shell, x, y, z )
 	local pos = Grid.FromGrid( x, y, z ) + Vector( 0, 0, Grid.UPM() * 0.5 )
+	local effect = shell.def.effect
 
 	shell.impact = pos
 
 	if hook.Run( "SkyOps.Arty.ShellImpact", shell, pos ) ~= true then
-		B.Explode( pos, shell.def.blast, shell.attacker )
+		if effect == "cluster" then
+			Bomblets( shell, x, y, z )
+		elseif shell.def.blast then
+			B.Explode( pos, shell.def.blast, shell.attacker )
+		end
 	end
 
 	-- three floats: net.WriteVector clamps to +-16384 u (docs/arty-api.md)
@@ -221,7 +283,7 @@ local function StepShell( shell, dt )
 	local px, py, pz = shell.x, shell.y, shell.z
 	local pg = Grid.Height( px, py )
 
-	FC.Step( shell, shell.def.k, dt, shell.ax, shell.ay, shell.az )
+	FC.Step( shell, shell.def.k, dt, shell.ax, shell.ay, shell.az, shell.wx, shell.wy )
 	shell.ax, shell.ay, shell.az = nil, nil, nil
 	shell.t = shell.t + dt
 

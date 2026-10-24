@@ -245,10 +245,20 @@ function FX.GroundAt( pos )
 	return tr.Hit and tr.HitPos.z or pos.z
 end
 
--- Wind: one direction for the session, slowly turning, carries smoke columns
+-- Wind that carries smoke columns, world units/s: the real wind of arty/core (sh_wind)
+-- when it blows, else one direction for the session, slowly turning, 3 m/s
 local windYaw = math.Rand( 0, 360 )
 
 function FX.Wind()
+	local W = SkyOps.Arty.Wind
+	local w = W and W.Actual and W.Actual()
+
+	if w and Grid.Origin then
+		local o = Grid.Origin
+
+		return Grid.FromGrid( o + w.x, o + w.y, 0 ) - Grid.FromGrid( o, o, 0 )
+	end
+
 	local yaw = windYaw + math.sin( CurTime() / 120 ) * 25
 
 	return Angle( 0, yaw, 0 ):Forward() * ( 3 * FX.UPM() ) -- 3 m/s

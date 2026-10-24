@@ -182,6 +182,8 @@ local function PaintInfo( spg, set, sh )
 	Row( "ДАЛЬН.", set and string.format( "%.0f м", set.range ) or "—" )
 	Row( "РЕЖИМ", A.IsAuto() and "АВТО" or "ХАРДКОР", A.IsAuto() and C.ok or C.accent )
 
+	if A.WindText() then Row( "ВЕТЕР", A.WindText(), C.muted ) end
+
 	-- свой дрон, пока игрок в САУ: подсветка держится? кружит?
 	local drone = A.LinkedDrone()
 

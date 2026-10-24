@@ -241,6 +241,17 @@ A.SHELLS = {
 	{ id = "krasnopol", name = "Краснополь" },
 }
 
+-- с модулем баллистики список берётся из него (дымовой, осветительный, кассетный)
+if FC() and FC().ShellOrder then
+	local SHORT = { he = "ОФС", krasnopol = "Краснополь", smoke = "Дым", illum = "Свет", cluster = "Кассет." }
+
+	A.SHELLS = {}
+
+	for _, id in ipairs( FC().ShellOrder ) do
+		A.SHELLS[ #A.SHELLS + 1 ] = { id = id, name = SHORT[ id ] or FC().Shells[ id ].name }
+	end
+end
+
 -- запасные заряды: начальная скорость, м/с
 local FALLBACK_CHARGES = {
 	{ id = 1, name = "Полный", v0 = 945 },
@@ -495,6 +506,7 @@ function A.LoadedShell( spg )
 	local F = FC()
 	local t = spg.GetShellType and spg:GetShellType() or 0
 
+	if F and F.LoadedShell then return F.LoadedShell( spg ) end
 	if F and F.ShellForStockType then return F.ShellForStockType( t ) end
 
 	return t == 1 and "krasnopol" or "he"
@@ -506,6 +518,19 @@ function A.LoadedCharge( spg )
 end
 
 function A.AutoLaying( spg ) return spg:GetNW2Bool( "SkyOpsArty_Auto", false ) end
+
+-- ветер по метеобюллетеню: "4 м/с с 45-00" (откуда дует); nil без модуля ветра
+function A.WindText()
+	local W = SkyOps.Arty.Wind
+
+	if not W or not W.BulletinDirSpeed then return nil end
+
+	local d, sp = W.BulletinDirSpeed()
+
+	if sp < 0.5 then return "штиль" end
+
+	return string.format( "%.0f м/с с %s", sp, A.FmtMils( d ) )
+end
 
 -- выбрать заряд в САУ, в которой сидит игрок
 function A.SetGunCharge( id )

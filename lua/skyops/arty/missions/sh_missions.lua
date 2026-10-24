@@ -76,13 +76,20 @@ M.Armor = {
 	heavy = { inner = 1.5, outer = 5 },
 }
 
--- damage multiplier of each shell (Krasnopol carries less explosive than the HE round)
-M.ShellPower = { he = 1, krasnopol = 0.85 }
+-- damage multiplier of each shell (Krasnopol carries less explosive than the HE round;
+-- smoke and illumination do not hurt; bomblets are weak but cover a wide circle)
+M.ShellPower = { he = 1, krasnopol = 0.85, smoke = 0, illum = 0, cluster = 0.7 }
+
+-- radius multiplier per armor: the cluster shell spreads bomblets over ~55 m
+M.ShellReach = { cluster = { soft = 2.5, light = 2, heavy = 1 } }
 
 -- damage 0..100 to a target of armor `armor` from a burst `d` metres from its edge
 function M.Damage( armor, d, shellId )
 	local a = M.Armor[ armor ] or M.Armor.soft
+	local reach = M.ShellReach[ shellId ] and M.ShellReach[ shellId ][ armor ] or 1
 	local f
+
+	if reach ~= 1 then a = { inner = a.inner * reach, outer = a.outer * reach } end
 
 	if d <= a.inner then
 		f = 1

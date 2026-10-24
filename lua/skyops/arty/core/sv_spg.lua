@@ -5,12 +5,17 @@
 -- Commands (player in a 2S35, any seat):
 --   skyops_arty_deploy                deploy / stow (key H)
 --   skyops_arty_charge next|<id>      charge for the next shot (key K)
+--   skyops_arty_shell next|<id>       shell for the next shot; the stock ammo switch key of
+--                                     the 2S35 also goes through all FC.ShellOrder
 --   skyops_arty_basedir <mils>|here|off   basic direction of the position; "here" makes
 --                                     the current barrel bearing read 30-00
 -- net:
 --   skyops_arty_lay  client -> server { UInt(6) mask }  laying keys held (SPG.LAY_*)
 --   skyops_arty_auto client -> server { Entity spg, Float x, Float y, Float z (target), String shell, UInt8 charge }
 --                    charge 0 = pick the weakest charge that reaches
+-- Hook for the ammo module:
+--   SkyOps.Arty.CanFireShell( spg, shellId, ply ) -> false, reason   blocks a shot of that
+--   shell (the stock round is put back) and skips the shell in the switch
 
 local SPG = SkyOps.Arty.SPG
 local FC = SkyOps.Arty.FireComp
@@ -67,7 +72,15 @@ end
 -- Charges --------------------------------------------------------------------------
 
 local function CurrentShell( spg )
-	return FC.ShellForStockType( spg.GetShellType and spg:GetShellType() or 0 )
+	return FC.LoadedShell( spg )
+end
+
+local function CanFire( spg, shellId, ply )
+	local ok, why = hook.Run( "SkyOps.Arty.CanFireShell", spg, shellId, ply )
+
+	if ok == false then return false, why or ( "нет снарядов «" .. FC.GetShell( shellId ).name .. "»" ) end
+
+	return true
 end
 
 -- charge that will be used with this shell: the set one, or the strongest the shell takes
@@ -81,6 +94,42 @@ end
 
 function SPG.SetCharge( spg, chargeId )
 	spg:SetNW2Int( "SkyOpsArty_Charge", chargeId )
+end
+
+-- loads another shell: the stock shell type follows (its HUD and the Krasnopol seeker
+-- light), the charge falls back to one this shell takes
+function SPG.SetShell( spg, shellId )
+	local def = FC.GetShell( shellId )
+
+	if not def then return false end
+
+	spg:SetNW2String( "SkyOpsArty_Shell", shellId )
+	spg.SkyOpsArty_StockType = def.stockType
+
+	if spg.SetShellType and spg:GetShellType() ~= def.stockType then spg:SetShellType( def.stockType ) end
+
+	local charge = spg:GetNW2Int( "SkyOpsArty_Charge", 0 )
+
+	if charge ~= 0 then SPG.SetCharge( spg, UsableCharge( shellId, charge ) ) end
+
+	return true
+end
+
+-- next shell after the loaded one that the ammo module lets fire; nil when none
+local function NextShell( spg, ply )
+	local order = FC.ShellOrder
+	local cur = CurrentShell( spg )
+	local at = 1
+
+	for i, id in ipairs( order ) do
+		if id == cur then at = i end
+	end
+
+	for n = 1, #order - 1 do
+		local id = order[ ( at - 1 + n ) % #order + 1 ]
+
+		if CanFire( spg, id, ply ) then return id end
+	end
 end
 
 -- States ---------------------------------------------------------------------------
@@ -280,6 +329,20 @@ local function Intercept( spg, stock )
 
 	stock:Remove()
 
+	local ok, why = CanFire( spg, shellId, ( order and order.attacker ) or Gunner( spg ) )
+
+	if not ok then
+		-- the stock cannon already took a round for this shot: give it back
+		local handler = spg:GetWeaponHandler( SPG.GUNNER_POD )
+
+		if IsValid( handler ) and handler.SetNWAmmo and handler.GetNWAmmo then
+			handler:SetNWAmmo( handler:GetNWAmmo() + 1 )
+		end
+
+		TellCrew( spg, "Выстрел отменён: " .. why )
+		return
+	end
+
 	local shell = Ballistics.Fire( {
 		pos = pos,
 		dir = dir,
@@ -336,9 +399,13 @@ function SPG.Fire( spg, shellId, charge, attacker )
 	if handler:GetMaxAmmo() > 0 and handler:GetAmmo() <= 0 then return false, "нет снарядов" end
 	if handler:GetOverheated() or not handler:CanAttack() then return false, "заряжание" end
 
-	local def = FC.GetShell( shellId )
+	if not FC.GetShell( shellId ) then return false, "неизвестный снаряд" end
 
-	if def and spg.SetShellType and spg:GetShellType() ~= def.stockType then spg:SetShellType( def.stockType ) end
+	local ok, why = CanFire( spg, shellId, attacker )
+
+	if not ok then return false, why end
+
+	if CurrentShell( spg ) ~= shellId then SPG.SetShell( spg, shellId ) end
 
 	spg.SkyOpsArty_NextShot = { shell = shellId, charge = charge, attacker = attacker, t = CurTime() }
 
@@ -468,8 +535,9 @@ local function AutoThink( spg, job )
 	local sol = job.sol
 	local charge = FC.GetCharge( job.shell, sol.charge )
 
-	Tell( job.ply, string.format( "Выстрел: %s, заряд «%s», угломер %s, прицел %s, дальность %.0f м, полёт %.0f с",
-		FC.GetShell( job.shell ).name, charge and charge.name or "?", FmtMils( sol.deflection ), FmtMils( sol.elevation ), sol.range, sol.tof ) )
+	Tell( job.ply, string.format( "Выстрел: %s, заряд «%s», угломер %s, прицел %s, дальность %.0f м, полёт %.0f с%s",
+		FC.GetShell( job.shell ).name, charge and charge.name or "?", FmtMils( sol.deflection ), FmtMils( sol.elevation ), sol.range, sol.tof,
+		sol.drift and string.format( ", поправка на ветер %+.0f м", -sol.drift ) or "" ) )
 
 	CancelAuto( spg )
 end
@@ -547,6 +615,29 @@ concommand.Add( "skyops_arty_charge", function( ply, _, args )
 	Tell( ply, string.format( "Заряд «%s» (%d м/с, до %.1f км)", c.name, c.v0, ( maxR or 0 ) / 1000 ) )
 end )
 
+concommand.Add( "skyops_arty_shell", function( ply, _, args )
+	local spg = SPG.Of( ply )
+
+	if not spg then return end
+
+	local want = args[ 1 ]
+
+	if want == "next" or not want then
+		want = NextShell( spg, ply )
+
+		if not want then return Tell( ply, "Других снарядов нет" ) end
+	elseif not FC.GetShell( want ) then
+		return Tell( ply, "Снаряды: " .. table.concat( FC.ShellOrder, ", " ) )
+	else
+		local ok, why = CanFire( spg, want, ply )
+
+		if not ok then return Tell( ply, why ) end
+	end
+
+	SPG.SetShell( spg, want )
+	Tell( ply, "Снаряд: " .. FC.GetShell( want ).name )
+end )
+
 concommand.Add( "skyops_arty_basedir", function( ply, _, args )
 	local spg = SPG.Of( ply )
 
@@ -613,6 +704,19 @@ hook.Add( "Think", "SkyOps.Arty.SPG", function()
 				elseif state == SPG.STATE_DEPLOYED then
 					LayThink( spg )
 				end
+			end
+
+			-- the stock ammo switch flips ShellType 0 <-> 1: take any change as "next shell"
+			local stock = spg.GetShellType and spg:GetShellType()
+
+			if stock and spg.SkyOpsArty_StockType == nil then
+				SPG.SetShell( spg, CurrentShell( spg ) )
+			elseif stock and stock ~= spg.SkyOpsArty_StockType then
+				local nextId = NextShell( spg, Gunner( spg ) )
+
+				SPG.SetShell( spg, nextId or CurrentShell( spg ) )
+
+				if nextId then TellCrew( spg, "Снаряд: " .. FC.GetShell( nextId ).name ) end
 			end
 
 			if spg.SkyOpsArty_Job then AutoThink( spg, spg.SkyOpsArty_Job ) end

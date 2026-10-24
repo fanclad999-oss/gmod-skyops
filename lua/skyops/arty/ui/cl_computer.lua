@@ -406,6 +406,12 @@ function PANEL:PaintResult( w, h )
 		{ "Вершина", sol.apex and string.format( "%.0f м", sol.apex ) or "—" },
 	}
 
+	-- вычислитель уже учёл ветер из бюллетеня: снос показан, угломер с поправкой
+	if A.WindText() then
+		rows[ #rows + 1 ] = { "Ветер", A.WindText() }
+		rows[ #rows + 1 ] = { "Снос", sol.drift and string.format( "%+.0f м", sol.drift ) or "—" }
+	end
+
 	for i, r in ipairs( rows ) do
 		local cx = ( i % 2 == 1 ) and pad or pad * 2 + half
 		local cy = y + math.floor( ( i - 1 ) / 2 ) * UI.S( 22 )
@@ -414,7 +420,7 @@ function PANEL:PaintResult( w, h )
 		UI.Text( r[ 2 ], "SkyOpsArty_Text", cx + half, cy, C.text, TEXT_ALIGN_RIGHT )
 	end
 
-	y = y + UI.S( 48 )
+	y = y + math.ceil( #rows / 2 ) * UI.S( 22 ) + UI.S( 4 )
 
 	local st = UI.State
 	local chargeTxt = "заряд " .. A.ChargeName( st.shell, sol.charge or st.charge ) .. ( st.charge == 0 and " (авто)" or "" ) .. ( sol.high and ", навесная" or "" )

@@ -229,7 +229,7 @@ net.Receive( "skyops_arty_fx_impact", function()
 	local pos = FX.ReadPos()
 
 	shells[ id ] = nil
-	FX.Impact( pos, shellId )
+	FX.Impact( pos, shellId, id )
 end )
 
 -- Tests ----------------------------------------------------------------------------
