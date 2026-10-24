@@ -565,14 +565,18 @@ function Run:SpawnFlights()
 			local ac = self.def.aircraft[ flight.aircraft ]
 			local spacing = U.FromMeters( start.airborne and 150 or 60 )
 
-			-- На земле самолёты встают друг за другом по полосе, в воздухе строем пеленга
-			local pos = basePos - baseAng:Forward() * spacing * (i - 1)
+			-- На земле самолёты встают друг за другом по полосе (вперёд от порога, чтобы не
+			-- оказаться за её краем), в воздухе строем пеленга
+			local pos = basePos + baseAng:Forward() * spacing * (i - 1)
 
 			if start.airborne then
 				pos = basePos - baseAng:Forward() * spacing * (i - 1) + baseAng:Right() * spacing * (i - 1)
 
 				if start.alt then
-					pos.z = SkyOps.Map.SeaLevel() + U.FromMeters( start.alt )
+					-- высота над рельефом у якоря; без карты высот от уровня моря
+					local ground = SkyOps.Map.GroundZ and SkyOps.Map.GroundZ( basePos.x, basePos.y, basePos.z )
+
+					pos.z = (ground or SkyOps.Map.SeaLevel()) + U.FromMeters( start.alt )
 				end
 			end
 

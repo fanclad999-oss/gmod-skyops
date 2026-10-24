@@ -20,26 +20,54 @@ SkyOps.Maps.kirovskoe = {
 
 if not string.find( game.GetMap():lower(), "kirov", 1, true ) then return end
 
--- Чанк InfMap1 = 20000 юнитов (~508 м). Примерная раскладка: 1 км ≈ 2 чанка.
-local function A( name, cx, cy, cz, yaw )
-	SkyOps.Map.Register( name, {
-		chunk = Vector( cx, cy, cz or 0 ),
-		pos = Vector( 0, 0, 0 ),
-		ang = Angle( 0, yaw or 0, 0 ),
-		todo = true,
-	} )
+-- Примерная раскладка: смещения от аэродрома в км (на восток, на север) и высота над
+-- рельефом в м. Север = +Y, восток = +X. Пока ядро не построило аэродром
+-- (skyops_airfield_here), точкой отсчёта служит центр карты, а airfield_main лежит там же.
+local LAYOUT = {
+	valley_south = { 6, 8 },
+	road_ip = { 10, 16 },
+	lake_west = { -2, 24 },
+	convoy_start = { 16, 32 },
+	road_mid = { 14, 24 },
+	hill_214 = { 22, 22 },
+	forest_east = { 12, 4 },
+	bridge_khrest = { 18, 12 },
+	bridge_khrest_sam = { 19, 13 },
+	ridge_west = { 8, 18 },
+	cap_station = { 4, 20, 4000, 90 },
+	north_edge = { 10, 60, 3000, -90 },
+}
+
+local function Layout( base, baseZ, useGround )
+	local K = (SkyOps.M_TO_HU or 40) * 1000
+
+	for name, l in pairs( LAYOUT ) do
+		local pos = base + Vector( l[1] * K, l[2] * K, 0 )
+		local ground = useGround and SkyOps.Map.GroundZ and SkyOps.Map.GroundZ( pos.x, pos.y, baseZ )
+
+		pos.z = (ground or baseZ) + (l[3] or 0) * (SkyOps.M_TO_HU or 40)
+
+		SkyOps.Map.Register( name, { pos = pos, ang = Angle( 0, l[4] or 0, 0 ), todo = true } )
+	end
 end
 
-A( "airfield_main", 0, 0, 0, 90 )
-A( "valley_south", 12, 16 )
-A( "road_ip", 20, 32 )
-A( "lake_west", -4, 48 )
-A( "convoy_start", 32, 64 )
-A( "road_mid", 28, 48 )
-A( "hill_214", 44, 44 )
-A( "forest_east", 24, 8 )
-A( "bridge_khrest", 36, 24 )
-A( "bridge_khrest_sam", 38, 26 )
-A( "ridge_west", 16, 36 )
-A( "cap_station", 8, 40, 8, 90 )   -- ~4 км высоты
-A( "north_edge", 20, 120, 6, -90 ) -- ~3 км высоты
+-- Без аэродрома: всё от центра карты
+SkyOps.Map.Register( "airfield_main", { chunk = Vector( 0, 0, 0 ), pos = Vector( 0, 0, 0 ), ang = Angle( 0, 90, 0 ), todo = true } )
+Layout( SkyOps.Map.Anchor( "airfield_main" ), 0 )
+
+-- Ядро регистрирует airfield_main после загрузки карты (и при перестройке аэродрома):
+-- как только он настоящий, раскладываем остальные якоря вокруг него
+local laidAt
+
+timer.Create( "SkyOps.Kirovskoe.Layout", 2, 0, function()
+	local a = SkyOps.Map.Anchors[ "airfield_main" ]
+
+	if not a or a.todo then return end
+
+	local pos = SkyOps.Map.Anchor( "airfield_main" )
+
+	if not pos or laidAt == pos then return end
+
+	laidAt = pos
+	Layout( Vector( pos.x, pos.y, 0 ), pos.z, true )
+end )

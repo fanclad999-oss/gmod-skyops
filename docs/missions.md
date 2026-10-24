@@ -40,7 +40,7 @@
 | `aircraft` | `{ role, crew, loadouts = { tags, default } }`: роль из `SkyOps.Registry.Aircraft`, мест в экипаже, разрешённые подвески |
 | `flights` | сколько экипажей можно (по умолчанию 2) |
 | `callsign` | позывной звена (по умолчанию «Гром»: Гром-1, Гром-2) |
-| `start` | `anchor`, `airborne`, `alt` (м над уровнем моря), `speed` (км/ч) |
+| `start` | `anchor`, `airborne`, `alt` (м над рельефом у якоря), `speed` (км/ч) |
 | `waypoints` | `{ id, anchor, radius, label }` |
 | `units` | что спавнить, см. ниже |
 | `objectives` | задачи, порядок = порядок в брифинге |
