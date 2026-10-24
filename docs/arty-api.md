@@ -13,6 +13,20 @@
 (6000 на круг, 0 = север, по часовой). Мировые позиции везде "развёрнутые" позиции
 InfMap, то есть то, что возвращает `GetPos()` (InfMap его подменяет).
 
+## Правила для позиций в сети (InfMap)
+
+- `net.WriteVector` сжимает координаты в диапазон ±16384 u (~410 м при 40 u/m), дальше
+  приходит мусор. Мировые позиции в net передаём тремя `net.WriteFloat` (x, y, z) или
+  координатами сетки в метрах. Касается `skyops_arty_auto` (target), `skyops_arty_impact`,
+  `skyops_arty_target` и любых новых сообщений.
+- NW/NW2 Vector, скорее всего, сжимаются так же (стоковый `TrackPos` дронов тоже). Позиции
+  дальше 400 м от нуля карты в `SetNW2Vector` не кладём: три `NW2Float` или координаты сетки.
+  Касается `SkyOpsArty_LoiterCenter` и `SkyOpsArty_LaserPos`. Проверить в игре.
+- На клиенте InfMap `Entity:GetPos()` отдаёт позицию относительно чанка `LocalPlayer`.
+  Абсолютная = `pos + InfMap.unlocalize_vector( Vector(), LocalPlayer().CHUNK_OFFSET )`,
+  обратно (серверная позиция -> где рисовать) вычитаем. Готовая функция: `FX.ToRender`
+  в `arty/fx/sh_fx.lua`. `Grid.ToGrid` на клиенте ждёт абсолютную позицию.
+
 ## Сетка `SkyOps.Arty.Grid` (shared)
 
 - `ToGrid( worldPos ) -> x_m, y_m`
